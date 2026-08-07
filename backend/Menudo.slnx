@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Menudo.Application/Menudo.Application.csproj" />
+  <Project Path="Menudo.Domain/Menudo.Domain.csproj" />
+  <Project Path="Menudo.Infrastructure/Menudo.Infrastructure.csproj" />
+  <Project Path="Menudo.Presentation/Menudo.Presentation.csproj" />
+</Solution>

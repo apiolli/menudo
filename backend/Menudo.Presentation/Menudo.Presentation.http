@@ -1,0 +1,6 @@
+@Menudo.Presentation_HostAddress = http://localhost:5091
+
+GET {{Menudo.Presentation_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
