@@ -10,8 +10,8 @@ namespace Menudo.Domain.Entities
     public class Category
     {
         public int Id { get; set; }
-        public int Name { get; set; }
-        public decimal? Budget { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public decimal Budget { get; set; }
         public decimal Spent { get; set; }
         public Status Status { get; set; }
         public List<Expense> Expenses { get; set; } = [];

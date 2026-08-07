@@ -11,6 +11,7 @@ namespace Menudo.Domain.Entities
         public string Name { get; set; } = string.Empty;
         public PaymentType Type { get; set; }
         public string? Detail {  get; set; }
+        public List<Expense> Expenses { get; set; } = [];
         public string Icon { get; set; } = string.Empty;
         public string Color { get; set; } = string.Empty;
     }
