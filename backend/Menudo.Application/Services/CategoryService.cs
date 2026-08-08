@@ -25,6 +25,8 @@ namespace Menudo.Application.Services
         public async Task<CategoryDTO> CreateCategoryAsync(CreateCategoryDTO dto)
         {
             var category = _mapper.Map<Category>(dto);
+
+            // Se cambia el estado a activo
             category.Status = Status.Active;
 
             await _repo.AddAsync(category);
@@ -38,23 +40,22 @@ namespace Menudo.Application.Services
             var categories = await _repo.GetAllAsync();
 
             if (!categories.Any()) throw new NotFoundException("Actualmente no existen categorias.");
+
             return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
         }
 
         public async Task<CategoryDTO> GetCategoryById(int id)
         {
-            var categoria = await _repo.GetByIdAsync(id);
-
-            if (categoria is null) throw new NotFoundException($"La categoria con id {id} no existe");
+            var categoria = await _repo.GetByIdAsync(id) 
+                ?? throw new NotFoundException($"La categoria con id {id} no existe"); ;
 
             return _mapper.Map<CategoryDTO>(categoria);
         }
 
         public async Task UpdateCategoryAsync(int id, UpdateCategoryDTO dto)
         {
-            var categoria = await _repo.GetByIdAsync(id);
-
-            if (categoria is null) throw new NotFoundException($"La categoria con id {id} no existe");
+            var categoria = await _repo.GetByIdAsync(id) 
+                ?? throw new NotFoundException($"La categoria con id {id} no existe");
 
             _mapper.Map(dto, categoria);
             _repo.Update(categoria);
@@ -63,9 +64,8 @@ namespace Menudo.Application.Services
 
         public async Task DeleteCategoryAsync(int id)
         {
-            var categoria = await _repo.GetByIdAsync(id);
-
-            if (categoria is null) throw new NotFoundException($"La categoria con id {id} no existe");
+            var categoria = await _repo.GetByIdAsync(id) 
+                ?? throw new NotFoundException($"La categoria con id {id} no existe");
 
             _repo.Delete(categoria);
             await _repo.SaveChangesAsync();
