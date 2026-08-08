@@ -16,13 +16,15 @@ namespace Menudo.Application.Mapping
             CreateMap<CreateCategoryDTO, Category>()
                 .ForMember(ent => ent.Id, config => config.Ignore())
                 .ForMember(ent => ent.Status, config => config.Ignore())
-                .ForMember(ent => ent.Expenses, config => config.Ignore());
+                .ForMember(ent => ent.Expenses, config => config.Ignore())
+                .ForMember(ent => ent.Spent, config => config.Ignore());
 
             CreateMap<Category, CategoryDTO>();
 
             CreateMap<UpdateCategoryDTO, Category>()
                 .ForMember(ent => ent.Id, config => config.Ignore())
-                .ForMember(ent => ent.Expenses, config => config.Ignore());
+                .ForMember(ent => ent.Expenses, config => config.Ignore())
+                .ForMember(ent => ent.Spent, config => config.Ignore());
 
             // Mapeos de metodos de pago
 

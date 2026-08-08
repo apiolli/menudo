@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Menudo.Application.DTOs.Category;
 using Menudo.Application.Interfaces;
 using Menudo.Domain.Entities;
@@ -14,20 +15,24 @@ namespace Menudo.Application.Services
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepository _repo;
+        private readonly IValidator<CreateCategoryDTO> _createDtoValidator;
         private readonly IMapper _mapper;
 
-        public CategoryService(ICategoryRepository repo, IMapper mapper)
+        public CategoryService(ICategoryRepository repo, IMapper mapper, IValidator<CreateCategoryDTO> createDtoValidator)
         {
             _repo = repo;
             _mapper = mapper;
+            _createDtoValidator = createDtoValidator;
         }
 
         public async Task<CategoryDTO> CreateCategoryAsync(CreateCategoryDTO dto)
         {
+            _createDtoValidator.ValidateAndThrow(dto);
             var category = _mapper.Map<Category>(dto);
 
             // Se cambia el estado a activo
             category.Status = Status.Active;
+            category.Spent = 0;
 
             await _repo.AddAsync(category);
             await _repo.SaveChangesAsync();

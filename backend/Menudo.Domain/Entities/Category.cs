@@ -1,9 +1,4 @@
 ﻿using Menudo.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace Menudo.Domain.Entities
 {
