@@ -1,3 +1,4 @@
+using Menudo.Application;
 using Menudo.Infrastructure;
 using Menudo.Presentation.Middlewares;
 using Scalar.AspNetCore;
@@ -12,6 +13,7 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 });
 
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplication(builder.Configuration);
 
 var app = builder.Build();
 

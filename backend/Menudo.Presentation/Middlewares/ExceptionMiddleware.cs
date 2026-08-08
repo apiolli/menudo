@@ -43,7 +43,7 @@ namespace Menudo.Presentation.Middlewares
                 StatusCode = statusCode,
                 Message = message,
                 Details = details,
-                RequestId = context.Request.Path
+                RequestId = context.TraceIdentifier
             };
 
             context.Response.ContentType = "application/json";

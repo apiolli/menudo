@@ -1,4 +1,6 @@
-﻿using Menudo.Infrastructure.Persistence;
+﻿using Menudo.Domain.Interfaces;
+using Menudo.Infrastructure.Persistence;
+using Menudo.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +16,9 @@ namespace Menudo.Infrastructure
         {
             services.AddDbContext<MenudoDbContext>(opciones =>
                 opciones.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
 
             return services;
         }

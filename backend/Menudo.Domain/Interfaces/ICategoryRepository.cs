@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Menudo.Domain.Interfaces
 {
-    public interface ICategoryRepository
+    public interface ICategoryRepository : IBaseRepository<Category>
     {
     }
 }
