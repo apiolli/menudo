@@ -16,7 +16,7 @@ namespace Menudo.Application.Validators.Category
 
             RuleFor(x => x.Budget)
                 .NotEmpty().WithMessage("El presupuesto no puede estar vacio.")
-                .GreaterThan(0).WithMessage("El presupuesto debe de ser mayor que 0");
+                .GreaterThan(0).WithMessage("El presupuesto debe de ser mayor que 0.");
 
             RuleFor(x => x.Icon)
                 .NotEmpty().WithMessage("El icono de la categoria no puede estar vacio.");

@@ -27,7 +27,7 @@ namespace Menudo.Infrastructure.Configuration
                 .IsRequired();
 
             builder.Property(e => e.Description)
-                .IsRequired(false)
+                .IsRequired()
                 .HasMaxLength(100);
                 
         }

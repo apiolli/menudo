@@ -18,10 +18,10 @@ namespace Menudo.Application.Validators.Category
 
             RuleFor(x => x.Budget)
                 .NotEmpty().WithMessage("El presupuesto no puede estar vacio.")
-                .GreaterThan(0).WithMessage("El presupuesto debe de ser mayor que 0");
+                .GreaterThan(0).WithMessage("El presupuesto debe de ser mayor que 0.");
 
             RuleFor(x => x.Status)
-                .NotEmpty().WithMessage("El estado de la categoria es obligatorio,")
+                .NotEmpty().WithMessage("El estado de la categoria es obligatorio.")
                 .IsInEnum()
                 .WithMessage("El estado enviado no es válido.");
 
