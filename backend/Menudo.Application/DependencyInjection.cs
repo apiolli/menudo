@@ -15,6 +15,7 @@ namespace Menudo.Application
             services.AddValidatorsFromAssemblyContaining<CreateCategoryDTOValidator>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IPaymentMethodService, PaymentMethodService>();
+            services.AddScoped<IExpenseService, ExpenseService>();
             return services;
 
         }

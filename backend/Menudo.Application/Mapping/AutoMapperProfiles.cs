@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Menudo.Application.DTOs.Category;
+using Menudo.Application.DTOs.Expense;
 using Menudo.Application.DTOs.PaymentMethod;
 using Menudo.Domain.Entities;
 
@@ -36,6 +37,17 @@ namespace Menudo.Application.Mapping
                 .ForMember(ent => ent.Expenses, config => config.Ignore());
 
             // Mapeos de gastos
+            CreateMap<CreateExpenseDTO, Expense>()
+                .ForMember(ent => ent.Id, config => config.Ignore())
+                .ForMember(ent => ent.Category, config => config.Ignore())
+                .ForMember(ent => ent.PaymentMethod, config => config.Ignore());
+
+            CreateMap<Expense, ExpenseDTO>();
+
+            CreateMap<UpdateExpenseDTO, Expense>()
+                .ForMember(ent => ent.Id, config => config.Ignore())
+                .ForMember(ent => ent.Category, config => config.Ignore())
+                .ForMember(ent => ent.PaymentMethod, config => config.Ignore());
         }
     }
 }
