@@ -14,6 +14,7 @@ namespace Menudo.Application
             services.AddAutoMapper(cfg => { }, typeof(DependencyInjection));
             services.AddValidatorsFromAssemblyContaining<CreateCategoryDTOValidator>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IPaymentMethodService, PaymentMethodService>();
             return services;
 
         }

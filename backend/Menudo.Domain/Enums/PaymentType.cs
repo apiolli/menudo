@@ -7,10 +7,10 @@ namespace Menudo.Domain.Enums
 {
     public enum PaymentType
     {
-        Transfer,
-        Cash,
-        DebitCard,
-        CreditCard,
-        VirtualWallet
+        Transfer = 1,
+        Cash = 2,
+        DebitCard = 3,
+        CreditCard = 4,
+        VirtualWallet = 5
     }
 }

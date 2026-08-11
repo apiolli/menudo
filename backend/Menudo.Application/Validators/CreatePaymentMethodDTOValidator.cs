@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using Menudo.Application.DTOs.PaymentMethod;
-using Menudo.Domain.Enums;
 
 namespace Menudo.Application.Validators
 {
@@ -14,7 +13,7 @@ namespace Menudo.Application.Validators
 
             RuleFor(x => x.PaymentType)
                 .NotEmpty().WithMessage("El tipo de metodo de pago es obligatorio,")
-                .IsEnumName(typeof(PaymentType), caseSensitive: false)
+                .IsInEnum()
                 .WithMessage("El metodo de pago enviado no es válido dentro del catálogo de metodos.");
 
             RuleFor(x => x.Detail)
