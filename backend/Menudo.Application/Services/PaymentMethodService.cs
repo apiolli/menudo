@@ -12,13 +12,16 @@ namespace Menudo.Application.Services
     {
         private readonly IPaymentMethodRepository _repo;
         private readonly IValidator<CreatePaymentMethodDTO> _createDtoValidator;
+        private readonly IValidator<UpdatePaymentMethodDTO> _updateDtoValidator;
         private readonly IMapper _mapper;
 
-        public PaymentMethodService(IPaymentMethodRepository repo, IMapper mapper, IValidator<CreatePaymentMethodDTO> createDtoValidator)
+        public PaymentMethodService(IPaymentMethodRepository repo, IValidator<CreatePaymentMethodDTO> createDtoValidator, 
+            IValidator<UpdatePaymentMethodDTO> updateDtoValidator, IMapper mapper)
         {
             _repo = repo;
-            _mapper = mapper;
             _createDtoValidator = createDtoValidator;
+            _updateDtoValidator = updateDtoValidator;
+            _mapper = mapper;
         }
 
         public async Task<PaymentMethodDTO> CreatePaymentMethodAsync(CreatePaymentMethodDTO dto)
@@ -52,6 +55,9 @@ namespace Menudo.Application.Services
 
         public async Task UpdatePaymentMethodAsync(int id, UpdatePaymentMethodDTO dto)
         {
+            var result = _updateDtoValidator.Validate(dto);
+            if (!result.IsValid) throw new ValidationException(result.Errors);
+            
             var paymentMethod = await ValidatePaymentMethodByIdAsync(id);
 
             _mapper.Map(dto, paymentMethod);

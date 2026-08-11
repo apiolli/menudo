@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Menudo.Application.Validators
+namespace Menudo.Application.Validators.Category
 {
     public class CreateCategoryDTOValidator : AbstractValidator<CreateCategoryDTO>
     {

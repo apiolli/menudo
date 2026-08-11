@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using Menudo.Application.Interfaces;
 using Menudo.Application.Services;
-using Menudo.Application.Validators;
+using Menudo.Application.Validators.Category;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

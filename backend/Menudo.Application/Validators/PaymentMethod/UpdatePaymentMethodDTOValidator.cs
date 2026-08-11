@@ -1,18 +1,21 @@
 ﻿using FluentValidation;
 using Menudo.Application.DTOs.PaymentMethod;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace Menudo.Application.Validators
+namespace Menudo.Application.Validators.PaymentMethod
 {
-    public class CreatePaymentMethodDTOValidator : AbstractValidator<CreatePaymentMethodDTO>
+    public class UpdatePaymentMethodDTOValidator : AbstractValidator<UpdatePaymentMethodDTO>
     {
-        public CreatePaymentMethodDTOValidator()
+        public UpdatePaymentMethodDTOValidator()
         {
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("El nombre de la categoria es obligatorio.")
                 .Length(5, 40).WithMessage("El nombre debe tener entre 5 y 40 caracteres.");
 
-            RuleFor(x => x.PaymentType)
-                .NotEmpty().WithMessage("El tipo de metodo de pago es obligatorio,")
+            RuleFor(x => x.Type)
+                .NotEmpty().WithMessage("El tipo de metodo de pago es obligatori.")
                 .IsInEnum()
                 .WithMessage("El metodo de pago enviado no es válido dentro del catálogo de metodos.");
 
@@ -24,7 +27,6 @@ namespace Menudo.Application.Validators
 
             RuleFor(x => x.Color)
                 .NotEmpty().WithMessage("El color del metodo de pago no puede estar vacio.");
-
-    }
+        }
     }
 }

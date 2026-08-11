@@ -13,13 +13,15 @@ namespace Menudo.Application.Services
     {
         private readonly ICategoryRepository _repo;
         private readonly IValidator<CreateCategoryDTO> _createDtoValidator;
+        private readonly IValidator<UpdateCategoryDTO> _updateDtoValidator;
         private readonly IMapper _mapper;
-
-        public CategoryService(ICategoryRepository repo, IMapper mapper, IValidator<CreateCategoryDTO> createDtoValidator)
+        public CategoryService(ICategoryRepository repo, IValidator<CreateCategoryDTO> createDtoValidator, 
+            IValidator<UpdateCategoryDTO> updateDtoValidator, IMapper mapper)
         {
             _repo = repo;
-            _mapper = mapper;
             _createDtoValidator = createDtoValidator;
+            _updateDtoValidator = updateDtoValidator;
+            _mapper = mapper;
         }
 
         public async Task<CategoryDTO> CreateCategoryAsync(CreateCategoryDTO dto)
@@ -51,29 +53,35 @@ namespace Menudo.Application.Services
 
         public async Task<CategoryDTO> GetCategoryById(int id)
         {
-            var categoria = await _repo.GetByIdAsync(id) 
-                ?? throw new NotFoundException($"La categoria con id {id} no existe"); ;
+            var category = await ValidateCategoryByIdAsync(id);
 
-            return _mapper.Map<CategoryDTO>(categoria);
+            return _mapper.Map<CategoryDTO>(category);
         }
 
         public async Task UpdateCategoryAsync(int id, UpdateCategoryDTO dto)
         {
-            var categoria = await _repo.GetByIdAsync(id) 
-                ?? throw new NotFoundException($"La categoria con id {id} no existe");
+            var result = _updateDtoValidator.Validate(dto);
+            if (!result.IsValid) throw new ValidationException(result.Errors);
 
-            _mapper.Map(dto, categoria);
-            _repo.Update(categoria);
+            var category = await ValidateCategoryByIdAsync(id);
+
+            _mapper.Map(dto, category);
+            _repo.Update(category);
             await _repo.SaveChangesAsync();
         }
 
         public async Task DeleteCategoryAsync(int id)
         {
-            var categoria = await _repo.GetByIdAsync(id) 
-                ?? throw new NotFoundException($"La categoria con id {id} no existe");
+            var category = await ValidateCategoryByIdAsync(id);
 
-            _repo.Delete(categoria);
+            _repo.Delete(category);
             await _repo.SaveChangesAsync();
+        }
+
+        private async Task<Category> ValidateCategoryByIdAsync(int id)
+        {
+            return await _repo.GetByIdAsync(id)
+                ?? throw new NotFoundException($"La categoria con id {id} no existe");
         }
     }
 }
