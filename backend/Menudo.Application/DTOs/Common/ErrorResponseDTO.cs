@@ -8,7 +8,7 @@ namespace Menudo.Application.DTOs.ErrorResponse
     {
         public int StatusCode { get; set; }
         public string Message { get; set; } = string.Empty;
-        public List<string> Details { get; set; } = [];
+        public Dictionary<string, string[]> Details { get; set; } = [];
         public string RequestId { get; set; } = string.Empty;
     }
 }

@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
 using Menudo.Application.DTOs.Category;
 using Menudo.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Menudo.Application.Mapping
 {

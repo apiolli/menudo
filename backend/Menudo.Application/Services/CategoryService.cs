@@ -6,9 +6,6 @@ using Menudo.Domain.Entities;
 using Menudo.Domain.Enums;
 using Menudo.Domain.Exceptions;
 using Menudo.Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Menudo.Application.Services
 {
@@ -27,7 +24,10 @@ namespace Menudo.Application.Services
 
         public async Task<CategoryDTO> CreateCategoryAsync(CreateCategoryDTO dto)
         {
-            _createDtoValidator.ValidateAndThrow(dto);
+            var result = _createDtoValidator.Validate(dto);
+
+            if (!result.IsValid) throw new ValidationException(result.Errors);
+
             var category = _mapper.Map<Category>(dto);
 
             // Se cambia el estado a activo

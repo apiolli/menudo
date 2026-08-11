@@ -2,6 +2,7 @@
 using Menudo.Application.DTOs.ErrorResponse;
 using Menudo.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.ObjectPool;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 
@@ -35,12 +36,14 @@ namespace Menudo.Presentation.Middlewares
         {
             var (statusCode, message, details) = exception switch
             {
-                AppException error => (error.StatusCode, error.Message, []),
+                AppException error => (error.StatusCode, error.Message, new Dictionary<string, string[]>()),
                 ValidationException error => (
                     StatusCodes.Status400BadRequest, 
                     "Error de validacion", 
-                    error.Errors.Select(e => $"{e.PropertyName}: {e.ErrorMessage}").ToList()),
-                _ => (StatusCodes.Status500InternalServerError, "Ocurrio un error interno del servidor", []),
+                    error.Errors
+                    .GroupBy(e => e.PropertyName)
+                    .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray())),
+                _ => (StatusCodes.Status500InternalServerError, "Ocurrio un error interno del servidor", new Dictionary<string, string[]>()),
             };
 
             var response = new ErrorResponseDTO
