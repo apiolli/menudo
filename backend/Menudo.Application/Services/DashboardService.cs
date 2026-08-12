@@ -22,33 +22,27 @@ namespace Menudo.Application.Services
 
         public DashboardDTO GetDashboardData()
         {
+            var now = DateTime.Now;
+            var lastMonth = now.AddMonths(-1);
+            var monthTotal = _repo.GetTotalByMonth(now.Year, now.Month);
+            var lastMonthTotal = _repo.GetTotalByMonth(lastMonth.Year, lastMonth.Month);
+            var movements = _repo.GetCountByMonth(now.Year, now.Month);
+
+            var highestExpense = _repo.GetHighestExpenseByMonth(now.Year, now.Month);
+            var lastMovements = _repo.GetLastMovements(6);
+
+            var percentajeChange = lastMonthTotal == 0 ? 0m
+                : ((monthTotal - lastMonthTotal) / lastMonthTotal) * 100m;
+
+            var movementsAverage = movements == 0 ? 0m : monthTotal / movements;
+
             var expenses = _repo.GetQueryable();
-            var actualMonthExpenses = expenses.Where(e => e.Date.Month == DateTime.Now.Month && e.Date.Year == DateTime.Now.Year);
-
-            var monthTotal = actualMonthExpenses.Sum(e => e.Amount);
-
-            var lastMonthTotal = expenses
-                .Where(e => e.Date.Month == DateTime.Now.AddMonths(-1).Month)
-                .Sum(e => e.Amount);
-
-            var percentajeChange = ((monthTotal - lastMonthTotal) / lastMonthTotal) * 100m;
-
-            var movements = actualMonthExpenses.Count();
-            var movementsAverage = actualMonthExpenses.Average(e => e.Amount);
-
-            var highestExpense = actualMonthExpenses
-                .OrderByDescending(x => x.Amount)
-                .Select(e => new ExpenseSummaryDTO
-                    {
-                        Id = e.Id,
-                        Description = e.Description,
-                        Amount = e.Amount,
-                    })
-                .FirstOrDefault();
-
+            var spendingByCategory = GetSpendingByCategory(now.Year, now.Month, expenses);
             var evolutionOverLast6Months = GetEvolutionOverTheLast6Months(expenses);
-            var spendingByCategory = GetSpendingByCategory(actualMonthExpenses);
-            var lastMovements = mapper.Map<List<ExpenseDTO>>(actualMonthExpenses.Take(6).OrderByDescending(x => x.Date).ToList());
+
+            // Mapeo de entidades
+            var highestExpenseDto = mapper.Map<ExpenseSummaryDTO>(highestExpense);
+            var lastMovementsDto = mapper.Map<List<ExpenseDTO>>(lastMovements);
 
             return new DashboardDTO
             {
@@ -57,10 +51,10 @@ namespace Menudo.Application.Services
                 PercentajeChange = Math.Round(percentajeChange, 1),
                 Movements = movements,
                 MovementsAverage = Math.Round(movementsAverage, 2),
-                HighestExpense = highestExpense!,
+                HighestExpense = highestExpenseDto,
                 EvolutionOverTheLast6Months = evolutionOverLast6Months,
                 SpendingByCategory = spendingByCategory,
-                LastMovements = lastMovements,
+                LastMovements = lastMovementsDto,
             };
         }
 
@@ -72,26 +66,22 @@ namespace Menudo.Application.Services
             for (int i = 5; i >= 0; i--)
             {
                 var date = today.AddMonths(-i);
-
-                var total = allExpenses
-                    .Where(e => e.Date.Year == date.Year && e.Date.Month == date.Month)
-                    .Sum(e => e.Amount);
-
                 result.Add(new TotalSpentPerMonthDTO
                 {
                     Month = date.ToString("MMM", new CultureInfo("es-AR")),
                     Year = date.Year,
                     MonthNumber = date.Month,
-                    Total = total
+                    Total = _repo.GetTotalByMonth(date.Year, date.Month),
                 });
             }
 
             return result;
         }
 
-        private List<SpendingByCategoryDTO> GetSpendingByCategory(IQueryable<Expense> monthExpenses)
+         private List<SpendingByCategoryDTO> GetSpendingByCategory(int year, int month, IQueryable<Expense> expenses)
         {
-            return monthExpenses
+            return expenses
+                .Where(e => e.Date.Year == year && e.Date.Month == month)
                 .GroupBy(e => e.Category)
                 .Select(e => new SpendingByCategoryDTO
                 {

@@ -7,5 +7,9 @@ namespace Menudo.Domain.Interfaces
 {
     public interface IExpenseRepository : IBaseRepository<Expense>
     {
+        decimal GetTotalByMonth(int year, int month);
+        int GetCountByMonth(int year, int month);
+        Expense? GetHighestExpenseByMonth(int year, int month);
+        List<Expense> GetLastMovements(int count);
     }
 }
