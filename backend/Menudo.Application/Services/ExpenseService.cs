@@ -91,24 +91,20 @@ namespace Menudo.Application.Services
             var expenses = await _repo.GetQueryableExpensesAsync();
 
             if (!string.IsNullOrEmpty(dto.Description))
-            {
                 expenses = expenses.Where(e => e.Description.Contains(dto.Description));
-            }
+
 
             if (dto.CategoryId is not null)
-            {
                 expenses = expenses.Where(e => e.CategoryId.Equals(dto.CategoryId));
-            }
+
 
             if (dto.PaymentMethodId is not null)
-            {
                 expenses = expenses.Where(e => e.PaymentMethodId.Equals(dto.PaymentMethodId));
-            }
+
 
             if (dto.FromTheDate is not null)
-            {
                 expenses = expenses.Where(e => e.Date >= dto.FromTheDate);
-            }
+
 
             if (dto.ToTheDate is not null)
             {

@@ -23,12 +23,6 @@ namespace Menudo.Presentation.Controllers
             return Ok(response);
         }
 
-        [HttpGet("filter")]
-        public async Task<ActionResult<IEnumerable<ExpenseDTO>>> FilterExpenses([FromQuery] FilterExpenseDTO dto)
-        {
-            var response = await service.FilterExpensesAsync(dto);
-            return Ok(response);
-        }
 
         [HttpGet("{id}", Name = "GetExpense")]
         public async Task<ActionResult<ExpenseDTO>> GetById(int id)
@@ -56,6 +50,13 @@ namespace Menudo.Presentation.Controllers
         {
             await service.DeleteExpenseAsync(id);
             return NoContent();
+        }
+
+        [HttpGet("filter")]
+        public async Task<ActionResult<IEnumerable<ExpenseDTO>>> FilterExpenses([FromQuery] FilterExpenseDTO dto)
+        {
+            var response = await service.FilterExpensesAsync(dto);
+            return Ok(response);
         }
     }
 }
