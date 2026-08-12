@@ -88,7 +88,7 @@ namespace Menudo.Application.Services
 
         public async Task<List<ExpenseDTO>> FilterExpensesAsync(FilterExpenseDTO dto)
         {
-            var expenses = await _repo.GetQueryableExpensesAsync();
+            var expenses = _repo.GetQueryable();
 
             if (!string.IsNullOrEmpty(dto.Description))
                 expenses = expenses.Where(e => e.Description.Contains(dto.Description));

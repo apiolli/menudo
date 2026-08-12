@@ -11,6 +11,7 @@ namespace Menudo.Domain.Interfaces
         Task AddAsync(T entity);
         void Update(T entity);
         void Delete(T entity);
+        IQueryable<T> GetQueryable();
         Task SaveChangesAsync();
     }
 }

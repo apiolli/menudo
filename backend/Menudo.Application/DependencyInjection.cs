@@ -16,6 +16,7 @@ namespace Menudo.Application
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IPaymentMethodService, PaymentMethodService>();
             services.AddScoped<IExpenseService, ExpenseService>();
+            services.AddScoped<IDashboardService, DashboardService>();
             return services;
 
         }

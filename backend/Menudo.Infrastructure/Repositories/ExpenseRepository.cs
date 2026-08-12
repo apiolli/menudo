@@ -10,6 +10,5 @@ namespace Menudo.Infrastructure.Repositories
         {
         }
 
-        public async Task<IQueryable<Expense>> GetQueryableExpensesAsync() => _dbSet.AsQueryable();
     }
 }
