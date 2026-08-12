@@ -7,5 +7,6 @@ namespace Menudo.Domain.Interfaces
 {
     public interface IExpenseRepository : IBaseRepository<Expense>
     {
+        Task<IQueryable<Expense>> GetQueryableExpensesAsync();
     }
 }

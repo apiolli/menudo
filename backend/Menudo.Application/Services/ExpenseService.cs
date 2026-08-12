@@ -17,14 +17,19 @@ namespace Menudo.Application.Services
         private readonly IExpenseRepository _repo;
         private readonly IValidator<CreateExpenseDTO> _createDtoValidator;
         private readonly IValidator<UpdateExpenseDTO> _updateDtoValidator;
+        private readonly ICategoryService categoryService;
+        private readonly IPaymentMethodService paymentMethodService;
         private readonly IMapper _mapper;
 
-        public ExpenseService(IExpenseRepository repo, IValidator<CreateExpenseDTO> createDtoValidator,
-            IValidator<UpdateExpenseDTO> updateDtoValidator, IMapper mapper)
+        public ExpenseService(IExpenseRepository repo, IValidator<CreateExpenseDTO> createDtoValidator, 
+            IValidator<UpdateExpenseDTO> updateDtoValidator, ICategoryService categoryService, 
+            IPaymentMethodService paymentMethodService, IMapper mapper)
         {
             _repo = repo;
             _createDtoValidator = createDtoValidator;
             _updateDtoValidator = updateDtoValidator;
+            this.categoryService = categoryService;
+            this.paymentMethodService = paymentMethodService;
             _mapper = mapper;
         }
 
@@ -33,6 +38,9 @@ namespace Menudo.Application.Services
             var result = _createDtoValidator.Validate(dto);
 
             if (!result.IsValid) throw new ValidationException(result.Errors);
+
+            var existCategory = await categoryService.ValidateCategoryByIdAsync(dto.CategoryId);
+            var existPaymentMethod = await paymentMethodService.ValidatePaymentMethodByIdAsync(dto.PaymentMethodId);
 
             var expense = _mapper.Map<Expense>(dto);
 
@@ -63,6 +71,8 @@ namespace Menudo.Application.Services
             if (!result.IsValid) throw new ValidationException(result.Errors);
 
             var expense = await ValidateExpenseByIdAsync(id);
+            var existCategory = await categoryService.ValidateCategoryByIdAsync(dto.CategoryId);
+            var existPaymentMethod = await paymentMethodService.ValidatePaymentMethodByIdAsync(dto.PaymentMethodId);
 
             _mapper.Map(dto, expense);
             _repo.Update(expense);
@@ -74,6 +84,38 @@ namespace Menudo.Application.Services
             var expense = await ValidateExpenseByIdAsync(id);
             _repo.Delete(expense);
             await _repo.SaveChangesAsync();
+        }
+
+        public async Task<List<ExpenseDTO>> FilterExpensesAsync(FilterExpenseDTO dto)
+        {
+            var expenses = await _repo.GetQueryableExpensesAsync();
+
+            if (!string.IsNullOrEmpty(dto.Description))
+            {
+                expenses = expenses.Where(e => e.Description.Contains(dto.Description));
+            }
+
+            if (dto.CategoryId is not null)
+            {
+                expenses = expenses.Where(e => e.CategoryId.Equals(dto.CategoryId));
+            }
+
+            if (dto.PaymentMethodId is not null)
+            {
+                expenses = expenses.Where(e => e.PaymentMethodId.Equals(dto.PaymentMethodId));
+            }
+
+            if (dto.FromTheDate is not null)
+            {
+                expenses = expenses.Where(e => e.Date >= dto.FromTheDate);
+            }
+
+            if (dto.ToTheDate is not null)
+            {
+                expenses = expenses.Where(e => e.Date <= dto.ToTheDate);
+            }
+
+            return _mapper.Map<List<ExpenseDTO>>(expenses.ToList());
         }
 
         private async Task<Expense> ValidateExpenseByIdAsync(int id)

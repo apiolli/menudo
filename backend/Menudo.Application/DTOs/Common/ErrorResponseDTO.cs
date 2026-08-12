@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Menudo.Application.DTOs.ErrorResponse
 {
-    public class ErrorResponseDTO
+    public record ErrorResponseDTO
     {
         public int StatusCode { get; set; }
         public string Message { get; set; } = string.Empty;

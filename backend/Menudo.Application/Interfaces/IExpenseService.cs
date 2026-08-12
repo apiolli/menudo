@@ -1,7 +1,4 @@
 ﻿using Menudo.Application.DTOs.Expense;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Menudo.Application.Interfaces
 {
@@ -12,5 +9,6 @@ namespace Menudo.Application.Interfaces
         Task<ExpenseDTO> GetExpenseById(int id);
         Task UpdateExpenseAsync(int id, UpdateExpenseDTO dto);
         Task DeleteExpenseAsync(int id);
+        Task<List<ExpenseDTO>> FilterExpensesAsync(FilterExpenseDTO dto);
     }
 }

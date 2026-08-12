@@ -13,6 +13,7 @@ namespace Menudo.Application.Interfaces
         Task<PaymentMethodDTO> GetPaymentMethodById(int id);
         Task UpdatePaymentMethodAsync(int id, UpdatePaymentMethodDTO dto);
         Task DeletePaymentMethodAsync(int id);
+        Task<PaymentMethod> ValidatePaymentMethodByIdAsync(int id);
 
     }
 }

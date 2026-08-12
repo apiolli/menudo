@@ -9,5 +9,7 @@ namespace Menudo.Infrastructure.Repositories
         public ExpenseRepository(MenudoDbContext context) : base(context)
         {
         }
+
+        public async Task<IQueryable<Expense>> GetQueryableExpensesAsync() => _dbSet.AsQueryable();
     }
 }

@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Menudo.Application.DTOs.Expense
 {
-    public class ExpenseSummaryDTO
+    public record ExpenseSummaryDTO
     {
         public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
     }
 }

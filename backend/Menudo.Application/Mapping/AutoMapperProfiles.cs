@@ -14,10 +14,10 @@ namespace Menudo.Application.Mapping
             CreateMap<CreateCategoryDTO, Category>()
                 .ForMember(ent => ent.Id, config => config.Ignore())
                 .ForMember(ent => ent.Status, config => config.Ignore())
-                .ForMember(ent => ent.Expenses, config => config.Ignore())
                 .ForMember(ent => ent.Spent, config => config.Ignore());
 
-            CreateMap<Category, CategoryDTO>();
+            CreateMap<Category, CategoryDTO>()
+                .ForMember(dto => dto.TotalExpenses, config => config.MapFrom(ent => ent.Expenses.Count()));
 
             CreateMap<UpdateCategoryDTO, Category>()
                 .ForMember(ent => ent.Id, config => config.Ignore())
@@ -30,7 +30,8 @@ namespace Menudo.Application.Mapping
                 .ForMember(ent => ent.Expenses, config => config.Ignore())
                 .ForMember(ent => ent.Type, config => config.MapFrom(dto => dto.PaymentType));
 
-            CreateMap<PaymentMethod, PaymentMethodDTO>();
+            CreateMap<PaymentMethod, PaymentMethodDTO>()
+                .ForMember(dto => dto.TotalExpenses, config => config.MapFrom(ent => ent.Expenses.Count()));
 
             CreateMap<UpdatePaymentMethodDTO, PaymentMethod>()
                 .ForMember(ent => ent.Id, config => config.Ignore())
@@ -43,6 +44,7 @@ namespace Menudo.Application.Mapping
                 .ForMember(ent => ent.PaymentMethod, config => config.Ignore());
 
             CreateMap<Expense, ExpenseDTO>();
+            CreateMap<Expense, ExpenseSummaryDTO>();
 
             CreateMap<UpdateExpenseDTO, Expense>()
                 .ForMember(ent => ent.Id, config => config.Ignore())

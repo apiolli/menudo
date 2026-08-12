@@ -10,7 +10,7 @@ namespace Menudo.Infrastructure.Repositories
     public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         private readonly MenudoDbContext _context;
-        private readonly DbSet<T> _dbSet;
+        protected readonly DbSet<T> _dbSet;
 
         public BaseRepository(MenudoDbContext context)
         {

@@ -78,7 +78,7 @@ namespace Menudo.Application.Services
             await _repo.SaveChangesAsync();
         }
 
-        private async Task<Category> ValidateCategoryByIdAsync(int id)
+        public async Task<Category> ValidateCategoryByIdAsync(int id)
         {
             return await _repo.GetByIdAsync(id)
                 ?? throw new NotFoundException($"La categoria con id {id} no existe");

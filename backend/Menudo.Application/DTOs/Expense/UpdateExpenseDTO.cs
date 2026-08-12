@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Menudo.Application.DTOs.Expense
 {
-    public class UpdateExpenseDTO
+    public record UpdateExpenseDTO
     {
         public decimal Amount { get; set; }
         public DateTime Date { get; set; }

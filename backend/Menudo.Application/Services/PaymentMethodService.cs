@@ -72,7 +72,7 @@ namespace Menudo.Application.Services
             await _repo.SaveChangesAsync();
         }
 
-        private async Task<PaymentMethod> ValidatePaymentMethodByIdAsync(int id)
+        public async Task<PaymentMethod> ValidatePaymentMethodByIdAsync(int id)
         {
             return await _repo.GetByIdAsync(id)
                 ?? throw new NotFoundException($"El metodo de pago con id {id} no existe");

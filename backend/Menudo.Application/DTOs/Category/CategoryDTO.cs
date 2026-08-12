@@ -14,8 +14,10 @@ namespace Menudo.Application.DTOs.Category
         public decimal Budget { get; set; }
         public decimal Spent { get; set; }
         public Status Status { get; set; }
-        public List<ExpenseSummaryDTO> Expenses { get; set; } = [];
         public string Color { get; set; } = string.Empty;
         public string Icon { get; set; } = string.Empty;
+        public int TotalExpenses { get; set; }
+        public List<ExpenseSummaryDTO> Expenses { get; set; } = [];
+
     }
 }
