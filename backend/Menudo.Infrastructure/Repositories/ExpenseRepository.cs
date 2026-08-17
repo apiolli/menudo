@@ -1,9 +1,6 @@
-﻿using Menudo.Application.DTOs.Category;
-using Menudo.Application.DTOs.Expense;
-using Menudo.Domain.Entities;
+﻿using Menudo.Domain.Entities;
 using Menudo.Domain.Interfaces;
 using Menudo.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
 
 namespace Menudo.Infrastructure.Repositories
 {

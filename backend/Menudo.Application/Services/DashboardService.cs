@@ -40,7 +40,7 @@ namespace Menudo.Application.Services
             var spendingByCategory = GetSpendingByCategory(now.Year, now.Month, expenses);
             var evolutionOverLast6Months = GetEvolutionOverTheLast6Months(expenses);
 
-            // Mapeo de entidades
+            // Mapeo de entidades de DTOs
             var highestExpenseDto = mapper.Map<ExpenseSummaryDTO>(highestExpense);
             var lastMovementsDto = mapper.Map<List<ExpenseDTO>>(lastMovements);
 
@@ -78,7 +78,7 @@ namespace Menudo.Application.Services
             return result;
         }
 
-         private List<SpendingByCategoryDTO> GetSpendingByCategory(int year, int month, IQueryable<Expense> expenses)
+        private List<SpendingByCategoryDTO> GetSpendingByCategory(int year, int month, IQueryable<Expense> expenses)
         {
             return expenses
                 .Where(e => e.Date.Year == year && e.Date.Month == month)

@@ -1,3 +1,10 @@
+import { RouterProvider } from "react-router";
+import { router } from "./router/app.router";
+
 export const Menudo = () => {
-  return <div>Menudo</div>;
+  return (
+    <>
+      <RouterProvider router={router} />
+    </>
+  );
 };
