@@ -1,9 +1,9 @@
 import { LogOut, Wallet } from "lucide-react";
 import { useNavigate } from "react-router";
-import { NavList } from "./NavList";
-import { Button } from "../ui/button";
 import { useContext } from "react";
 import { MenudoContext } from "../../context/MenudoContext";
+import { NavList } from "./NavList";
+import { Button } from "../../components/ui/button";
 
 export const SidebarBody = () => {
   const { usuario, logout } = useContext(MenudoContext);
@@ -16,11 +16,11 @@ export const SidebarBody = () => {
         </span>
         <div className="leading-tight">
           <p className="font-display text-[15px] font-semibold text-sidebar-foreground">
-            Gastia
+            menudo
           </p>
-          <p className="text-[11px] text-sidebar-foreground/60">
+          {/* <p className="text-[11px] text-sidebar-foreground/60">
             Gastos personales
-          </p>
+          </p> */}
         </div>
       </div>
 

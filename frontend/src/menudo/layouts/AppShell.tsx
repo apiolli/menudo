@@ -1,8 +1,13 @@
 import { Menu } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { SidebarBody } from "./SideBarBody";
-import { Button } from "../ui/button";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "../ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "../../components/ui/sheet";
+import { Button } from "../../components/ui/button";
 
 export const AppShell = ({
   title,

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { AppShell } from "../../../components/custom/app-shell";
 import { DashboardContent } from "./ui/DashboardContent";
 import { monthLabel } from "../../../data/finance-types";
 import { Button } from "../../../components/ui/button";
@@ -7,6 +6,7 @@ import { Plus } from "lucide-react";
 import { ExportDialog } from "../../../components/custom/ExportDialog";
 import { RequireAuth } from "../../../components/common/RequireAuth";
 import { ExpenseDialog } from "../../../components/custom/ExpenseDialog";
+import { AppShell } from "../../layouts/AppShell";
 
 export const DashboardPage = () => {
   const [open, setOpen] = useState(false);
