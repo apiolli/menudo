@@ -17,7 +17,7 @@ export const AuthPage = () => {
           <span className="grid size-9 place-items-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground">
             <Wallet className="size-5" />
           </span>
-          <p className="font-display text-lg font-semibold text-sidebar-foreground">
+          <p className="text-lg font-semibold text-sidebar-foreground">
             menudo
           </p>
         </div>
@@ -56,7 +56,7 @@ export const AuthPage = () => {
       </aside>
 
       {/* Formularios de acceso: login y registro */}
-      <main className="flex items-center justify-center px-6 py-14">
+      <main className="flex items-center justify-center px-6 py-14 ">
         <div className="w-full max-w-sm">
           <div className="mb-8 lg:hidden">
             <span className="grid size-10 place-items-center rounded-xl bg-primary text-primary-foreground">
@@ -69,7 +69,7 @@ export const AuthPage = () => {
           </p>
 
           {/* Pestañas: Iniciar sesión / Crear cuenta */}
-          <Tabs defaultValue="login" className="mt-8">
+          <Tabs defaultValue="login" className="mt-8 flex flex-col">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="login">Iniciar sesión</TabsTrigger>
               <TabsTrigger value="registro">Crear cuenta</TabsTrigger>

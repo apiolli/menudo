@@ -1,0 +1,35 @@
+import { useState } from "react";
+import { AppShell } from "../../../components/custom/app-shell";
+import { DashboardContent } from "./ui/DashboardContent";
+import { monthLabel } from "../../../data/finance-types";
+import { Button } from "../../../components/ui/button";
+import { Plus } from "lucide-react";
+import { ExportDialog } from "../../../components/custom/ExportDialog";
+import { RequireAuth } from "../../../components/common/RequireAuth";
+import { ExpenseDialog } from "../../../components/custom/ExpenseDialog";
+
+export const DashboardPage = () => {
+  const [open, setOpen] = useState(false);
+  const hoy = new Date().toISOString().slice(0, 10);
+  const inicioMes = hoy.slice(0, 8) + "01";
+
+  return (
+    <AppShell
+      title="Dashboard"
+      subtitle={monthLabel(hoy.slice(0, 7))}
+      actions={
+        <>
+          <ExportDialog desde={inicioMes} hasta={hoy} />
+          <Button className="gap-2" onClick={() => setOpen(true)}>
+            <Plus className="size-4" /> Nuevo gasto
+          </Button>
+        </>
+      }
+    >
+      <RequireAuth>
+        <DashboardContent onNuevo={() => setOpen(true)} />
+      </RequireAuth>
+      <ExpenseDialog open={open} onOpenChange={setOpen} />
+    </AppShell>
+  );
+};
