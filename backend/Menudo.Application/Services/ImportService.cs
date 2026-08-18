@@ -1,5 +1,6 @@
 ﻿using Menudo.Application.DTOs.Expense;
 using Menudo.Application.Interfaces;
+using Menudo.Domain.Exceptions;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
@@ -76,23 +77,23 @@ namespace Menudo.Application.Services
 
                     if (string.IsNullOrWhiteSpace(dateStr) && string.IsNullOrWhiteSpace(description) && string.IsNullOrWhiteSpace(amountStr))
                     {
-                        continue; // Skip empty row
+                        continue;
                     }
 
                     if (!DateTime.TryParse(dateStr, out DateTime date))
-                        throw new ArgumentException("Fecha inválida.");
+                        throw new BadRequestException("Fecha inválida.");
 
                     if (string.IsNullOrWhiteSpace(description))
-                        throw new ArgumentException("La descripción es obligatoria.");
+                        throw new BadRequestException("La descripción es obligatoria.");
 
                     if (!decimal.TryParse(amountStr, out decimal amount) || amount <= 0)
-                        throw new ArgumentException("El monto debe ser un número mayor a 0.");
+                        throw new BadRequestException("El monto debe ser un número mayor a 0.");
 
                     if (!int.TryParse(categoryIdStr, out int categoryId))
-                        throw new ArgumentException("El CategoryId debe ser un número entero.");
+                        throw new BadRequestException("El CategoryId debe ser un número entero.");
 
                     if (!int.TryParse(paymentMethodIdStr, out int paymentMethodId))
-                        throw new ArgumentException("El PaymentMethodId debe ser un número entero.");
+                        throw new BadRequestException("El PaymentMethodId debe ser un número entero.");
 
                     var dto = new CreateExpenseDTO
                     {
