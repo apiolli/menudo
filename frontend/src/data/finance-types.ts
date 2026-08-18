@@ -10,11 +10,11 @@ export type MetodoPago = {
   id: string;
   nombre: string;
   tipo:
-    | "efectivo"
-    | "tarjeta_credito"
-    | "tarjeta_debito"
-    | "transferencia"
-    | "billetera";
+    | "Efectivo"
+    | "Tarjeta de credito"
+    | "Tarjeta de debito"
+    | "Transferencia"
+    | "Billetera";
   detalle?: string;
 };
 

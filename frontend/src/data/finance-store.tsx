@@ -8,6 +8,9 @@ import {
   FileText,
   FileSpreadsheet,
   Table2,
+  Banknote,
+  Landmark,
+  Smartphone,
 } from "lucide-react";
 import * as Icons from "lucide-react";
 import type { Categoria, MetodoPago, Gasto, Usuario } from "./finance-types";
@@ -63,21 +66,21 @@ export const CATEGORIAS: Categoria[] = [
 ];
 
 export const METODOS: MetodoPago[] = [
-  { id: "m1", nombre: "Efectivo", tipo: "efectivo" },
+  { id: "m1", nombre: "Efectivo", tipo: "Efectivo" },
   {
     id: "m2",
     nombre: "Visa Crédito",
-    tipo: "tarjeta_credito",
+    tipo: "Tarjeta de credito",
     detalle: "•••• 4821",
   },
   {
     id: "m3",
     nombre: "Débito Galicia",
-    tipo: "tarjeta_debito",
+    tipo: "Tarjeta de debito",
     detalle: "•••• 7745",
   },
-  { id: "m4", nombre: "Transferencia", tipo: "transferencia" },
-  { id: "m5", nombre: "Mercado Pago", tipo: "billetera" },
+  { id: "m4", nombre: "Transferencia", tipo: "Transferencia" },
+  { id: "m5", nombre: "Mercado Pago", tipo: "Billetera" },
 ];
 
 export const DESCRIPCIONES: Record<string, string[]> = {
@@ -210,3 +213,11 @@ export function Icono({
     )[name] ?? Icons.Tag;
   return <Cmp className={className} />;
 }
+
+export const TIPOS = [
+  { id: "Efectivo", label: "Efectivo", icon: Banknote },
+  { id: "Tarjeta de crédito", label: "Tarjeta de crédito", icon: CreditCard },
+  { id: "Tarjeta de débito", label: "Tarjeta de débito", icon: CreditCard },
+  { id: "Transferencia", label: "Transferencia", icon: Landmark },
+  { id: "Billetera", label: "Billetera virtual", icon: Smartphone },
+] as const;

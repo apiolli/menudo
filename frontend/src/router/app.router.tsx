@@ -3,36 +3,20 @@ import { AuthPage } from "../menudo/pages/auth/AuthPage";
 import { DashboardPage } from "../menudo/pages/dashboard/DashboardPage";
 import { ExpensesPage } from "../menudo/pages/expenses/ExpensesPage";
 import { CategoriesPage } from "../menudo/pages/categories/CategoriesPage";
+import { PaymentMethodsPage } from "../menudo/pages/paymentMethods/PaymentMethodsPage";
+import { ProfilePage } from "../menudo/pages/profile/ProfilePage";
+import { ReportsPage } from "../menudo/pages/reports/ReportsPage";
 
 // const SearchPage = lazy(() => import("@/herores/pages/search/SearchPage"));
 
 export const router = createBrowserRouter([
-  //   {
-  //     path: "/auth",
-  //     element: <HeroesLayout />,
-  //     children: [
-  //       {
-  //         index: true,
-  //         element: <HomePage />,
-  //       },
-  //       {
-  //         path: "heroes/1",
-  //         element: <HeroPage />,
-  //       },
-  //       {
-  //         path: "search",
-  //         element: <SearchPage />,
-  //       },
-  //     ],
-  //   },
-
-  {
-    path: "/auth",
-    element: <AuthPage />,
-  },
   {
     path: "/",
     element: <DashboardPage />,
+  },
+  {
+    path: "/auth",
+    element: <AuthPage />,
   },
   {
     path: "/expenses",
@@ -41,5 +25,17 @@ export const router = createBrowserRouter([
   {
     path: "/categories",
     element: <CategoriesPage />,
+  },
+  {
+    path: "/paymentMethods",
+    element: <PaymentMethodsPage />,
+  },
+  {
+    path: "/profile",
+    element: <ProfilePage />,
+  },
+  {
+    path: "/reports",
+    element: <ReportsPage />,
   },
 ]);
