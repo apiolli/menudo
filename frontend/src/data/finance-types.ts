@@ -38,23 +38,26 @@ export type User = {
   avatarColor?: string;
 };
 
+// ... tus tipos (Category, PaymentMethod, Expense, User) se mantienen igual
+
+// Cambiamos a 'es-DO' y 'DOP' para formato de República Dominicana
 export const currency = (value: number) =>
-  new Intl.NumberFormat("en-US", {
+  new Intl.NumberFormat("es-DO", {
     style: "currency",
-    currency: "USD",
+    currency: "DOP",
     maximumFractionDigits: 0,
   }).format(value);
 
 export const currencyExact = (value: number) =>
-  new Intl.NumberFormat("en-US", {
+  new Intl.NumberFormat("es-DO", {
     style: "currency",
-    currency: "USD",
+    currency: "DOP",
     minimumFractionDigits: 2,
   }).format(value);
 
 export const formatDate = (iso: string) =>
   new Date(iso.length > 10 ? iso : `${iso}T12:00:00`).toLocaleDateString(
-    "en-US",
+    "es-DO",
     {
       day: "2-digit",
       month: "short",
@@ -65,7 +68,7 @@ export const formatDate = (iso: string) =>
 export const monthKey = (iso: string) => iso.slice(0, 7);
 
 export const monthLabel = (key: string) =>
-  new Date(`${key}-01T12:00:00`).toLocaleDateString("en-US", {
+  new Date(`${key}-01T12:00:00`).toLocaleDateString("es-DO", {
     month: "long",
     year: "numeric",
   });

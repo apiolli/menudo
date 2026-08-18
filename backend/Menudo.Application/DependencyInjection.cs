@@ -17,13 +17,12 @@ namespace Menudo.Application
             services.AddScoped<IPaymentMethodService, PaymentMethodService>();
             services.AddScoped<IExpenseService, ExpenseService>();
             services.AddScoped<IDashboardService, DashboardService>();
-
             services.AddScoped<IExportStrategy, ExcelExportStrategy>();
             services.AddScoped<IExportStrategy, TxtExportStrategy>();
             services.AddScoped<IExportStrategy, JsonExportStrategy>();
             services.AddScoped<IExportStrategyFactory, ExportStrategyFactory>();
             services.AddScoped<IExportService, ExportService>();
-
+            services.AddScoped<IImportService, ImportService>();
             return services;
 
         }

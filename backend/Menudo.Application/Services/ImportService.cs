@@ -4,7 +4,6 @@ using Menudo.Domain.Exceptions;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -16,23 +15,24 @@ namespace Menudo.Application.Services
         private readonly ICategoryService _categoryService;
         private readonly IPaymentMethodService _paymentMethodService;
 
-        public ImportService(IExpenseService expenseService, ICategoryService categoryService, IPaymentMethodService paymentMethodService, OfficeOpenXml.LicenseContext? licenseContext)
+        public ImportService(IExpenseService expenseService, ICategoryService categoryService, IPaymentMethodService paymentMethodService)
         {
             _expenseService = expenseService;
             _categoryService = categoryService;
             _paymentMethodService = paymentMethodService;
-            licenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+            
+            ExcelPackage.License.SetNonCommercialPersonal("cesar_diaz"); 
         }
 
         public byte[] GetTemplate()
         {
             using var package = new ExcelPackage();
             var worksheet = package.Workbook.Worksheets.Add("Template");
-            worksheet.Cells[1, 1].Value = "Date (yyyy-MM-dd)";
-            worksheet.Cells[1, 2].Value = "Description";
-            worksheet.Cells[1, 3].Value = "Amount";
-            worksheet.Cells[1, 4].Value = "CategoryId";
-            worksheet.Cells[1, 5].Value = "PaymentMethodId";
+            worksheet.Cells[1, 1].Value = "Fecha (yyyy-MM-dd)";
+            worksheet.Cells[1, 2].Value = "Descripcion";
+            worksheet.Cells[1, 3].Value = "Monto";
+            worksheet.Cells[1, 4].Value = "CategoriaId";
+            worksheet.Cells[1, 5].Value = "MetodoPagoId";
             worksheet.Cells.AutoFitColumns();
             return package.GetAsByteArray();
         }
@@ -77,7 +77,7 @@ namespace Menudo.Application.Services
 
                     if (string.IsNullOrWhiteSpace(dateStr) && string.IsNullOrWhiteSpace(description) && string.IsNullOrWhiteSpace(amountStr))
                     {
-                        continue;
+                        continue; 
                     }
 
                     if (!DateTime.TryParse(dateStr, out DateTime date))

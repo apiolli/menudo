@@ -33,7 +33,8 @@ namespace Menudo.Infrastructure.Authentication
 
             var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
 
-            if (result == Microsoft.AspNetCore.Identity.PasswordVerificationResult.Failed) throw new BadRequestException("Credenciales invalidas");
+            if (result == Microsoft.AspNetCore.Identity.PasswordVerificationResult.Failed) 
+                throw new BadRequestException("Credenciales invalidas");
 
             var token = _jwtTokenGenerator.GenerateToken(user);
 
@@ -52,7 +53,7 @@ namespace Menudo.Infrastructure.Authentication
 
             if (emailExists)
             {
-                throw new ConflictException("Email already in use");
+                throw new ConflictException("Este email ya esta en uso");
             }
 
 

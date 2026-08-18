@@ -8,7 +8,7 @@ import { RequireAuth } from "../../../components/common/RequireAuth";
 import type { Expense } from "../../../data/finance-types";
 import { ExpenseDialog } from "../../../components/custom/ExpenseDialog";
 import { toast } from "sonner";
-import { apiClient } from "../../../lib/api";
+import { importService } from "../../../services/import.service";
 
 export const ExpensesPage = () => {
   const [open, setOpen] = useState(false);
@@ -21,21 +21,15 @@ export const ExpensesPage = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append("file", file);
-
     setImporting(true);
     try {
-      const res = await apiClient<any>("/api/expenses/import", {
-        method: "POST",
-        body: formData,
-      });
+      const res = await importService.uploadFile(file);
       toast.success(
         `Importación finalizada. Éxitos: ${res.successCount}. Errores: ${res.failureCount}.`,
       );
       setRefreshTrigger((t) => t + 1);
     } catch (err) {
-      toast.error("Error al importar");
+      toast.error("Error al importar el archivo");
     } finally {
       setImporting(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -44,16 +38,8 @@ export const ExpensesPage = () => {
 
   const handleDownloadTemplate = async () => {
     try {
-      const res = await fetch(
-        "https://localhost:7254/api/expenses/import/template",
-      );
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "template_gastos.xlsx";
-      a.click();
-      URL.revokeObjectURL(url);
+      await importService.downloadTemplate();
+      toast.success("Plantilla descargada exitosamente");
     } catch (err) {
       toast.error("Error al descargar la plantilla");
     }

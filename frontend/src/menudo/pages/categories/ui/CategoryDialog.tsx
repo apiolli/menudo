@@ -110,7 +110,7 @@ export const CategoryDialog = ({ open, onOpenChange, category }: Props) => {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="cat-pre">Presupuesto mensual (opcional)</Label>
+            <Label htmlFor="cat-pre">Presupuesto mensual </Label>
             <Input
               id="cat-pre"
               inputMode="decimal"

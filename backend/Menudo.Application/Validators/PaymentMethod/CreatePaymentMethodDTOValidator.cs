@@ -16,9 +16,6 @@ namespace Menudo.Application.Validators.PaymentMethod
                 .IsInEnum()
                 .WithMessage("El metodo de pago enviado no es válido dentro del catálogo de metodos.");
 
-            RuleFor(x => x.Detail)
-                .MinimumLength(5).WithMessage("El detalle debe de tener minimo 5 caracteres.");
-
             RuleFor(x => x.Icon)
                 .NotEmpty().WithMessage("El icono del metodo de pago no puede estar vacio.");
 

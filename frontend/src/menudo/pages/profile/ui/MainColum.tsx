@@ -96,7 +96,7 @@ export const MainColum = ({
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              {["USD", "ARS", "EUR", "MXN", "CLP"].map((m) => (
+              {["RD", "USD", "EUR", "MXN", "CLP"].map((m) => (
                 <SelectItem key={m} value={m}>
                   {m}
                 </SelectItem>

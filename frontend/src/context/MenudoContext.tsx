@@ -14,6 +14,7 @@ import {
   type CreateExpenseDTO,
   type UpdateExpenseDTO,
 } from "../services/expenses.service";
+import { importService, type ImportResult } from "../services/import.service";
 
 interface MenudoContextType {
   categories: Category[];
@@ -35,6 +36,7 @@ interface MenudoContextType {
   createExpense: (exp: CreateExpenseDTO) => Promise<void>;
   updateExpense: (id: number, exp: UpdateExpenseDTO) => Promise<void>;
   deleteExpense: (id: number) => Promise<void>;
+  importExpensesFromFile: (file: File) => Promise<ImportResult>;
 }
 
 export const MenudoContext = createContext<MenudoContextType | undefined>(
@@ -92,14 +94,11 @@ export const MenudoProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [isAuthenticated, loadCategories, loadPaymentMethods, loadExpenses]);
 
-  // CATEGORIES (id as number)
+  // CATEGORIES
   const createCategory = async (cat: Omit<Category, "id">) => {
     await apiClient("/api/categories", {
       method: "POST",
-      body: {
-        ...cat,
-        status: 1,
-      },
+      body: { ...cat, status: 1 },
     });
     await loadCategories();
   };
@@ -107,10 +106,7 @@ export const MenudoProvider = ({ children }: { children: ReactNode }) => {
   const updateCategory = async (id: number, cat: Partial<Category>) => {
     await apiClient(`/api/categories/${id}`, {
       method: "PUT",
-      body: {
-        ...cat,
-        status: 1,
-      },
+      body: { ...cat, status: 1 },
     });
     await loadCategories();
   };
@@ -120,7 +116,7 @@ export const MenudoProvider = ({ children }: { children: ReactNode }) => {
     await loadCategories();
   };
 
-  // PAYMENT METHODS (id as number)
+  // PAYMENT METHODS
   const createPaymentMethod = async (pm: Omit<PaymentMethod, "id">) => {
     await apiClient("/api/paymentMethods", {
       method: "POST",
@@ -161,6 +157,16 @@ export const MenudoProvider = ({ children }: { children: ReactNode }) => {
     await loadExpenses();
   };
 
+  // IMPORT
+  const importExpensesFromFile = async (file: File): Promise<ImportResult> => {
+    const result = await importService.uploadFile(file);
+    // Si se importó al menos uno con éxito, recargamos la lista de gastos
+    if (result.successCount > 0) {
+      await loadExpenses();
+    }
+    return result;
+  };
+
   return (
     <MenudoContext.Provider
       value={{
@@ -180,6 +186,7 @@ export const MenudoProvider = ({ children }: { children: ReactNode }) => {
         createExpense,
         updateExpense,
         deleteExpense,
+        importExpensesFromFile,
       }}
     >
       {children}
