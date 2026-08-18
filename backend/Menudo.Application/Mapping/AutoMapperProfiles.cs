@@ -50,6 +50,7 @@ namespace Menudo.Application.Mapping
                 .ForMember(ent => ent.Id, config => config.Ignore())
                 .ForMember(ent => ent.Category, config => config.Ignore())
                 .ForMember(ent => ent.PaymentMethod, config => config.Ignore());
+
         }
     }
 }

@@ -21,9 +21,10 @@ namespace Menudo.Application.Services
         private readonly ICategoryService categoryService;
         private readonly IPaymentMethodService paymentMethodService;
         private readonly IMapper _mapper;
+        private readonly IExportService _exportService;
         public ExpenseService(IExpenseRepository repo, IValidator<CreateExpenseDTO> createDtoValidator, 
             IValidator<UpdateExpenseDTO> updateDtoValidator, ICurrentUserService currentUserService, 
-            ICategoryService categoryService, IPaymentMethodService paymentMethodService, IMapper mapper)
+            ICategoryService categoryService, IPaymentMethodService paymentMethodService, IMapper mapper, IExportService exportService)
         {
             _repo = repo;
             _createDtoValidator = createDtoValidator;
@@ -32,6 +33,7 @@ namespace Menudo.Application.Services
             this.categoryService = categoryService;
             this.paymentMethodService = paymentMethodService;
             _mapper = mapper;
+            _exportService = exportService;
         }
 
         public async Task<ExpenseDTO> CreateExpenseAsync(CreateExpenseDTO dto)
@@ -141,6 +143,42 @@ namespace Menudo.Application.Services
                     TotalPages = totalPages
                 };
         }
+
+    public async Task<ExpenseExportDTO> ExportExpensesAsync(ExportFormat format, FilterExpenseDTO? filter = null)
+    {
+        var userId = currentUserService.UserId;
+        var query = _repo.GetQueryable().Where(x => x.UserId == userId);
+
+        if (filter is not null)
+        {
+            if (!string.IsNullOrEmpty(filter.Description))
+                query = query.Where(e => e.Description.Contains(filter.Description));
+
+            if (filter.CategoryId is not null)
+                query = query.Where(e => e.CategoryId.Equals(filter.CategoryId));
+
+            if (filter.PaymentMethodId is not null)
+                query = query.Where(e => e.PaymentMethodId.Equals(filter.PaymentMethodId));
+
+            if (filter.FromTheDate is not null)
+                query = query.Where(e => e.Date >= filter.FromTheDate);
+
+            if (filter.ToTheDate is not null)
+                query = query.Where(e => e.Date <= filter.ToTheDate);
+        }
+
+        var expenses = query
+            .OrderByDescending(e => e.Date)
+            .ToList();
+
+        if (expenses.Count == 0)
+            throw new NotFoundException("No hay gastos que coincidan con los filtros para exportar.");
+
+        var exportData = _mapper.Map<List<ExpenseDTO>>(expenses);
+        var fileName = $"gastos_{DateTime.UtcNow:yyyyMMdd_HHmmss}";
+
+        return await _exportService.ExportAsync(exportData, format, fileName);
+    }
 
         private async Task<Expense> ValidateExpenseByIdAsync(int id)
         {

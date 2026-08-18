@@ -60,5 +60,12 @@ namespace Menudo.Presentation.Controllers
             var response = await service.FilterExpensesAsync(dto);
             return Ok(response);
         }
-    }
+
+        [HttpGet("export")]
+        public async Task<IActionResult> ExportExpenses([FromQuery] ExportFormat format, [FromQuery] FilterExpenseDTO? filter)
+        {
+            var result = await service.ExportExpensesAsync(format, filter);
+            return File(result.Content, result.ContentType, result.FileName);
+        }
+            }
 }
