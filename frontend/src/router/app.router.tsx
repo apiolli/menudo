@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import { AuthPage } from "../menudo/pages/auth/AuthPage";
 import { DashboardPage } from "../menudo/pages/dashboard/DashboardPage";
 import { ExpensesPage } from "../menudo/pages/expenses/ExpensesPage";
@@ -37,5 +37,9 @@ export const router = createBrowserRouter([
   {
     path: "/reports",
     element: <ReportsPage />,
+  },
+  {
+    path: "*",
+    element: <Navigate to="/" replace />,
   },
 ]);

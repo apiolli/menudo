@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import type { Expense } from "../../data/finance-types";
@@ -28,15 +28,15 @@ const today = () => new Date().toISOString().slice(0, 10);
 const expenseSchema = z.object({
   amount: z.coerce
     .number()
-    .min(0.01, "IngresÃ¡ un monto mayor a 0")
+    .min(0.01, "Ingresá un monto mayor a 0")
     .max(1_000_000, "El monto es demasiado alto"),
-  date: z.string().min(1, "ElegÃ­ una fecha"),
+  date: z.string().min(1, "Elegí una fecha"),
   description: z
     .string()
-    .min(3, "DescribÃ­ el gasto (mÃ­n. 3 caracteres)")
-    .max(140, "MÃ¡ximo 140 caracteres"),
-  categoryId: z.coerce.number().min(1, "SeleccionÃ¡ una categorÃ­a"),
-  paymentMethodId: z.coerce.number().min(1, "SeleccionÃ¡ un mÃ©todo de pago"),
+    .min(3, "Describí el gasto (mín. 3 caracteres)")
+    .max(140, "Máximo 140 caracteres"),
+  categoryId: z.coerce.number().min(1, "Seleccioná una categoría"),
+  paymentMethodId: z.coerce.number().min(1, "Seleccioná un método de pago"),
 });
 
 interface Props {
@@ -127,8 +127,7 @@ export const ExpenseDialog = ({ open, onOpenChange, expense }: Props) => {
         <DialogHeader>
           <DialogTitle>{expense ? "Editar gasto" : "Nuevo gasto"}</DialogTitle>
           <DialogDescription>
-            RegistrÃ¡ el detalle del movimiento para mantener tu anÃ¡lisis al
-            dÃ­a.
+            Registrá el detalle del movimiento para mantener tu análisis al día.
           </DialogDescription>
         </DialogHeader>
 
@@ -159,7 +158,7 @@ export const ExpenseDialog = ({ open, onOpenChange, expense }: Props) => {
             )}
           </div>
           <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="descripcion">DescripciÃ³n</Label>
+            <Label htmlFor="descripcion">Descripción</Label>
             <Textarea
               id="descripcion"
               rows={2}
@@ -173,10 +172,29 @@ export const ExpenseDialog = ({ open, onOpenChange, expense }: Props) => {
             )}
           </div>
           <div className="space-y-2">
-            <Label>CategorÃ­a</Label>
+            <Label>Categoría</Label>
             <Select value={categoriaId} onValueChange={handleSelect}>
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar" />
+                <SelectValue placeholder="Seleccionar">
+                  {categories.find((c) => String(c.id) === categoriaId) ? (
+                    <span className="flex items-center gap-2">
+                      <span
+                        className="size-2.5 rounded-full"
+                        style={{
+                          backgroundColor: categories.find(
+                            (c) => String(c.id) === categoriaId,
+                          )?.color,
+                        }}
+                      />
+                      {
+                        categories.find((c) => String(c.id) === categoriaId)
+                          ?.name
+                      }
+                    </span>
+                  ) : (
+                    "Seleccionar"
+                  )}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {categories.map((c) => (
@@ -196,11 +214,15 @@ export const ExpenseDialog = ({ open, onOpenChange, expense }: Props) => {
               <p className="text-xs text-destructive">{errors.categoryId}</p>
             )}
           </div>
+
           <div className="space-y-2">
-            <Label>MÃ©todo de pago</Label>
+            <Label>Método de pago</Label>
             <Select value={metodoPagoId} onValueChange={handleMethodPayment}>
               <SelectTrigger>
-                <SelectValue placeholder="Seleccionar" />
+                <SelectValue placeholder="Seleccionar">
+                  {paymentMethods.find((m) => String(m.id) === metodoPagoId)
+                    ?.name ?? "Seleccionar"}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {paymentMethods.map((m) => (

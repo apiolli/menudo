@@ -23,8 +23,8 @@ export const ReportsPage = () => {
 
   return (
     <AppShell
-      title="Reportes y anÃ¡lisis"
-      subtitle="ComparÃ¡ perÃ­odos y descubrÃ­ tendencias"
+      title="Reportes y análisis"
+      subtitle="Compara perí­odos y descubre­ tendencias"
       actions={<ExportDialog fromDate={fromDate} toDate={toDate} />}
     >
       <RequireAuth>
@@ -132,8 +132,8 @@ function Content({
       {/* Estado vacÃ­o / Contenido del reporte */}
       {filtered.length === 0 ? (
         <EmptyState
-          title="No hay datos en este perÃ­odo"
-          description="AmpliÃ¡ el rango de fechas o cambiÃ¡ la categorÃ­a seleccionada."
+          title="No hay datos en este periodo"
+          description="Amplia el rango de fechas o cambia la categora seleccionada."
           action={undefined}
         />
       ) : (
@@ -142,7 +142,7 @@ function Content({
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard
               accent
-              label="Total del perÃ­odo"
+              label="Total del per­iodo"
               value={currency(total)}
               hint={`${filtered.length} gastos`}
             />
@@ -157,7 +157,7 @@ function Content({
               hint="por movimiento"
             />
             <StatCard
-              label="CategorÃ­a top"
+              label="Categoria top"
               value={byCategory[0]?.name ?? "â€”"}
               hint={byCategory[0] ? currency(byCategory[0].value) : ""}
             />

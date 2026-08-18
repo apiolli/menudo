@@ -14,7 +14,7 @@ export const PaymentMethodsPage = () => {
   return (
     <AppShell
       title="Métodos de pago"
-      subtitle="Cómo pagás cada gasto"
+      subtitle="Cómo pagas cada gasto"
       actions={
         <Button
           className="gap-2"

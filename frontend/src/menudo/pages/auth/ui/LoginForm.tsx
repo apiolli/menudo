@@ -39,15 +39,27 @@ export const LoginForm = () => {
     setLoading(true);
 
     try {
-      const response = await apiClient<{ token: string }>("/api/auth/login", {
+      // Usamos 'any' o una interfaz flexible para atrapar tanto 'token' como 'Token' de C#
+      const response = await apiClient<any>("/api/auth/login", {
         method: "POST",
-        body: JSON.stringify({ email, password }),
+        body: { email, password },
       });
-      login(response.token);
+
+      // Extraemos el token soportando ambas variantes de serialización de .NET
+      const token = response?.token || response?.Token;
+
+      if (!token) {
+        throw new Error("El servidor no devolvió un token válido");
+      }
+
+      login(token);
       toast.success("Sesión iniciada");
-      navigate("/");
+      navigate("/dashboard");
     } catch (error: any) {
-      const msg = error.response?.data?.message || "Error al iniciar sesión";
+      const msg =
+        error.response?.data?.message ||
+        error.message ||
+        "Credenciales inválidas";
       toast.error(msg);
       setErrors({ email: "Credenciales inválidas" });
     } finally {

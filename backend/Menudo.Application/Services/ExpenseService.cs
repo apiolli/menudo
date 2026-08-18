@@ -91,7 +91,7 @@ namespace Menudo.Application.Services
             await _repo.SaveChangesAsync();
         }
 
-        public async Task<List<ExpenseDTO>> FilterExpensesAsync(FilterExpenseDTO dto)
+        public async Task<PaginationExpenseDTO> FilterExpensesAsync(FilterExpenseDTO dto)
         {
             var userId = currentUserService.UserId;
             var query = _repo.GetQueryable();
@@ -118,7 +118,28 @@ namespace Menudo.Application.Services
                 expenses = expenses.Where(e => e.Date <= dto.ToTheDate);
             }
 
-            return _mapper.Map<List<ExpenseDTO>>(expenses.ToList());
+            var totalItems = expenses.Count();
+
+            int pageNumber = dto.PageNumber > 0 ? dto.PageNumber : 1;
+            int pageSize = dto.PageSize > 0 ? dto.PageSize : 8;
+
+            var items = expenses
+                .OrderByDescending(e => e.Date) 
+                .Skip((dto.PageNumber - 1) * dto.PageSize)
+                .Take(dto.PageSize)
+                .ToList();
+
+            var itemsDto = _mapper.Map<List<ExpenseDTO>>(items);
+            int totalPages = pageSize > 0 ? (int)Math.Ceiling(totalItems / (double)dto.PageSize) : 0;
+
+            return new PaginationExpenseDTO
+                {
+                    Items = itemsDto,
+                    TotalItems = totalItems,
+                    PageNumber = dto.PageNumber,
+                    PageSize = dto.PageSize,
+                    TotalPages = totalPages
+                };
         }
 
         private async Task<Expense> ValidateExpenseByIdAsync(int id)

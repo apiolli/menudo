@@ -34,6 +34,8 @@ export const formatos = [
   { id: "json", label: "JSON", desc: "Formato JSON", icon: Table2 },
 ] as const;
 
+// ... (Tus otros imports se mantienen igual)
+
 export const COLORES = [
   "#2f7d63",
   "#c2d84b",
@@ -44,6 +46,8 @@ export const COLORES = [
   "#3fa3a3",
   "#b5477f",
 ];
+
+// He unificado los íconos para que los métodos de pago también puedan usar estos
 export const ICONOS = [
   "ShoppingBasket",
   "Bus",
@@ -55,7 +59,13 @@ export const ICONOS = [
   "Dog",
   "Shirt",
   "Gift",
+  "Banknote", // Nuevo para Efectivo
+  "CreditCard", // Nuevo para Tarjetas
+  "Smartphone", // Nuevo para Billetera Virtual
+  "Landmark", // Nuevo para Transferencia
 ];
+
+// ... (Tu función Icono se mantiene igual, ya que funciona perfectamente)
 
 export function Icono({
   name,

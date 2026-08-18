@@ -25,7 +25,7 @@ export const ExpensesPagination = ({ current, pages, setPage }: Props) => {
         <Button
           variant="outline"
           size="sm"
-          disabled={current === pages}
+          disabled={current >= pages}
           onClick={() => setPage(current + 1)}
         >
           Siguiente

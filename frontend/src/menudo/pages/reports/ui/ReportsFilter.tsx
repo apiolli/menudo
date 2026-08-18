@@ -30,8 +30,11 @@ export const ReportsFilter = ({
   categories,
 }: Props) => {
   const handleSelect = (value: string | null) => {
-    setCategory(value ?? ""); // Convierte null en string vacío
+    setCategory(value ?? "todas");
   };
+
+  const selectedCategory = categories.find((c) => String(c.id) === category);
+
   return (
     <section className="surface grid gap-4 p-5 md:grid-cols-3">
       <div className="space-y-2">
@@ -56,13 +59,33 @@ export const ReportsFilter = ({
         <Label>Categoría</Label>
         <Select value={category} onValueChange={handleSelect}>
           <SelectTrigger>
-            <SelectValue />
+            <SelectValue placeholder="Todas las categorías">
+              {category === "todas" ? (
+                "Todas las categorías"
+              ) : selectedCategory ? (
+                <span className="flex items-center gap-2">
+                  <span
+                    className="size-2.5 rounded-full"
+                    style={{ backgroundColor: selectedCategory.color }}
+                  />
+                  {selectedCategory.name}
+                </span>
+              ) : (
+                "Todas las categorías"
+              )}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="todas">Todas las categorías</SelectItem>
             {categories.map((c) => (
-              <SelectItem key={c.id} value={c.id}>
-                {c.name}
+              <SelectItem key={c.id} value={String(c.id)}>
+                <span className="flex items-center gap-2">
+                  <span
+                    className="size-2.5 rounded-full"
+                    style={{ backgroundColor: c.color }}
+                  />
+                  {c.name}
+                </span>
               </SelectItem>
             ))}
           </SelectContent>

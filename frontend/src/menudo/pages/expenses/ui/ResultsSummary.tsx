@@ -21,7 +21,7 @@ export const ResultsSummary = ({
         <span className="num font-semibold text-foreground">
           {filteredExpenses.length}
         </span>{" "}
-        movimientos Â·{" "}
+        movimientos ·{" "}
         <span className="num font-semibold text-foreground">
           {currencyExact(total)}
         </span>{" "}

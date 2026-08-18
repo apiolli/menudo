@@ -42,14 +42,20 @@ export const ExpensesFilter = ({
   toDate,
 }: Props) => {
   const handleCat = (value: string | null) => {
-    setCategoryId(value ?? "");
+    setCategoryId(value ?? "todas");
     setPage(1);
   };
 
   const handlePay = (value: string | null) => {
-    setPaymentMethodId(value ?? "");
+    setPaymentMethodId(value ?? "todos");
     setPage(1);
   };
+
+  const selectedCategory = categories.find((c) => String(c.id) === categoryId);
+  const selectedPaymentMethod = paymentMethods.find(
+    (m) => String(m.id) === paymentMethodId,
+  );
+
   return (
     <section className="surface grid gap-4 p-5 md:grid-cols-2 xl:grid-cols-5">
       <div className="space-y-2 xl:col-span-1">
@@ -59,7 +65,7 @@ export const ExpensesFilter = ({
           <Input
             id="q"
             className="pl-9"
-            placeholder="DescripciÃ³nâ€¦"
+            placeholder="Descripción…"
             value={q}
             onChange={(e) => {
               setQ(e.target.value);
@@ -68,27 +74,53 @@ export const ExpensesFilter = ({
           />
         </div>
       </div>
+
       <div className="space-y-2">
-        <Label>CategorÃ­a</Label>
+        <Label>Categoría</Label>
         <Select value={categoryId} onValueChange={handleCat}>
           <SelectTrigger>
-            <SelectValue />
+            <SelectValue placeholder="Todas las categorías">
+              {categoryId === "todas" ? (
+                "Todas"
+              ) : selectedCategory ? (
+                <span className="flex items-center gap-2">
+                  <span
+                    className="size-2.5 rounded-full"
+                    style={{ backgroundColor: selectedCategory.color }}
+                  />
+                  {selectedCategory.name}
+                </span>
+              ) : (
+                "Todas"
+              )}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="todas">Todas</SelectItem>
             {categories.map((c) => (
               <SelectItem key={c.id} value={String(c.id)}>
-                {c.name}
+                <span className="flex items-center gap-2">
+                  <span
+                    className="size-2.5 rounded-full"
+                    style={{ backgroundColor: c.color }}
+                  />
+                  {c.name}
+                </span>
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
+
       <div className="space-y-2">
-        <Label>MÃ©todo de pago</Label>
+        <Label>Método de pago</Label>
         <Select value={paymentMethodId} onValueChange={handlePay}>
           <SelectTrigger>
-            <SelectValue />
+            <SelectValue placeholder="Todos los métodos">
+              {paymentMethodId === "todos"
+                ? "Todos"
+                : (selectedPaymentMethod?.name ?? "Todos")}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="todos">Todos</SelectItem>
@@ -100,22 +132,30 @@ export const ExpensesFilter = ({
           </SelectContent>
         </Select>
       </div>
+
       <div className="space-y-2">
         <Label htmlFor="fromDate">Desde</Label>
         <Input
           id="fromDate"
           type="date"
           value={fromDate}
-          onChange={(e) => setFromDate(e.target.value)}
+          onChange={(e) => {
+            setFromDate(e.target.value);
+            setPage(1);
+          }}
         />
       </div>
+
       <div className="space-y-2">
         <Label htmlFor="toDate">Hasta</Label>
         <Input
           id="toDate"
           type="date"
           value={toDate}
-          onChange={(e) => setToDate(e.target.value)}
+          onChange={(e) => {
+            setToDate(e.target.value);
+            setPage(1);
+          }}
         />
       </div>
     </section>

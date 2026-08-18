@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { type Expense } from "../../../../data/finance-types";
 import { useMenudo } from "../../../../context/MenudoContext";
+import { expenseService } from "../../../../services/expenses.service";
 import { toast } from "sonner";
-import { apiClient } from "../../../../lib/api";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -42,23 +42,23 @@ export const ExpensesContent = ({ onNew, onEdit, refreshTrigger }: Props) => {
   const fetchExpenses = useCallback(async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      params.append("PageNumber", page.toString());
-      params.append("PageSize", PAGE_SIZE.toString());
-      if (q) params.append("Description", q);
-      if (categoryId !== "todas") params.append("CategoryId", categoryId);
-      if (paymentMethodId !== "todos")
-        params.append("PaymentMethodId", paymentMethodId);
-      if (fromDate) params.append("FromTheDate", fromDate);
-      if (toDate) params.append("ToTheDate", toDate);
+      const res = await expenseService.getFiltered({
+        pageNumber: page,
+        pageSize: PAGE_SIZE,
+        description: q || undefined,
+        categoryId: categoryId !== "todas" ? categoryId : undefined,
+        paymentMethodId:
+          paymentMethodId !== "todos" ? paymentMethodId : undefined,
+        fromTheDate: fromDate || undefined,
+        toTheDate: toDate || undefined,
+      });
 
-      const res = await apiClient<any>(
-        `/api/expenses/filter?${params.toString()}`,
-      );
-      setVisibleExpenses(res.items);
-      setTotalItems(res.totalItems);
+      setVisibleExpenses(res?.items ?? []);
+      setTotalItems(res?.totalItems ?? 0);
     } catch (error) {
       toast.error("Error al cargar los gastos");
+      setVisibleExpenses([]);
+      setTotalItems(0);
     } finally {
       setLoading(false);
     }

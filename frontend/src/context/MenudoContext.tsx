@@ -9,6 +9,11 @@ import {
 import { apiClient } from "../lib/api";
 import { useAuth } from "../hooks/useAuth";
 import type { Category, PaymentMethod, Expense } from "../data/finance-types";
+import {
+  expenseService,
+  type CreateExpenseDTO,
+  type UpdateExpenseDTO,
+} from "../services/expenses.service";
 
 interface MenudoContextType {
   categories: Category[];
@@ -17,8 +22,8 @@ interface MenudoContextType {
   loading: boolean;
   loadCategories: () => Promise<void>;
   createCategory: (cat: Omit<Category, "id">) => Promise<void>;
-  updateCategory: (id: number, cat: Partial<Category>) => Promise<void>;
-  deleteCategory: (id: number) => Promise<void>;
+  updateCategory: (id: string, cat: Partial<Category>) => Promise<void>;
+  deleteCategory: (id: string) => Promise<void>;
   loadPaymentMethods: () => Promise<void>;
   createPaymentMethod: (pm: Omit<PaymentMethod, "id">) => Promise<void>;
   updatePaymentMethod: (
@@ -27,10 +32,8 @@ interface MenudoContextType {
   ) => Promise<void>;
   deletePaymentMethod: (id: number) => Promise<void>;
   loadExpenses: () => Promise<void>;
-  createExpense: (
-    exp: Omit<Expense, "id" | "category" | "paymentMethod">,
-  ) => Promise<void>;
-  updateExpense: (id: number, exp: Partial<Expense>) => Promise<void>;
+  createExpense: (exp: CreateExpenseDTO) => Promise<void>;
+  updateExpense: (id: number, exp: UpdateExpenseDTO) => Promise<void>;
   deleteExpense: (id: number) => Promise<void>;
 }
 
@@ -65,8 +68,8 @@ export const MenudoProvider = ({ children }: { children: ReactNode }) => {
 
   const loadExpenses = useCallback(async () => {
     try {
-      const data = await apiClient<Expense[]>("/api/expenses");
-      setExpenses(data);
+      const data = await expenseService.getAll();
+      setExpenses(data ?? []);
     } catch (e) {
       console.error(e);
     }
@@ -93,29 +96,35 @@ export const MenudoProvider = ({ children }: { children: ReactNode }) => {
   const createCategory = async (cat: Omit<Category, "id">) => {
     await apiClient("/api/categories", {
       method: "POST",
-      body: JSON.stringify(cat),
+      body: {
+        ...cat,
+        status: 1,
+      },
     });
     await loadCategories();
   };
 
-  const updateCategory = async (id: number, cat: Partial<Category>) => {
+  const updateCategory = async (id: string, cat: Partial<Category>) => {
     await apiClient(`/api/categories/${id}`, {
       method: "PUT",
-      body: JSON.stringify(cat),
+      body: {
+        ...cat,
+        status: 1,
+      },
     });
     await loadCategories();
   };
 
-  const deleteCategory = async (id: number) => {
+  const deleteCategory = async (id: string) => {
     await apiClient(`/api/categories/${id}`, { method: "DELETE" });
     await loadCategories();
   };
 
-  // PAYMENT METHODS
+  // PAYMENT METHODS (id as number)
   const createPaymentMethod = async (pm: Omit<PaymentMethod, "id">) => {
     await apiClient("/api/paymentMethods", {
       method: "POST",
-      body: JSON.stringify(pm),
+      body: pm,
     });
     await loadPaymentMethods();
   };
@@ -126,7 +135,7 @@ export const MenudoProvider = ({ children }: { children: ReactNode }) => {
   ) => {
     await apiClient(`/api/paymentMethods/${id}`, {
       method: "PUT",
-      body: JSON.stringify(pm),
+      body: pm,
     });
     await loadPaymentMethods();
   };
@@ -136,27 +145,19 @@ export const MenudoProvider = ({ children }: { children: ReactNode }) => {
     await loadPaymentMethods();
   };
 
-  // EXPENSES
-  const createExpense = async (
-    exp: Omit<Expense, "id" | "category" | "paymentMethod">,
-  ) => {
-    await apiClient("/api/expenses", {
-      method: "POST",
-      body: JSON.stringify(exp),
-    });
+  // EXPENSES (Integrado con expenseService)
+  const createExpense = async (exp: CreateExpenseDTO) => {
+    await expenseService.create(exp);
     await loadExpenses();
   };
 
-  const updateExpense = async (id: number, exp: Partial<Expense>) => {
-    await apiClient(`/api/expenses/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(exp),
-    });
+  const updateExpense = async (id: number, exp: UpdateExpenseDTO) => {
+    await expenseService.update(id, exp);
     await loadExpenses();
   };
 
   const deleteExpense = async (id: number) => {
-    await apiClient(`/api/expenses/${id}`, { method: "DELETE" });
+    await expenseService.delete(id);
     await loadExpenses();
   };
 

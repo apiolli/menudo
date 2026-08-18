@@ -3,30 +3,33 @@ import { toast } from "sonner";
 import { MainColum } from "./MainColum";
 import { SideColum } from "./SideColum";
 import { useAuth } from "../../../../hooks/useAuth";
-import { apiClient } from "../../../../lib/api";
+import { useMenudo } from "../../../../context/MenudoContext";
+import { userService } from "../../../../services/user.service";
 import { z } from "zod";
 
 const updateSchema = z.object({
   name: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
-  email: z.string().email("IngresÃ¡ un email vÃ¡lido"),
+  email: z.string().email("Ingresá un email válido"),
   currency: z.string(),
 });
 
 const passwordSchema = z
   .object({
-    current: z.string().min(6, "La contraseÃ±a actual es requerida"),
+    current: z.string().min(6, "La contraseña actual es requerida"),
     new: z
       .string()
-      .min(6, "La nueva contraseÃ±a debe tener al menos 6 caracteres"),
+      .min(6, "La nueva contraseña debe tener al menos 6 caracteres"),
     repeat: z.string(),
   })
   .refine((data) => data.new === data.repeat, {
-    message: "Las contraseÃ±as no coinciden",
+    message: "Las contraseñas no coinciden",
     path: ["repeat"],
   });
 
 export const ProfileContent = () => {
   const { user, setUser, logout } = useAuth();
+  const { categories, expenses } = useMenudo();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [currency, setCurrency] = useState("USD");
@@ -63,16 +66,9 @@ export const ProfileContent = () => {
     }
 
     try {
-      const updatedUser = await apiClient<{
-        id: number;
-        name: string;
-        email: string;
-      }>("/api/user/me", {
-        method: "PUT",
-        body: JSON.stringify({ name, email }),
-      });
-      setUser(updatedUser);
-      toast.success("Datos actualizados");
+      const updatedUser = await userService.updateProfile({ name, email });
+      setUser(updatedUser as any);
+      toast.success("Datos actualizados exitosamente");
     } catch (error: any) {
       toast.error(
         error.response?.data?.message || "Error al actualizar perfil",
@@ -95,26 +91,20 @@ export const ProfileContent = () => {
     }
 
     try {
-      await apiClient("/api/user/me/password", {
-        method: "PUT",
-        body: JSON.stringify({
-          currentPassword: password.current,
-          newPassword: password.new,
-        }),
+      await userService.changePassword({
+        currentPassword: password.current,
+        newPassword: password.new,
       });
       setPassword({ current: "", new: "", repeat: "" });
-      toast.success("ContraseÃ±a actualizada exitosamente");
+      toast.success("Contraseña actualizada exitosamente");
     } catch (error: any) {
       toast.error(
-        error.response?.data?.message || "Error al cambiar la contraseÃ±a",
+        error.response?.data?.message || "Error al cambiar la contraseña",
       );
     }
   };
 
-  // Mocked for now until Expenses/Categories are integrated
-
-  const categories: any[] = [];
-  const total = 0;
+  const total = expenses.reduce((acc, curr) => acc + curr.amount, 0);
 
   return (
     <div className="grid gap-6 lg:grid-cols-3">
@@ -134,12 +124,12 @@ export const ProfileContent = () => {
         passwordErrors={passwordErrors}
       />
 
-      {/* Columna lateral: avatar, estadÃ­sticas y cierre de sesiÃ³n */}
+      {/* Columna lateral: avatar, estadísticas y cierre de sesión */}
       <SideColum
         user={
           user
             ? {
-                id: user.id.toString(),
+                id: String(user.id),
                 name: user.name,
                 email: user.email,
                 avatarColor: "#22c55e",
@@ -147,7 +137,7 @@ export const ProfileContent = () => {
               }
             : null
         }
-        expenses={[]}
+        expenses={expenses}
         logout={logout}
         total={total}
         categories={categories}

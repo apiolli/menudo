@@ -9,6 +9,6 @@ namespace Menudo.Application.Interfaces
         Task<ExpenseDTO> GetExpenseById(int id);
         Task UpdateExpenseAsync(int id, UpdateExpenseDTO dto);
         Task DeleteExpenseAsync(int id);
-        Task<List<ExpenseDTO>> FilterExpensesAsync(FilterExpenseDTO dto);
+        Task<PaginationExpenseDTO> FilterExpensesAsync(FilterExpenseDTO dto);
     }
 }

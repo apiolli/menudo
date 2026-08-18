@@ -8,7 +8,7 @@ import {
 import { apiClient } from "../lib/api";
 
 interface UserProfile {
-  id: number;
+  id: string;
   name: string;
   email: string;
 }
@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (token) {
-      apiClient<UserProfile>("/api/user/me")
+      apiClient<UserProfile>("/api/users/me")
         .then((data) => setUser(data))
         .catch(() => {
           // If token is invalid or expired

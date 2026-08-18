@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "https://localhost:7254";
+const API_BASE_URL = "http://localhost:5091";
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -27,7 +27,9 @@ export const apiClient = async <T>(
   options: any = {},
 ): Promise<T> => {
   const method = options.method || "GET";
-  const data = options.body ? JSON.parse(options.body) : undefined;
+
+  // Si mandan un body, lo pasamos directamente a Axios sin intentar hacerle JSON.parse
+  const data = options.body;
 
   const response = await api.request<T>({
     url: endpoint,

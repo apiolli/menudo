@@ -11,7 +11,7 @@ import { z } from "zod";
 
 const registerSchema = z
   .object({
-    name: z.string().min(3, "El name debe tener al menos 3 caracteres"),
+    name: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
     email: z.string().email("Debe ser un correo válido"),
     password: z
       .string()
@@ -53,20 +53,23 @@ export const RegisterForm = () => {
     setLoading(true);
 
     try {
+      // CORRECCIÓN: Enviamos el objeto plano directamente en 'body'
+      const { name, email, password } = result.data;
       const response = await apiClient<{ token: string }>(
         "/api/auth/register",
         {
           method: "POST",
-          body: JSON.stringify({
-            name: form.name,
-            email: form.email,
-            password: form.password,
-          }),
+          body: {
+            name: name,
+            email: email,
+            password: password,
+          },
         },
       );
+
       login(response.token);
       toast.success("Cuenta creada exitosamente");
-      navigate("/");
+      navigate("/dashboard");
     } catch (error: any) {
       const msg = error.response?.data?.message || "Error al registrarse";
       toast.error(msg);
@@ -81,7 +84,7 @@ export const RegisterForm = () => {
   return (
     <form onSubmit={submit} className="mt-6 space-y-4">
       {[
-        { k: "name", label: "Nombre comleto", type: "text" },
+        { k: "name", label: "Nombre completo", type: "text" },
         { k: "email", label: "Email", type: "email" },
         { k: "password", label: "Contraseña", type: "password" },
         { k: "repeat", label: "Repetir contraseña", type: "password" },

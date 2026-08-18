@@ -55,7 +55,7 @@ namespace Menudo.Presentation.Controllers
         }
 
         [HttpGet("filter")]
-        public async Task<ActionResult<IEnumerable<ExpenseDTO>>> FilterExpenses([FromQuery] FilterExpenseDTO dto)
+        public async Task<ActionResult<PaginationExpenseDTO>> FilterExpenses([FromQuery]FilterExpenseDTO dto)
         {
             var response = await service.FilterExpensesAsync(dto);
             return Ok(response);

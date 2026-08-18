@@ -1,12 +1,18 @@
 import { LogOut, Wallet } from "lucide-react";
-import { useNavigate } from "react-router";
 import { useAuth } from "../../hooks/useAuth";
 import { NavList } from "./NavList";
 import { Button } from "../../components/ui/button";
+import { useNavigate } from "react-router";
 
 export const SidebarBody = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/", { replace: true });
+  };
+
   return (
     <div className="flex h-full flex-col bg-sidebar p-4">
       <div className="mb-6 flex items-center gap-2.5 px-2 pt-2">
@@ -17,9 +23,6 @@ export const SidebarBody = () => {
           <p className="font-display text-[15px] font-semibold text-sidebar-foreground">
             menudo
           </p>
-          {/* <p className="text-[11px] text-sidebar-foreground/60">
-            Gastos personales
-          </p> */}
         </div>
       </div>
 
@@ -44,10 +47,7 @@ export const SidebarBody = () => {
         <Button
           variant="ghost"
           className="w-full justify-start gap-3 text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-          onClick={() => {
-            logout();
-            navigate("/auth");
-          }}
+          onClick={handleLogout}
         >
           <LogOut className="size-4.5" /> Cerrar sesión
         </Button>

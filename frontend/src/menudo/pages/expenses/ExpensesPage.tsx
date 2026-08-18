@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { ExpensesContent } from "./ui/ExpensesContent";
 import { AppShell } from "../../layouts/AppShell";
 import { ExportDialog } from "../../../components/custom/ExportDialog";
@@ -7,8 +7,6 @@ import { Plus } from "lucide-react";
 import { RequireAuth } from "../../../components/common/RequireAuth";
 import type { Expense } from "../../../data/finance-types";
 import { ExpenseDialog } from "../../../components/custom/ExpenseDialog";
-
-import { useRef } from "react";
 import { toast } from "sonner";
 import { apiClient } from "../../../lib/api";
 
@@ -33,7 +31,7 @@ export const ExpensesPage = () => {
         body: formData,
       });
       toast.success(
-        `Importacion finalizada. Ã‰xitos: ${res.successCount}. Errores: ${res.failureCount}.`,
+        `Importación finalizada. Éxitos: ${res.successCount}. Errores: ${res.failureCount}.`,
       );
       setRefreshTrigger((t) => t + 1);
     } catch (err) {

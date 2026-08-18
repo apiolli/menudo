@@ -51,7 +51,7 @@ export const MainColum = ({
   passwordErrors,
 }: Props) => {
   const handleSelect = (value: string | null) => {
-    setCurrency(value ?? ""); // Convierte null en string vacÃ­o
+    setCurrency(value ?? "USD");
   };
 
   return (
@@ -59,7 +59,7 @@ export const MainColum = ({
       {/* Formulario de datos personales */}
       <h2 className="text-base font-semibold">Datos personales</h2>
       <p className="text-xs text-muted-foreground">
-        Esta informaciÃ³n solo la ves vos.
+        Esta información solo la ves tú.
       </p>
       <form onSubmit={saveData} className="mt-5 grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
@@ -68,6 +68,7 @@ export const MainColum = ({
             id="p-nombre"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            placeholder="Tu nombre"
           />
           {errors.name && (
             <p className="text-xs text-destructive">{errors.name}</p>
@@ -80,6 +81,7 @@ export const MainColum = ({
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            placeholder="correo@ejemplo.com"
           />
           {errors.email && (
             <p className="text-xs text-destructive">{errors.email}</p>
@@ -89,7 +91,9 @@ export const MainColum = ({
           <Label>Moneda</Label>
           <Select value={currency} onValueChange={handleSelect}>
             <SelectTrigger>
-              <SelectValue />
+              <SelectValue placeholder="Selecciona una moneda">
+                {currency || "Selecciona una moneda"}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {["USD", "ARS", "EUR", "MXN", "CLP"].map((m) => (
@@ -107,17 +111,17 @@ export const MainColum = ({
 
       <Separator className="my-8" />
 
-      {/* Formulario de cambio de contraseÃ±a */}
-      <h2 className="text-base font-semibold">Cambiar contraseÃ±a</h2>
+      {/* Formulario de cambio de contraseña */}
+      <h2 className="text-base font-semibold">Cambiar contraseña</h2>
       <p className="text-xs text-muted-foreground">
-        UsÃ¡ al menos 8 caracteres con nÃºmeros y letras.
+        Usa al menos 8 caracteres con números y letras.
       </p>
       <form
         onSubmit={changePassword}
         className="mt-5 grid gap-4 sm:grid-cols-2"
       >
         <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor="p-actual">ContraseÃ±a actual</Label>
+          <Label htmlFor="p-actual">Contraseña actual</Label>
           <Input
             id="p-actual"
             type="password"
@@ -125,25 +129,27 @@ export const MainColum = ({
             onChange={(e) =>
               setPassword({ ...password, current: e.target.value })
             }
+            placeholder="••••••••"
           />
           {passwordErrors.current && (
             <p className="text-xs text-destructive">{passwordErrors.current}</p>
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="p-nueva">Nueva contraseÃ±a</Label>
+          <Label htmlFor="p-nueva">Nueva contraseña</Label>
           <Input
             id="p-nueva"
             type="password"
             value={password.new}
             onChange={(e) => setPassword({ ...password, new: e.target.value })}
+            placeholder="••••••••"
           />
           {passwordErrors.new && (
             <p className="text-xs text-destructive">{passwordErrors.new}</p>
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="p-repetir">Repetir contraseÃ±a</Label>
+          <Label htmlFor="p-repetir">Repetir contraseña</Label>
           <Input
             id="p-repetir"
             type="password"
@@ -151,6 +157,7 @@ export const MainColum = ({
             onChange={(e) =>
               setPassword({ ...password, repeat: e.target.value })
             }
+            placeholder="••••••••"
           />
           {passwordErrors.repeat && (
             <p className="text-xs text-destructive">{passwordErrors.repeat}</p>
@@ -158,7 +165,7 @@ export const MainColum = ({
         </div>
         <div className="sm:col-span-2">
           <Button type="submit" variant="secondary" className="gap-2">
-            <ShieldCheck className="size-4" /> Actualizar contraseÃ±a
+            <ShieldCheck className="size-4" /> Actualizar contraseña
           </Button>
         </div>
       </form>

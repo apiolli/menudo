@@ -7,8 +7,8 @@ import {
   type PaymentMethod,
 } from "../../../../data/finance-types";
 import { Button } from "../../../../components/ui/button";
-import { TIPOS } from "../../../../data/finance-store";
-import { Pencil, Trash2, Wallet } from "lucide-react";
+import { Icono } from "../../../../data/finance-store";
+import { Pencil, Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,22 +44,34 @@ export const PaymentMethodsContent = ({ onNew, onEdit }: Props) => {
     <>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {paymentMethods.map((m) => {
-          const typeObj = TIPOS.find((t) => t.id === m.type);
-          const Icon = typeObj?.icon ?? Wallet;
+          // Normalizamos el color para asegurarnos de que siempre tenga '#'
+          const rawColor = m.color || "#2f7d63";
+          const formattedColor = rawColor.startsWith("#")
+            ? rawColor
+            : `#${rawColor}`;
+
           const spent = expenses
             .filter(
               (g) =>
                 g.paymentMethodId === m.id && monthKey(g.date) === currentMonth,
             )
             .reduce((s, g) => s + g.amount, 0);
+
           return (
             <article
               key={m.id}
               className="surface flex flex-col justify-between p-5"
             >
               <div className="flex items-start justify-between">
-                <span className="grid size-11 place-items-center rounded-xl bg-secondary text-secondary-foreground">
-                  <Icon className="size-5" />
+                {/* Ícono y color dinámicos basados en la selección del usuario */}
+                <span
+                  className="grid size-11 place-items-center rounded-xl"
+                  style={{
+                    backgroundColor: `${formattedColor}1f`,
+                    color: formattedColor,
+                  }}
+                >
+                  <Icono name={m.icon || "CreditCard"} className="size-5" />
                 </span>
                 <div className="flex">
                   <Button
@@ -84,8 +96,7 @@ export const PaymentMethodsContent = ({ onNew, onEdit }: Props) => {
               <div className="mt-5">
                 <p className="font-display font-semibold">{m.name}</p>
                 <p className="text-xs text-muted-foreground">
-                  {typeObj?.label}
-                  {m.detail ? ` · ${m.detail}` : ""}
+                  {m.detail ? `${m.detail}` : ""}
                 </p>
               </div>
               <div className="mt-4 flex items-baseline justify-between border-t border-border pt-4">

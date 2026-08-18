@@ -53,11 +53,11 @@ export const ExpensesTable = ({
     <>
       {filteredExpenses.length === 0 ? (
         <EmptyState
-          title={hasFilters ? "Sin resultados" : "AÃºn no cargaste gastos"}
+          title={hasFilters ? "Sin resultados" : "Aún no cargaste gastos"}
           description={
             hasFilters
-              ? "ProbÃ¡ ajustando los filtros o el tÃ©rmino de bÃºsqueda."
-              : "RegistrÃ¡ tu primer gasto para verlo acÃ¡."
+              ? "Probá ajustando los filtros o el término de búsqueda."
+              : "Registrá tu primer gasto para verlo acá."
           }
           action={
             hasFilters ? (
@@ -76,18 +76,20 @@ export const ExpensesTable = ({
               <TableHeader>
                 <TableRow>
                   <TableHead>Fecha</TableHead>
-                  <TableHead>DescripciÃ³n</TableHead>
-                  <TableHead>CategorÃ­a</TableHead>
-                  <TableHead>MÃ©todo</TableHead>
+                  <TableHead>Descripción</TableHead>
+                  <TableHead>Categoría</TableHead>
+                  <TableHead>Método</TableHead>
                   <TableHead className="text-right">Monto</TableHead>
                   <TableHead className="w-24 text-right">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {visibleExpenses.map((g) => {
-                  const c = categories.find((x) => x.id === g.categoryId);
+                  const c = categories.find(
+                    (x) => String(x.id) === String(g.categoryId),
+                  );
                   const m = paymentMethods.find(
-                    (x) => x.id === g.paymentMethodId,
+                    (x) => Number(x.id) === Number(g.paymentMethodId),
                   );
                   return (
                     <TableRow key={g.id}>
@@ -103,11 +105,11 @@ export const ExpensesTable = ({
                             className="size-2.5 rounded-full"
                             style={{ backgroundColor: c?.color }}
                           />
-                          {c?.name ?? "â€”"}
+                          {c?.name ?? "—"}
                         </span>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary">{m?.name ?? "â€”"}</Badge>
+                        <Badge variant="secondary">{m?.name ?? "—"}</Badge>
                       </TableCell>
                       <TableCell className="num text-right font-semibold">
                         {currencyExact(g.amount)}

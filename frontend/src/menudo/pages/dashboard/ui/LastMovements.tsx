@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { Button } from "../../../../components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Wallet } from "lucide-react";
 import {
   currencyExact,
   formatDate,
@@ -9,6 +9,7 @@ import {
   type PaymentMethod,
 } from "../../../../data/finance-types";
 import { Badge } from "../../../../components/ui/badge";
+import { Icono } from "../../../../data/finance-store";
 
 interface Props {
   recentExpenses: Expense[];
@@ -38,32 +39,48 @@ export const LastMovements = ({
       </header>
       <ul className="divide-y divide-border">
         {recentExpenses.map((expense) => {
-          const category = categories.find((c) => c.id === expense.categoryId);
-          const method = paymentMethods.find(
-            (m) => m.id === expense.paymentMethodId,
+          const category = categories.find(
+            (c) => String(c.id) === String(expense.categoryId),
           );
+          const method = paymentMethods.find(
+            (m) => Number(m.id) === Number(expense.paymentMethodId),
+          );
+
+          // Normalizamos el color y obtenemos el ícono de la categoría
+          const rawColor = category?.color || "#888";
+          const formattedColor = rawColor.startsWith("#")
+            ? rawColor
+            : `#${rawColor}`;
+          const CategoryIcon = category?.icon ? Icono : Wallet;
+
           return (
             <li
               key={expense.id}
               className="flex items-center gap-4 px-5 py-3.5"
             >
               <span
-                className="size-9 shrink-0 rounded-lg"
+                className="grid size-9 shrink-0 place-items-center rounded-xl"
                 style={{
-                  backgroundColor: `${category?.color ?? "#888"}22`,
-                  border: `1px solid ${category?.color}55`,
+                  backgroundColor: `${formattedColor}22`,
+                  color: formattedColor,
+                  border: `1px solid ${formattedColor}55`,
                 }}
-              />
+              >
+                <CategoryIcon
+                  name={category?.icon || "Wallet"}
+                  className="size-4"
+                />
+              </span>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">
                   {expense.description}
                 </p>
                 <p className="truncate text-xs text-muted-foreground">
-                  {formatDate(expense.date)} · {method?.name}
+                  {formatDate(expense.date)} · {method?.name ?? "—"}
                 </p>
               </div>
               <Badge variant="secondary" className="hidden sm:inline-flex">
-                {category?.name}
+                {category?.name ?? "—"}
               </Badge>
               <span className="num text-sm font-semibold">
                 {currencyExact(expense.amount)}
