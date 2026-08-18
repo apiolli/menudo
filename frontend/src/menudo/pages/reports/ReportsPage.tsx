@@ -1,45 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useContext, useMemo, useState, type SetStateAction } from "react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Legend,
-  Line,
-  LineChart,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import { AppShell } from "@/components/app-shell";
-import { EmptyState, RequireAuth, StatCard } from "@/components/common";
-import { ExportDialog } from "@/components/export-dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Progress } from "@/components/ui/progress";
-import { useFinance } from "@/store/finance-store";
-import { currency, currencyExact, monthKey } from "@/lib/finance-types";
+import { useContext, useMemo, useState } from "react";
+
 import { MenudoContext } from "../../../context/MenudoContext";
 import { ReportsFilter } from "./ui/ReportsFilter";
+import { DetailedCategoryTable } from "./ui/DetailedCategoryTable";
+import { ReportsBarChart } from "./ui/ReportsBarChart";
+import { ReportsPieChart } from "./ui/ReportsPieChart";
+import { ReportsLineGraph } from "./ui/ReportsLineGraph";
+import { AppShell } from "../../layouts/AppShell";
+import { RequireAuth } from "../../../components/common/RequireAuth";
+import { ExportDialog } from "../../../components/custom/ExportDialog";
+import { currency, monthKey } from "../../../data/finance-types";
+import { EmptyState } from "../../../components/common/EmptyState";
+import { StatCard } from "../../../components/common/StatCard";
 
 export const ReportsPage = () => {
   const hoy = new Date();
@@ -162,6 +134,7 @@ function Contenido({
         <EmptyState
           title="No hay datos en este período"
           description="Ampliá el rango de fechas o cambiá la categoría seleccionada."
+          action={undefined}
         />
       ) : (
         <>
@@ -193,204 +166,17 @@ function Contenido({
           {/* Gráficos comparativos */}
           <div className="grid gap-4 lg:grid-cols-5">
             {/* Gráfico de líneas: tendencia mensual */}
-            <section className="surface p-5 lg:col-span-3">
-              <h2 className="text-base font-semibold">Tendencia mensual</h2>
-              <p className="text-xs text-muted-foreground">
-                Evolución del gasto en el período
-              </p>
-              <div className="mt-3 h-[280px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={serieMensual}
-                    margin={{ top: 8, right: 8, left: -14, bottom: 0 }}
-                  >
-                    <CartesianGrid
-                      strokeDasharray="3 3"
-                      vertical={false}
-                      stroke="var(--border)"
-                    />
-                    <XAxis
-                      dataKey="name"
-                      tickLine={false}
-                      axisLine={false}
-                      fontSize={12}
-                    />
-                    <YAxis
-                      tickLine={false}
-                      axisLine={false}
-                      fontSize={12}
-                      tickFormatter={(v) => `$${v / 1000}k`}
-                    />
-                    <Tooltip
-                      formatter={(v: number) => currencyExact(v)}
-                      contentStyle={{
-                        borderRadius: 12,
-                        border: "1px solid var(--border)",
-                        background: "var(--card)",
-                        fontSize: 12,
-                      }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="total"
-                      stroke="var(--chart-1)"
-                      strokeWidth={2.5}
-                      dot={{ r: 3, fill: "var(--chart-1)" }}
-                      activeDot={{ r: 5 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </section>
+            <ReportsLineGraph serieMensual={serieMensual} />
 
             {/* Gráfico de torta: participación por categoría */}
-            <section className="surface p-5 lg:col-span-2">
-              <h2 className="text-base font-semibold">
-                Participación por categoría
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                Del total del período
-              </p>
-              <div className="mt-3 h-[280px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={porCategoria}
-                      dataKey="value"
-                      nameKey="name"
-                      outerRadius={92}
-                      stroke="var(--card)"
-                      isAnimationActive={false}
-                    >
-                      {porCategoria.map((c) => (
-                        <Cell key={c.name} fill={c.color} />
-                      ))}
-                    </Pie>
-                    <Legend iconType="circle" wrapperStyle={{ fontSize: 12 }} />
-                    <Tooltip
-                      formatter={(v: number) => currencyExact(v)}
-                      contentStyle={{
-                        borderRadius: 12,
-                        border: "1px solid var(--border)",
-                        background: "var(--card)",
-                        fontSize: 12,
-                      }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-            </section>
+            <ReportsPieChart porCategoria={porCategoria} />
           </div>
 
           {/* Gráfico de barras: comparativo por método de pago */}
-          <section className="surface p-5">
-            <h2 className="text-base font-semibold">
-              Comparativo por método de pago
-            </h2>
-            <p className="text-xs text-muted-foreground">
-              Monto acumulado por medio utilizado
-            </p>
-            <div className="mt-3 h-[260px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={porMetodo}
-                  layout="vertical"
-                  margin={{ top: 8, right: 16, left: 24, bottom: 0 }}
-                >
-                  <CartesianGrid
-                    strokeDasharray="3 3"
-                    horizontal={false}
-                    stroke="var(--border)"
-                  />
-                  <XAxis
-                    type="number"
-                    tickLine={false}
-                    axisLine={false}
-                    fontSize={12}
-                    tickFormatter={(v) => `$${v / 1000}k`}
-                  />
-                  <YAxis
-                    type="category"
-                    dataKey="name"
-                    tickLine={false}
-                    axisLine={false}
-                    fontSize={12}
-                    width={110}
-                  />
-                  <Tooltip
-                    cursor={{ fill: "var(--muted)" }}
-                    formatter={(v: number) => currencyExact(v)}
-                    contentStyle={{
-                      borderRadius: 12,
-                      border: "1px solid var(--border)",
-                      background: "var(--card)",
-                      fontSize: 12,
-                    }}
-                  />
-                  <Bar
-                    dataKey="value"
-                    fill="var(--chart-2)"
-                    radius={[0, 8, 8, 0]}
-                    maxBarSize={26}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </section>
+          <ReportsBarChart porMetodo={porMetodo} />
 
           {/* Tabla de detalle por categoría */}
-          <section className="surface overflow-hidden">
-            <header className="border-b border-border px-5 py-4">
-              <h2 className="text-base font-semibold">Detalle por categoría</h2>
-              <p className="text-xs text-muted-foreground">
-                Participación sobre el total del período
-              </p>
-            </header>
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Categoría</TableHead>
-                    <TableHead className="text-right">Gastos</TableHead>
-                    <TableHead className="text-right">Total</TableHead>
-                    <TableHead className="w-[220px]">Participación</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {porCategoria.map((c) => (
-                    <TableRow key={c.name}>
-                      <TableCell>
-                        <span className="inline-flex items-center gap-2 font-medium">
-                          <span
-                            className="size-2.5 rounded-full"
-                            style={{ backgroundColor: c.color }}
-                          />
-                          {c.name}
-                        </span>
-                      </TableCell>
-                      <TableCell className="num text-right">
-                        {c.cantidad}
-                      </TableCell>
-                      <TableCell className="num text-right font-semibold">
-                        {currencyExact(c.value)}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <Progress
-                            value={(c.value / total) * 100}
-                            className="h-2"
-                          />
-                          <span className="num w-12 text-right text-xs text-muted-foreground">
-                            {((c.value / total) * 100).toFixed(1)}%
-                          </span>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </section>
+          <DetailedCategoryTable porCategoria={porCategoria} total={total} />
         </>
       )}
     </div>
