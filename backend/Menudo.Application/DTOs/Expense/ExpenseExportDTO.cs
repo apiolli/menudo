@@ -5,8 +5,4 @@ public record ExpenseExportDTO()
     public byte[] Content { get; set; } 
     
     
-    
-    
-    
-    
 }

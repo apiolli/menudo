@@ -22,8 +22,8 @@ interface MenudoContextType {
   loading: boolean;
   loadCategories: () => Promise<void>;
   createCategory: (cat: Omit<Category, "id">) => Promise<void>;
-  updateCategory: (id: string, cat: Partial<Category>) => Promise<void>;
-  deleteCategory: (id: string) => Promise<void>;
+  updateCategory: (id: number, cat: Partial<Category>) => Promise<void>;
+  deleteCategory: (id: number) => Promise<void>;
   loadPaymentMethods: () => Promise<void>;
   createPaymentMethod: (pm: Omit<PaymentMethod, "id">) => Promise<void>;
   updatePaymentMethod: (
@@ -51,7 +51,7 @@ export const MenudoProvider = ({ children }: { children: ReactNode }) => {
   const loadCategories = useCallback(async () => {
     try {
       const data = await apiClient<Category[]>("/api/categories");
-      setCategories(data);
+      setCategories(data ?? []);
     } catch (e) {
       console.error(e);
     }
@@ -60,7 +60,7 @@ export const MenudoProvider = ({ children }: { children: ReactNode }) => {
   const loadPaymentMethods = useCallback(async () => {
     try {
       const data = await apiClient<PaymentMethod[]>("/api/paymentMethods");
-      setPaymentMethods(data);
+      setPaymentMethods(data ?? []);
     } catch (e) {
       console.error(e);
     }
@@ -92,7 +92,7 @@ export const MenudoProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [isAuthenticated, loadCategories, loadPaymentMethods, loadExpenses]);
 
-  // CATEGORIES
+  // CATEGORIES (id as number)
   const createCategory = async (cat: Omit<Category, "id">) => {
     await apiClient("/api/categories", {
       method: "POST",
@@ -104,7 +104,7 @@ export const MenudoProvider = ({ children }: { children: ReactNode }) => {
     await loadCategories();
   };
 
-  const updateCategory = async (id: string, cat: Partial<Category>) => {
+  const updateCategory = async (id: number, cat: Partial<Category>) => {
     await apiClient(`/api/categories/${id}`, {
       method: "PUT",
       body: {
@@ -115,7 +115,7 @@ export const MenudoProvider = ({ children }: { children: ReactNode }) => {
     await loadCategories();
   };
 
-  const deleteCategory = async (id: string) => {
+  const deleteCategory = async (id: number) => {
     await apiClient(`/api/categories/${id}`, { method: "DELETE" });
     await loadCategories();
   };
@@ -145,7 +145,7 @@ export const MenudoProvider = ({ children }: { children: ReactNode }) => {
     await loadPaymentMethods();
   };
 
-  // EXPENSES (Integrado con expenseService)
+  // EXPENSES
   const createExpense = async (exp: CreateExpenseDTO) => {
     await expenseService.create(exp);
     await loadExpenses();

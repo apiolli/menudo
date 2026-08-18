@@ -67,5 +67,5 @@ namespace Menudo.Presentation.Controllers
             var result = await service.ExportExpensesAsync(format, filter);
             return File(result.Content, result.ContentType, result.FileName);
         }
-            }
+    }
 }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { formatos } from "../../data/finance-store";
+import { apiClient } from "../../lib/api";
 
 import {
   Dialog,
@@ -39,7 +40,7 @@ export const ExportDialog = ({
 
   const exportData = async () => {
     if (fromDate > toDate) {
-      toast.error("El rango de fechas es invÃ¡lido");
+      toast.error("El rango de fechas es inválido");
       return;
     }
     setExporting(true);
@@ -50,18 +51,15 @@ export const ExportDialog = ({
       params.append("ToTheDate", toDate);
       params.append("format", exportFormat);
 
-      const res = await fetch(
-        `https://localhost:7254/api/expenses/export?${params.toString()}`,
+      // Usamos tu apiClient con responseType: 'blob' para recibir el archivo correctamente
+      const blob = await apiClient<Blob>(
+        `/api/expenses/export?${params.toString()}`,
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          method: "GET",
+          responseType: "blob",
         },
       );
 
-      if (!res.ok) throw new Error("Error al exportData");
-
-      const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -69,9 +67,12 @@ export const ExportDialog = ({
       a.click();
       URL.revokeObjectURL(url);
 
-      toast.success(`Reporte ${exportFormat.toUpperCase()} generado`);
+      toast.success(
+        `Reporte ${exportFormat.toUpperCase()} generado exitosamente`,
+      );
       setOpen(false);
     } catch (error) {
+      console.error("Error al exportar:", error);
       toast.error("Error al generar el reporte");
     } finally {
       setExporting(false);
@@ -89,7 +90,7 @@ export const ExportDialog = ({
         <DialogHeader>
           <DialogTitle>Exportar reporte</DialogTitle>
           <DialogDescription>
-            ElegÃ­ el exportFormat y el rango de fechas a incluir.
+            Elegí el formato y el rango de fechas a incluir.
           </DialogDescription>
         </DialogHeader>
 
@@ -138,12 +139,16 @@ export const ExportDialog = ({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
+          <Button
+            variant="outline"
+            onClick={() => setOpen(false)}
+            disabled={exporting}
+          >
             Cancelar
           </Button>
           <Button onClick={exportData} disabled={exporting} className="gap-2">
             <Download className="size-4" />
-            {exporting ? "Generandoâ€¦" : "Exportar"}
+            {exporting ? "Generando..." : "Exportar"}
           </Button>
         </DialogFooter>
       </DialogContent>
