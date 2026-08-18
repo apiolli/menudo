@@ -1,6 +1,6 @@
 ﻿using Menudo.Application.DTOs.Auth;
 
-namespace Menudo.Domain.Interfaces
+namespace Menudo.Application.Interfaces
 {
     public interface IAuthService
     {

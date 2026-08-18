@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Menudo.Infrastructure.Migrations
 {
     [DbContext(typeof(MenudoDbContext))]
-    [Migration("20260818072108_FinalUsersTable")]
-    partial class FinalUsersTable
+    [Migration("20260818154607_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.10")
+                .HasAnnotation("ProductVersion", "10.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -176,7 +176,7 @@ namespace Menudo.Infrastructure.Migrations
                     b.HasOne("Menudo.Domain.Entities.User", "User")
                         .WithMany("Categories")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -199,7 +199,7 @@ namespace Menudo.Infrastructure.Migrations
                     b.HasOne("Menudo.Domain.Entities.User", "User")
                         .WithMany("Expenses")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Category");
@@ -214,7 +214,7 @@ namespace Menudo.Infrastructure.Migrations
                     b.HasOne("Menudo.Domain.Entities.User", "User")
                         .WithMany("PaymentMethods")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");

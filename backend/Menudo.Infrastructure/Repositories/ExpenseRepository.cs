@@ -1,6 +1,7 @@
 ﻿using Menudo.Domain.Entities;
 using Menudo.Domain.Interfaces;
 using Menudo.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace Menudo.Infrastructure.Repositories
 {
@@ -32,6 +33,13 @@ namespace Menudo.Infrastructure.Repositories
         {
             return _dbSet.Where(e => e.Date.Month == month && e.Date.Year == year)
                 .Sum(e => e.Amount);
+        }
+
+        public async Task<List<Expense>?> GetAllAsync(Guid id)
+        {
+            return await _dbSet.Where(x => x.UserId.Equals(id)).Include(x => x.Category)
+                .Include(x => x.PaymentMethod)
+                .ToListAsync();
         }
 
     }

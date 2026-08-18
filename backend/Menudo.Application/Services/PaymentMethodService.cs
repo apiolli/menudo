@@ -13,15 +13,17 @@ namespace Menudo.Application.Services
         private readonly IPaymentMethodRepository _repo;
         private readonly IValidator<CreatePaymentMethodDTO> _createDtoValidator;
         private readonly IValidator<UpdatePaymentMethodDTO> _updateDtoValidator;
+        private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
 
         public PaymentMethodService(IPaymentMethodRepository repo, IValidator<CreatePaymentMethodDTO> createDtoValidator, 
-            IValidator<UpdatePaymentMethodDTO> updateDtoValidator, IMapper mapper)
+            IValidator<UpdatePaymentMethodDTO> updateDtoValidator, IMapper mapper, ICurrentUserService currentUserService)
         {
             _repo = repo;
             _createDtoValidator = createDtoValidator;
             _updateDtoValidator = updateDtoValidator;
             _mapper = mapper;
+            _currentUserService = currentUserService;
         }
 
         public async Task<PaymentMethodDTO> CreatePaymentMethodAsync(CreatePaymentMethodDTO dto)
@@ -30,7 +32,9 @@ namespace Menudo.Application.Services
 
             if (!result.IsValid) throw new ValidationException(result.Errors);
 
+            var userId = _currentUserService.UserId!.Value;
             var paymentMethod = _mapper.Map<PaymentMethod>(dto);
+            paymentMethod.UserId = userId;
 
             await _repo.AddAsync(paymentMethod);
             await _repo.SaveChangesAsync();
@@ -40,9 +44,10 @@ namespace Menudo.Application.Services
 
         public async Task<IEnumerable<PaymentMethodDTO>> GetAllPaymentMethodsAsync()
         {
-            var paymentMethods = await _repo.GetAllAsync();
+            var userId = _currentUserService.UserId;
+            var paymentMethods = await _repo.GetAllAsync(userId!.Value);
 
-            if (!paymentMethods.Any()) throw new NotFoundException("Actualmente no existen metodos de pago.");
+            if (paymentMethods is null) throw new NotFoundException("Actualmente no existen metodos de pago.");
 
             return _mapper.Map<IEnumerable<PaymentMethodDTO>>(paymentMethods);
         }

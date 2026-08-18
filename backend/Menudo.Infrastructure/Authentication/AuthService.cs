@@ -64,7 +64,7 @@ namespace Menudo.Infrastructure.Authentication
 
             user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
 
-            _repo.AddAsync(user);
+            await _repo.AddAsync(user);
             await _repo.SaveChangesAsync();
 
             var token = _jwtTokenGenerator.GenerateToken(user);

@@ -14,6 +14,10 @@ namespace Menudo.Infrastructure.Repositories
         {
         }
 
-        public new async Task<List<PaymentMethod>> GetAllAsync() => await _dbSet.Include(x => x.Expenses).ToListAsync();
+        public async Task<List<PaymentMethod>?> GetAllAsync(Guid id)
+        {
+            return await _dbSet.Where(x => x.UserId.Equals(id)).Include(x => x.Expenses)
+                .ToListAsync();
+        }
     }
 }

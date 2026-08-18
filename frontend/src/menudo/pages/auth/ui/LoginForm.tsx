@@ -17,8 +17,8 @@ const loginSchema = z.object({
 export const LoginForm = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [email, setEmail] = useState("valentina@finanzas.app");
-  const [password, setPassword] = useState("demo1234");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 

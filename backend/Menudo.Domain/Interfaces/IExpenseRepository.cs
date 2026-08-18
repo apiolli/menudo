@@ -11,5 +11,6 @@ namespace Menudo.Domain.Interfaces
         int GetCountByMonth(int year, int month);
         Expense? GetHighestExpenseByMonth(int year, int month);
         List<Expense> GetLastMovements(int count);
+        Task<List<Expense>?> GetAllAsync(Guid id);
     }
 }

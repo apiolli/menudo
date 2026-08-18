@@ -1,6 +1,5 @@
 ﻿using Menudo.Application.DTOs.Auth;
 using Menudo.Application.Interfaces;
-using Menudo.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;

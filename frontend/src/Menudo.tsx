@@ -1,7 +1,7 @@
 import { RouterProvider } from "react-router";
 import { router } from "./router/app.router";
-import { AuthProvider } from "./context/AuthContext"; // ajusta la ruta real
-import { MenudoProvider } from "./context/MenudoContext"; // ajusta la ruta real
+import { AuthProvider } from "./context/AuthContext";
+import { MenudoProvider } from "./context/MenudoContext";
 
 export const Menudo = () => {
   return (

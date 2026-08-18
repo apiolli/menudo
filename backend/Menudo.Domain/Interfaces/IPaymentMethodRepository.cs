@@ -7,5 +7,6 @@ namespace Menudo.Domain.Interfaces
 {
     public interface IPaymentMethodRepository : IBaseRepository<PaymentMethod>
     {
+        Task<List<PaymentMethod>?> GetAllAsync(Guid id);
     }
 }

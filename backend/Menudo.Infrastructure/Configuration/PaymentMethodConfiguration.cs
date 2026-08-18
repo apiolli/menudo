@@ -15,6 +15,11 @@ namespace Menudo.Infrastructure.Configuration
                 .WithOne(p => p.PaymentMethod)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasOne(p => p.User)
+                .WithMany(u => u.PaymentMethods)
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.Property(p => p.Name)
                 .IsRequired()
                 .HasMaxLength(100);

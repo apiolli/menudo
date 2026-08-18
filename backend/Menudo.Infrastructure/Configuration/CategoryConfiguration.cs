@@ -16,6 +16,11 @@ namespace Menudo.Infrastructure.Configuration
                 .HasForeignKey(e => e.CategoryId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasOne(p => p.User)
+                .WithMany(u => u.Categories)
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.Property(c => c.Name)
                 .IsRequired()
                 .HasMaxLength(100);

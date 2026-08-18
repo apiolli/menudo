@@ -81,7 +81,7 @@ export const RegisterForm = () => {
   return (
     <form onSubmit={submit} className="mt-6 space-y-4">
       {[
-        { k: "name", label: "name completo", type: "text" },
+        { k: "name", label: "Nombre comleto", type: "text" },
         { k: "email", label: "Email", type: "email" },
         { k: "password", label: "Contraseña", type: "password" },
         { k: "repeat", label: "Repetir contraseña", type: "password" },

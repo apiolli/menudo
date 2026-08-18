@@ -22,7 +22,7 @@ namespace Menudo.Infrastructure.Repositories
         public void Delete(T entity) => _dbSet.Remove(entity);
         public async Task<List<T>> GetAllAsync() => await _dbSet.ToListAsync();
         public async Task<T?> GetByIdAsync(int id) => await _dbSet.FindAsync(id);
-        public IQueryable<T> GetQueryable() =>  _dbSet.AsQueryable();
+        public IQueryable<T> GetQueryable() => _dbSet.AsQueryable();
         public void Update(T entity) => _dbSet.Update(entity);
         public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
     }

@@ -35,7 +35,7 @@ export const AuthPage = () => {
                 icon: PieChart,
                 text: "Análisis por categoría y método de pago",
               },
-              { icon: FileDown, text: "Exportación en PDF, Excel y CSV" },
+              { icon: FileDown, text: "Exportación en Excel, Txt y JSON" },
               {
                 icon: ShieldCheck,
                 text: "Tus datos son privados y solo tuyos",

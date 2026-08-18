@@ -9,9 +9,9 @@ namespace Menudo.Infrastructure.Repositories
     {
         public CategoryRepository(MenudoDbContext context) : base(context) { }
 
-        public new async Task<List<Category>> GetAllAsync()
+        public async Task<List<Category>?> GetAllAsync(Guid id)
         {
-            return await _dbSet.Include(x => x.Expenses).ToListAsync();
+            return await _dbSet.Where(x => x.UserId.Equals(id)).Include(x => x.Expenses).ToListAsync();
         }
     }
 }

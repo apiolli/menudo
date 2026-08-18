@@ -19,7 +19,7 @@ namespace Menudo.Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<DashboardDTO>> GetDashboard()
+        public async Task<ActionResult<DashboardDTO>> GetDashboard(Guid userId)
         {
             var response = service.GetDashboardData();
             return Ok(response);

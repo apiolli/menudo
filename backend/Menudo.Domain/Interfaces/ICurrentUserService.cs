@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Menudo.Domain.Interfaces
 {
-    public class ICurrentUserService
+    public interface ICurrentUserService
     {
-        public Guid? UserId;
+        public Guid? UserId { get; }
     }
 }

@@ -19,6 +19,11 @@ namespace Menudo.Infrastructure.Configuration
                 .WithMany(p => p.Expenses)
                 .HasForeignKey(e => e.PaymentMethodId);
 
+            builder.HasOne(e => e.User)
+                .WithMany(p => p.Expenses)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.Property(e => e.Amount)
                 .IsRequired()
                 .HasPrecision(10, 2);

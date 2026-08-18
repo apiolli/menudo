@@ -14,19 +14,24 @@ namespace Menudo.Application.Services
         private readonly ICategoryRepository _repo;
         private readonly IValidator<CreateCategoryDTO> _createDtoValidator;
         private readonly IValidator<UpdateCategoryDTO> _updateDtoValidator;
+        private readonly ICurrentUserService _currentUserService;
         private readonly IMapper _mapper;
-        public CategoryService(ICategoryRepository repo, IValidator<CreateCategoryDTO> createDtoValidator, 
-            IValidator<UpdateCategoryDTO> updateDtoValidator, IMapper mapper)
+
+        public CategoryService(ICategoryRepository repo, IValidator<CreateCategoryDTO> 
+            createDtoValidator, IValidator<UpdateCategoryDTO> updateDtoValidator, 
+            ICurrentUserService currentUserService, IMapper mapper)
         {
             _repo = repo;
             _createDtoValidator = createDtoValidator;
             _updateDtoValidator = updateDtoValidator;
+            _currentUserService = currentUserService;
             _mapper = mapper;
         }
 
         public async Task<CategoryDTO> CreateCategoryAsync(CreateCategoryDTO dto)
         {
             var result = _createDtoValidator.Validate(dto);
+            var userId = _currentUserService.UserId;
 
             if (!result.IsValid) throw new ValidationException(result.Errors);
 
@@ -35,6 +40,7 @@ namespace Menudo.Application.Services
             // Se cambia el estado a activo
             category.Status = Status.Active;
             category.Spent = 0;
+            category.UserId = userId!.Value;
 
             await _repo.AddAsync(category);
             await _repo.SaveChangesAsync();
@@ -44,9 +50,10 @@ namespace Menudo.Application.Services
 
         public async Task<IEnumerable<CategoryDTO>> GetAllCategoriesAsync()
         {
-            var categories = await _repo.GetAllAsync();
+            var userId = _currentUserService.UserId;
+            var categories = await _repo.GetAllAsync(userId!.Value);
 
-            if (!categories.Any()) throw new NotFoundException("Actualmente no existen categorias.");
+            if (categories is null) throw new NotFoundException("Actualmente no existen categorias.");
 
             return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
         }

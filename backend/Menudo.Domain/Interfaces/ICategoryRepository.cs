@@ -7,5 +7,6 @@ namespace Menudo.Domain.Interfaces
 {
     public interface ICategoryRepository : IBaseRepository<Category>
     {
+        Task<List<Category>?> GetAllAsync(Guid id);
     }
 }
