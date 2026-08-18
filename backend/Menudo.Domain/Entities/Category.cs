@@ -12,5 +12,9 @@ namespace Menudo.Domain.Entities
         public List<Expense> Expenses { get; set; } = [];
         public string Color { get; set; } = string.Empty;
         public string Icon { get; set; } = string.Empty;
+
+
+        public int UserId { get; set; }
+        public User? User { get; set; }
     }
 }

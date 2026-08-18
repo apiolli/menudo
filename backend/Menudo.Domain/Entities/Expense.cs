@@ -14,5 +14,9 @@ namespace Menudo.Domain.Entities
         public Category? Category { get; set; }
         public int PaymentMethodId { get; set; }
         public PaymentMethod? PaymentMethod { get; set; }
+
+
+        public int UserId { get; set; }
+        public User? User { get; set; }
     }
 }
