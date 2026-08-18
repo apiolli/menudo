@@ -1,21 +1,21 @@
 import { StatCard } from "../../../../components/common/StatCard";
-import { currency, type Gasto } from "../../../../data/finance-types";
+import { type Expense, currency } from "../../../../data/finance-types";
 
 interface Props {
   total: number;
   totalPrev: number;
-  cantidad: number;
-  promedio: number;
-  mayor: Gasto;
+  count: number;
+  average: number;
+  highest: Expense | undefined;
   delta: number;
 }
 
 export const CardsSummary = ({
   total,
   totalPrev,
-  cantidad,
-  promedio,
-  mayor,
+  count,
+  average,
+  highest,
   delta,
 }: Props) => {
   return (
@@ -34,13 +34,13 @@ export const CardsSummary = ({
       />
       <StatCard
         label="Movimientos"
-        value={String(cantidad)}
-        hint={`promedio ${currency(promedio)}`}
+        value={String(count)}
+        hint={`promedio ${currency(average)}`}
       />
       <StatCard
         label="Gasto más alto"
-        value={mayor ? currency(mayor.monto) : currency(0)}
-        hint={mayor?.descripcion ?? "—"}
+        value={highest ? currency(highest.amount) : currency(0)}
+        hint={highest?.description ?? "—"}
       />
     </div>
   );

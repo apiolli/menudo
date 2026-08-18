@@ -10,16 +10,16 @@ import { AppShell } from "../../layouts/AppShell";
 
 export const DashboardPage = () => {
   const [open, setOpen] = useState(false);
-  const hoy = new Date().toISOString().slice(0, 10);
-  const inicioMes = hoy.slice(0, 8) + "01";
+  const today = new Date().toISOString().slice(0, 10);
+  const monthStart = today.slice(0, 8) + "01";
 
   return (
     <AppShell
       title="Dashboard"
-      subtitle={monthLabel(hoy.slice(0, 7))}
+      subtitle={monthLabel(today.slice(0, 7))}
       actions={
         <>
-          <ExportDialog desde={inicioMes} hasta={hoy} />
+          <ExportDialog fromDate={monthStart} toDate={today} />
           <Button className="gap-2" onClick={() => setOpen(true)}>
             <Plus className="size-4" /> Nuevo gasto
           </Button>
@@ -27,7 +27,7 @@ export const DashboardPage = () => {
       }
     >
       <RequireAuth>
-        <DashboardContent onNuevo={() => setOpen(true)} />
+        <DashboardContent onNew={() => setOpen(true)} />
       </RequireAuth>
       <ExpenseDialog open={open} onOpenChange={setOpen} />
     </AppShell>

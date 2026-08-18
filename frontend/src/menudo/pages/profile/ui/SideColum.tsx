@@ -2,26 +2,25 @@ import { LogOut } from "lucide-react";
 import { Button } from "../../../../components/ui/button";
 import {
   currency,
-  type Categoria,
-  type Gasto,
-  type Usuario,
+  type Category,
+  type Expense,
 } from "../../../../data/finance-types";
 import { useNavigate } from "react-router";
 
 interface Props {
-  usuario: Usuario | null;
-  gastos: Gasto[];
+  user: any | null;
+  expenses: Expense[];
   logout: () => void;
   total: number;
-  categorias: Categoria[];
+  categories: Category[];
 }
 
 export const SideColum = ({
-  usuario,
-  gastos,
+  user,
+  expenses,
   logout,
   total,
-  categorias,
+  categories,
 }: Props) => {
   const navigate = useNavigate();
   return (
@@ -30,32 +29,32 @@ export const SideColum = ({
       <div className="surface p-6 text-center">
         <span
           className="mx-auto grid size-16 place-items-center rounded-full text-xl font-semibold text-primary-foreground"
-          style={{ backgroundColor: usuario?.avatarColor }}
+          style={{ backgroundColor: user?.avatarColor }}
         >
-          {usuario?.nombre.slice(0, 1)}
+          {user?.name?.slice(0, 1)}
         </span>
-        <p className="mt-3 font-display text-lg font-semibold">
-          {usuario?.nombre}
-        </p>
-        <p className="text-xs text-muted-foreground">{usuario?.email}</p>
+        <p className="mt-3 font-display text-lg font-semibold">{user?.name}</p>
+        <p className="text-xs text-muted-foreground">{user?.email}</p>
       </div>
 
-      {/* Resumen de estadísticas */}
+      {/* Resumen de estadÃ­sticas */}
       <div className="surface space-y-4 p-6">
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">
-            Gastos registrados
+            Expenses registrados
           </span>
-          <span className="num font-semibold">{gastos.length}</span>
+          <span className="num font-semibold">{expenses.length}</span>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">
-            Categorías activas
+            CategorÃ­as activas
           </span>
-          <span className="num font-semibold">{categorias.length}</span>
+          <span className="num font-semibold">{categories.length}</span>
         </div>
         <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">Total histórico</span>
+          <span className="text-sm text-muted-foreground">
+            Total histÃ³rico
+          </span>
           <span className="num font-semibold">{currency(total)}</span>
         </div>
       </div>
@@ -68,7 +67,7 @@ export const SideColum = ({
           navigate("/auth");
         }}
       >
-        <LogOut className="size-4" /> Cerrar sesión
+        <LogOut className="size-4" /> Cerrar sesiÃ³n
       </Button>
     </aside>
   );

@@ -8,29 +8,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../../components/ui/select";
-import type { Categoria } from "../../../../data/finance-types";
+import type { Category } from "../../../../data/finance-types";
 
 interface Props {
-  desde: string;
-  hasta: string;
-  cat: string;
-  setCat: React.Dispatch<React.SetStateAction<string>>;
-  setDesde: (v: string) => void;
-  setHasta: (v: string) => void;
-  categorias: Categoria[];
+  fromDate: string;
+  toDate: string;
+  category: string;
+  setCategory: React.Dispatch<React.SetStateAction<string>>;
+  setFromDate: (v: string) => void;
+  setToDate: (v: string) => void;
+  categories: Category[];
 }
 
 export const ReportsFilter = ({
-  desde,
-  hasta,
-  cat,
-  setCat,
-  setDesde,
-  setHasta,
-  categorias,
+  fromDate,
+  toDate,
+  category,
+  setCategory,
+  setFromDate,
+  setToDate,
+  categories,
 }: Props) => {
   const handleSelect = (value: string | null) => {
-    setCat(value ?? ""); // Convierte null en string vacío
+    setCategory(value ?? ""); // Convierte null en string vacío
   };
   return (
     <section className="surface grid gap-4 p-5 md:grid-cols-3">
@@ -39,8 +39,8 @@ export const ReportsFilter = ({
         <Input
           id="r-desde"
           type="date"
-          value={desde}
-          onChange={(e) => setDesde(e.target.value)}
+          value={fromDate}
+          onChange={(e) => setFromDate(e.target.value)}
         />
       </div>
       <div className="space-y-2">
@@ -48,21 +48,21 @@ export const ReportsFilter = ({
         <Input
           id="r-hasta"
           type="date"
-          value={hasta}
-          onChange={(e) => setHasta(e.target.value)}
+          value={toDate}
+          onChange={(e) => setToDate(e.target.value)}
         />
       </div>
       <div className="space-y-2">
         <Label>Categoría</Label>
-        <Select value={cat} onValueChange={handleSelect}>
+        <Select value={category} onValueChange={handleSelect}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="todas">Todas las categorías</SelectItem>
-            {categorias.map((c) => (
+            {categories.map((c) => (
               <SelectItem key={c.id} value={c.id}>
-                {c.nombre}
+                {c.name}
               </SelectItem>
             ))}
           </SelectContent>

@@ -10,14 +10,14 @@ import {
 import { currencyExact } from "../../../../data/finance-types";
 
 interface Props {
-  meses: {
+  months: {
     key: string;
     name: string;
     total: number;
   }[];
 }
 
-export const BarChartContent = ({ meses }: Props) => {
+export const BarChartContent = ({ months }: Props) => {
   return (
     <section className="surface p-5 lg:col-span-3">
       <header className="mb-4 flex items-center justify-between">
@@ -31,7 +31,7 @@ export const BarChartContent = ({ meses }: Props) => {
       <div className="h-70">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
-            data={meses}
+            data={months}
             margin={{ top: 8, right: 8, left: -14, bottom: 0 }}
           >
             <CartesianGrid

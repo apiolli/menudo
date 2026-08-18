@@ -2,6 +2,7 @@
 using Menudo.Application.Interfaces;
 using Menudo.Application.Services;
 using Menudo.Application.Validators.Category;
+using Menudo.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

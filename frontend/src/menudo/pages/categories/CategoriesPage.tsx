@@ -5,11 +5,11 @@ import { CategoryContent } from "./ui/CategoryContent";
 import { AppShell } from "../../layouts/AppShell";
 import { Button } from "../../../components/ui/button";
 import { RequireAuth } from "../../../components/common/RequireAuth";
-import type { Categoria } from "../../../data/finance-types";
+import type { Category } from "../../../data/finance-types";
 
 export const CategoriesPage = () => {
   const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<Categoria | null>(null);
+  const [editing, setEditing] = useState<Category | null>(null);
 
   return (
     <AppShell
@@ -28,21 +28,19 @@ export const CategoriesPage = () => {
       }
     >
       <RequireAuth>
-        {/* Contenido de la pagina*/}
         <CategoryContent
-          onNueva={() => {
+          onNew={() => {
             setEditing(null);
             setOpen(true);
           }}
-          onEditar={(c) => {
+          onEdit={(c) => {
             setEditing(c);
             setOpen(true);
           }}
         />
       </RequireAuth>
 
-      {/* Dialogo de para las categoria*/}
-      <CategoryDialog open={open} onOpenChange={setOpen} categoria={editing} />
+      <CategoryDialog open={open} onOpenChange={setOpen} category={editing} />
     </AppShell>
   );
 };

@@ -10,13 +10,13 @@ import {
 import { currencyExact } from "../../../../data/finance-types";
 
 interface Props {
-  serieMensual: {
+  monthlySeries: {
     name: string;
     total: number;
   }[];
 }
 
-export const ReportsLineGraph = ({ serieMensual }: Props) => {
+export const ReportsLineGraph = ({ monthlySeries }: Props) => {
   return (
     <section className="surface p-5 lg:col-span-3">
       <h2 className="text-base font-semibold">Tendencia mensual</h2>
@@ -26,7 +26,7 @@ export const ReportsLineGraph = ({ serieMensual }: Props) => {
       <div className="mt-3 h-70">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
-            data={serieMensual}
+            data={monthlySeries}
             margin={{ top: 8, right: 8, left: -14, bottom: 0 }}
           >
             <CartesianGrid

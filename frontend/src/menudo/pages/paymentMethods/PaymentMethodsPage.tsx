@@ -5,11 +5,11 @@ import { AppShell } from "../../layouts/AppShell";
 import { Button } from "../../../components/ui/button";
 import { Plus } from "lucide-react";
 import { RequireAuth } from "../../../components/common/RequireAuth";
-import type { MetodoPago } from "../../../data/finance-types";
+import type { PaymentMethod } from "../../../data/finance-types";
 
 export const PaymentMethodsPage = () => {
   const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<MetodoPago | null>(null);
+  const [editing, setEditing] = useState<PaymentMethod | null>(null);
 
   return (
     <AppShell
@@ -29,11 +29,11 @@ export const PaymentMethodsPage = () => {
     >
       <RequireAuth>
         <PaymentMethodsContent
-          onNuevo={() => {
+          onNew={() => {
             setEditing(null);
             setOpen(true);
           }}
-          onEditar={(m) => {
+          onEdit={(m) => {
             setEditing(m);
             setOpen(true);
           }}
@@ -42,7 +42,7 @@ export const PaymentMethodsPage = () => {
       <PaymentMethodDialog
         open={open}
         onOpenChange={setOpen}
-        metodo={editing}
+        paymentMethod={editing}
       />
     </AppShell>
   );

@@ -1,12 +1,11 @@
 import { LogOut, Wallet } from "lucide-react";
 import { useNavigate } from "react-router";
-import { useContext } from "react";
-import { MenudoContext } from "../../context/MenudoContext";
+import { useAuth } from "../../hooks/useAuth";
 import { NavList } from "./NavList";
 import { Button } from "../../components/ui/button";
 
 export const SidebarBody = () => {
-  const { usuario, logout } = useContext(MenudoContext);
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   return (
     <div className="flex h-full flex-col bg-sidebar p-4">
@@ -27,17 +26,17 @@ export const SidebarBody = () => {
       <NavList />
 
       <div className="mt-auto space-y-3 border-t border-sidebar-border pt-4">
-        {usuario && (
+        {user && (
           <div className="flex items-center gap-3 px-2">
             <span className="grid size-9 place-items-center rounded-full bg-sidebar-accent text-sm font-semibold text-sidebar-accent-foreground">
-              {usuario.nombre.slice(0, 1)}
+              {user.name.slice(0, 1).toUpperCase()}
             </span>
             <div className="min-w-0 leading-tight">
               <p className="truncate text-sm font-medium text-sidebar-foreground">
-                {usuario.nombre}
+                {user.name}
               </p>
               <p className="truncate text-[11px] text-sidebar-foreground/60">
-                {usuario.email}
+                {user.email}
               </p>
             </div>
           </div>

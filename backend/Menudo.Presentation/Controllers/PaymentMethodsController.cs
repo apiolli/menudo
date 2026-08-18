@@ -1,6 +1,7 @@
 ﻿using Menudo.Application.DTOs.Category;
 using Menudo.Application.DTOs.PaymentMethod;
 using Menudo.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +9,7 @@ namespace Menudo.Presentation.Controllers
 {
     [Route("api/paymentMethods")]
     [ApiController]
+    [Authorize]
     public class PaymentMethodsController : ControllerBase
     {
         private readonly IPaymentMethodService service;

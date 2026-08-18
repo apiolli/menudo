@@ -10,16 +10,16 @@ import { currencyExact } from "../../../../data/finance-types";
 import { Progress } from "../../../../components/ui/progress";
 
 interface Props {
-  porCategoria: {
+  byCategory: {
     name: string;
     color: string;
     value: number;
-    cantidad: number;
+    count: number;
   }[];
   total: number;
 }
 
-export const DetailedCategoryTable = ({ porCategoria, total }: Props) => {
+export const DetailedCategoryTable = ({ byCategory, total }: Props) => {
   return (
     <section className="surface overflow-hidden">
       <header className="border-b border-border px-5 py-4">
@@ -39,7 +39,7 @@ export const DetailedCategoryTable = ({ porCategoria, total }: Props) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {porCategoria.map((c) => (
+            {byCategory.map((c) => (
               <TableRow key={c.name}>
                 <TableCell>
                   <span className="inline-flex items-center gap-2 font-medium">
@@ -50,7 +50,7 @@ export const DetailedCategoryTable = ({ porCategoria, total }: Props) => {
                     {c.name}
                   </span>
                 </TableCell>
-                <TableCell className="num text-right">{c.cantidad}</TableCell>
+                <TableCell className="num text-right">{c.count}</TableCell>
                 <TableCell className="num text-right font-semibold">
                   {currencyExact(c.value)}
                 </TableCell>

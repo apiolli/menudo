@@ -1,13 +1,33 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { toast } from "sonner";
 import { Label } from "../../../../components/ui/label";
 import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
+import { apiClient } from "../../../../lib/api";
+import { useAuth } from "../../../../hooks/useAuth";
+
+import { z } from "zod";
+
+const registerSchema = z
+  .object({
+    name: z.string().min(3, "El name debe tener al menos 3 caracteres"),
+    email: z.string().email("Debe ser un correo válido"),
+    password: z
+      .string()
+      .min(6, "La contraseña debe tener al menos 6 caracteres"),
+    repeat: z.string(),
+  })
+  .refine((data) => data.password === data.repeat, {
+    message: "Las contraseñas no coinciden",
+    path: ["repeat"],
+  });
 
 export const RegisterForm = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [form, setForm] = useState({
-    nombre: "",
+    name: "",
     email: "",
     password: "",
     repeat: "",
@@ -16,14 +36,52 @@ export const RegisterForm = () => {
   const [loading, setLoading] = useState(false);
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
-  const submit = () => {
-    navigate("/");
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrors({});
+
+    const result = registerSchema.safeParse(form);
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.issues.forEach((issue) => {
+        fieldErrors[String(issue.path[0])] = issue.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await apiClient<{ token: string }>(
+        "/api/auth/register",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            name: form.name,
+            email: form.email,
+            password: form.password,
+          }),
+        },
+      );
+      login(response.token);
+      toast.success("Cuenta creada exitosamente");
+      navigate("/");
+    } catch (error: any) {
+      const msg = error.response?.data?.message || "Error al registrarse";
+      toast.error(msg);
+      if (msg.includes("in use") || msg.includes("uso")) {
+        setErrors({ email: "El correo ya está en uso" });
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <form onSubmit={submit} className="mt-6 space-y-4">
       {[
-        { k: "nombre", label: "Nombre completo", type: "text" },
+        { k: "name", label: "name completo", type: "text" },
         { k: "email", label: "Email", type: "email" },
         { k: "password", label: "Contraseña", type: "password" },
         { k: "repeat", label: "Repetir contraseña", type: "password" },

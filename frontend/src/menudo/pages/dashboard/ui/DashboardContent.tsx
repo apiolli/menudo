@@ -1,5 +1,5 @@
-import { useContext, useMemo } from "react";
-import { MenudoContext } from "../../../../context/MenudoContext";
+import { useMemo } from "react";
+import { useMenudo } from "../../../../context/MenudoContext";
 import { monthKey } from "../../../../data/finance-types";
 import { EmptyState } from "../../../../components/common/EmptyState";
 import { Button } from "../../../../components/ui/button";
@@ -8,40 +8,44 @@ import { LastMovements } from "./LastMovements";
 import { BarChartContent } from "./BarChartContent";
 import { PieChartContent } from "./PieChartContent";
 
-export const DashboardContent = ({ onNuevo }: { onNuevo: () => void }) => {
-  const { gastos, categorias, metodos } = useContext(MenudoContext);
+export const DashboardContent = ({ onNew }: { onNew: () => void }) => {
+  const { expenses, categories, paymentMethods } = useMenudo();
 
   const data = useMemo(() => {
     const now = new Date();
-    const actual = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const current = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
     const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const anterior = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, "0")}`;
+    const previous = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, "0")}`;
 
-    const delMes = gastos.filter((g) => monthKey(g.fecha) === actual);
-    const delAnterior = gastos.filter((g) => monthKey(g.fecha) === anterior);
-    const total = delMes.reduce((s, g) => s + g.monto, 0);
-    const totalPrev = delAnterior.reduce((s, g) => s + g.monto, 0);
+    const currentMonthExpenses = expenses.filter(
+      (e) => monthKey(e.date) === current,
+    );
+    const previousMonthExpenses = expenses.filter(
+      (e) => monthKey(e.date) === previous,
+    );
+    const total = currentMonthExpenses.reduce((s, e) => s + e.amount, 0);
+    const totalPrev = previousMonthExpenses.reduce((s, e) => s + e.amount, 0);
 
-    const porCategoria = categorias
+    const byCategory = categories
       .map((c) => ({
-        name: c.nombre,
+        name: c.name,
         color: c.color,
-        value: delMes
-          .filter((g) => g.categoriaId === c.id)
-          .reduce((s, g) => s + g.monto, 0),
+        value: currentMonthExpenses
+          .filter((e) => e.categoryId === c.id)
+          .reduce((s, e) => s + e.amount, 0),
       }))
       .filter((c) => c.value > 0)
       .sort((a, b) => b.value - a.value);
 
-    const meses = Array.from({ length: 6 }).map((_, i) => {
+    const months = Array.from({ length: 6 }).map((_, i) => {
       const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
       return {
         key,
-        name: d.toLocaleDateString("es-AR", { month: "short" }),
-        total: gastos
-          .filter((g) => monthKey(g.fecha) === key)
-          .reduce((s, g) => s + g.monto, 0),
+        name: d.toLocaleDateString("en-US", { month: "short" }),
+        total: expenses
+          .filter((e) => monthKey(e.date) === key)
+          .reduce((s, e) => s + e.amount, 0),
       };
     });
 
@@ -49,35 +53,37 @@ export const DashboardContent = ({ onNuevo }: { onNuevo: () => void }) => {
       total,
       totalPrev,
       delta: totalPrev ? ((total - totalPrev) / totalPrev) * 100 : 0,
-      cantidad: delMes.length,
-      promedio: delMes.length ? total / delMes.length : 0,
-      mayor: [...delMes].sort((a, b) => b.monto - a.monto)[0],
-      porCategoria,
-      meses,
-      recientes: [...gastos]
-        .sort((a, b) => (a.fecha < b.fecha ? 1 : -1))
+      count: currentMonthExpenses.length,
+      average: currentMonthExpenses.length
+        ? total / currentMonthExpenses.length
+        : 0,
+      highest: [...currentMonthExpenses].sort((a, b) => b.amount - a.amount)[0],
+      byCategory,
+      months,
+      recent: [...expenses]
+        .sort((a, b) => (a.date < b.date ? 1 : -1))
         .slice(0, 6),
     };
-  }, [gastos, categorias]);
+  }, [expenses, categories]);
 
   const {
     total,
     totalPrev,
-    cantidad,
-    promedio,
-    mayor,
+    count,
+    average,
+    highest,
     delta,
-    meses,
-    porCategoria,
-    recientes,
+    months,
+    byCategory,
+    recent,
   } = data;
 
-  if (!gastos.length)
+  if (!expenses.length)
     return (
       <EmptyState
         title="Todavía no hay gastos registrados"
         description="Cargá tu primer movimiento para empezar a ver estadísticas de tu mes."
-        action={<Button onClick={onNuevo}>Registrar gasto</Button>}
+        action={<Button onClick={onNew}>Registrar gasto</Button>}
       />
     );
 
@@ -87,23 +93,23 @@ export const DashboardContent = ({ onNuevo }: { onNuevo: () => void }) => {
       <CardsSummary
         total={total}
         totalPrev={totalPrev}
-        cantidad={cantidad}
-        promedio={promedio}
-        mayor={mayor}
+        count={count}
+        average={average}
+        highest={highest}
         delta={delta}
       />
 
       {/* Gráficos */}
       <div className="grid gap-4 lg:grid-cols-5">
-        <BarChartContent meses={meses} />
-        <PieChartContent porCategoria={porCategoria} />
+        <BarChartContent months={months} />
+        <PieChartContent byCategory={byCategory} />
       </div>
 
       {/* Últimos movimientos */}
       <LastMovements
-        recientes={recientes}
-        metodos={metodos}
-        categorias={categorias}
+        recentExpenses={recent}
+        paymentMethods={paymentMethods}
+        categories={categories}
       />
     </div>
   );

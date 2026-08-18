@@ -11,11 +11,11 @@ import { ReportsPage } from "../menudo/pages/reports/ReportsPage";
 
 export const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/dashboard",
     element: <DashboardPage />,
   },
   {
-    path: "/auth",
+    path: "/",
     element: <AuthPage />,
   },
   {

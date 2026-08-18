@@ -1,137 +1,119 @@
-﻿using ClosedXML.Excel;
-using Menudo.Application.DTOs.Import;
+﻿using Menudo.Application.DTOs.Expense;
 using Menudo.Application.Interfaces;
-using Menudo.Domain.Exceptions;
-using Microsoft.AspNetCore.Http;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Menudo.Application.Services
 {
     public class ImportService : IImportService
     {
+        private readonly IExpenseService _expenseService;
+        private readonly ICategoryService _categoryService;
+        private readonly IPaymentMethodService _paymentMethodService;
 
-        private readonly ICategoryService categoryService;
-        private readonly IPaymentMethodService paymentMethodService;
-
-        public ImportService(ICategoryService categoryService, IPaymentMethodService paymentMethodService)
+        public ImportService(IExpenseService expenseService, ICategoryService categoryService, IPaymentMethodService paymentMethodService, OfficeOpenXml.LicenseContext? licenseContext)
         {
-            this.categoryService = categoryService;
-            this.paymentMethodService = paymentMethodService;
+            _expenseService = expenseService;
+            _categoryService = categoryService;
+            _paymentMethodService = paymentMethodService;
+            licenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
         }
 
-        //    public async Task<ImportResultDTO> ImportAsync(IFormFile file, int userId)
-        //    {
-        //        if (file == null || file.Length == 0) throw new BadRequestException("Debe adjuntar un archivo");
+        public byte[] GetTemplate()
+        {
+            using var package = new ExcelPackage();
+            var worksheet = package.Workbook.Worksheets.Add("Template");
+            worksheet.Cells[1, 1].Value = "Date (yyyy-MM-dd)";
+            worksheet.Cells[1, 2].Value = "Description";
+            worksheet.Cells[1, 3].Value = "Amount";
+            worksheet.Cells[1, 4].Value = "CategoryId";
+            worksheet.Cells[1, 5].Value = "PaymentMethodId";
+            worksheet.Cells.AutoFitColumns();
+            return package.GetAsByteArray();
+        }
 
-        //        var extension = Path.GetExtension(file.FileName).ToLower();
-        //        if (extension != ".xlsx")
-        //            throw new BadRequestException("Solo se permiten archivos .xlsx");
+        public async Task<(int SuccessCount, int FailureCount, List<string> Errors)> ImportAsync(Stream stream)
+        {
+            int successCount = 0;
+            int failureCount = 0;
+            var errors = new List<string>();
 
-        //        var resultado = new ImportResultDTO();
+            if (stream == null || stream.Length == 0)
+            {
+                errors.Add("El archivo está vacío o no fue enviado.");
+                return (0, 1, errors);
+            }
 
-        //        using var stream = file.OpenReadStream();
-        //        using var workbook = new XLWorkbook(stream);
-        //        var hoja = workbook.Worksheet(1);
+            using var package = new ExcelPackage(stream);
+            var worksheet = package.Workbook.Worksheets[0];
 
-        //        var filas = hoja.RowsUsed().Skip(1); // saltar el header
-        //        var categorias = await _unitOfWork.Categorias.GetByUsuarioIdAsync(usuarioId);
-        //        var metodosPago = await _unitOfWork.MetodosPago.GetByUsuarioIdAsync(usuarioId);
+            if (worksheet == null)
+            {
+                errors.Add("El archivo no contiene hojas de cálculo válidas.");
+                return (0, 1, errors);
+            }
 
-        //        var gastosValidos = new List<Gasto>();
+            int rowCount = worksheet.Dimension?.Rows ?? 0;
+            if (rowCount <= 1)
+            {
+                errors.Add("El archivo no contiene datos.");
+                return (0, 1, errors);
+            }
 
-        //        foreach (var fila in filas)
-        //        {
-        //            resultado.TotalFilas++;
-        //            var numeroFila = fila.RowNumber();
+            for (int row = 2; row <= rowCount; row++)
+            {
+                try
+                {
+                    var dateStr = worksheet.Cells[row, 1].Text;
+                    var description = worksheet.Cells[row, 2].Text;
+                    var amountStr = worksheet.Cells[row, 3].Text;
+                    var categoryIdStr = worksheet.Cells[row, 4].Text;
+                    var paymentMethodIdStr = worksheet.Cells[row, 5].Text;
 
-        //            var datosOriginales = new Dictionary<string, string>
-        //            {
-        //                ["Fecha"] = fila.Cell(1).GetString(),
-        //                ["Monto"] = fila.Cell(2).GetString(),
-        //                ["Categoria"] = fila.Cell(3).GetString(),
-        //                ["MetodoPago"] = fila.Cell(4).GetString(),
-        //                ["Descripcion"] = fila.Cell(5).GetString()
-        //            };
+                    if (string.IsNullOrWhiteSpace(dateStr) && string.IsNullOrWhiteSpace(description) && string.IsNullOrWhiteSpace(amountStr))
+                    {
+                        continue; // Skip empty row
+                    }
 
-        //            // Validación de formato
-        //            if (!DateTime.TryParse(fila.Cell(1).GetString(), out var fecha))
-        //            {
-        //                resultado.Errores.Add(new ImportacionErrorDto
-        //                {
-        //                    Fila = numeroFila,
-        //                    Mensaje = "Fecha inválida o vacía",
-        //                    DatosOriginales = datosOriginales
-        //                });
-        //                continue;
-        //            }
+                    if (!DateTime.TryParse(dateStr, out DateTime date))
+                        throw new ArgumentException("Fecha inválida.");
 
-        //            if (!decimal.TryParse(fila.Cell(2).GetString(), out var monto) || monto <= 0)
-        //            {
-        //                resultado.Errores.Add(new ImportacionErrorDto
-        //                {
-        //                    Fila = numeroFila,
-        //                    Mensaje = "El monto debe ser un número positivo",
-        //                    DatosOriginales = datosOriginales
-        //                });
-        //                continue;
-        //            }
+                    if (string.IsNullOrWhiteSpace(description))
+                        throw new ArgumentException("La descripción es obligatoria.");
 
-        //            // Validación de reglas de negocio (existencia)
-        //            var nombreCategoria = fila.Cell(3).GetString().Trim();
-        //            var categoria = categorias.FirstOrDefault(c =>
-        //                c.Nombre.Equals(nombreCategoria, StringComparison.OrdinalIgnoreCase));
+                    if (!decimal.TryParse(amountStr, out decimal amount) || amount <= 0)
+                        throw new ArgumentException("El monto debe ser un número mayor a 0.");
 
-        //            if (categoria == null)
-        //            {
-        //                resultado.Errores.Add(new ImportacionErrorDto
-        //                {
-        //                    Fila = numeroFila,
-        //                    Mensaje = $"La categoría '{nombreCategoria}' no existe",
-        //                    DatosOriginales = datosOriginales
-        //                });
-        //                continue;
-        //            }
+                    if (!int.TryParse(categoryIdStr, out int categoryId))
+                        throw new ArgumentException("El CategoryId debe ser un número entero.");
 
-        //            var nombreMetodoPago = fila.Cell(4).GetString().Trim();
-        //            var metodoPago = metodosPago.FirstOrDefault(m =>
-        //                m.Nombre.Equals(nombreMetodoPago, StringComparison.OrdinalIgnoreCase));
+                    if (!int.TryParse(paymentMethodIdStr, out int paymentMethodId))
+                        throw new ArgumentException("El PaymentMethodId debe ser un número entero.");
 
-        //            if (metodoPago == null)
-        //            {
-        //                resultado.Errores.Add(new ImportacionErrorDto
-        //                {
-        //                    Fila = numeroFila,
-        //                    Mensaje = $"El método de pago '{nombreMetodoPago}' no existe",
-        //                    DatosOriginales = datosOriginales
-        //                });
-        //                continue;
-        //            }
+                    var dto = new CreateExpenseDTO
+                    {
+                        Date = date,
+                        Description = description,
+                        Amount = amount,
+                        CategoryId = categoryId,
+                        PaymentMethodId = paymentMethodId
+                    };
 
-        //            // Fila válida
-        //            gastosValidos.Add(new Gasto
-        //            {
-        //                Fecha = fecha,
-        //                Monto = monto,
-        //                CategoriaId = categoria.Id,
-        //                MetodoPagoId = metodoPago.Id,
-        //                Descripcion = fila.Cell(5).GetString(),
-        //                UsuarioId = usuarioId
-        //            });
-        //        }
+                    await _expenseService.CreateExpenseAsync(dto);
+                    successCount++;
+                }
+                catch (Exception ex)
+                {
+                    failureCount++;
+                    errors.Add($"Error en la fila {row}: {ex.Message}");
+                }
+            }
 
-        //        // Inserción masiva de solo las filas válidas
-        //        foreach (var gasto in gastosValidos)
-        //            await _unitOfWork.Gastos.AddAsync(gasto);
-
-        //        await _unitOfWork.SaveChangesAsync();
-
-        //        resultado.FilasExitosas = gastosValidos.Count;
-        //        resultado.FilasConError = resultado.Errores.Count;
-
-        //        return resultado;
-        //    }
-        //}
+            return (successCount, failureCount, errors);
+        }
     }
 }

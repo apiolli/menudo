@@ -1,6 +1,6 @@
-import { useContext, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useMenudo } from "../../../context/MenudoContext";
 
-import { MenudoContext } from "../../../context/MenudoContext";
 import { ReportsFilter } from "./ui/ReportsFilter";
 import { DetailedCategoryTable } from "./ui/DetailedCategoryTable";
 import { ReportsBarChart } from "./ui/ReportsBarChart";
@@ -14,169 +14,169 @@ import { EmptyState } from "../../../components/common/EmptyState";
 import { StatCard } from "../../../components/common/StatCard";
 
 export const ReportsPage = () => {
-  const hoy = new Date();
-  const desdeDefault = new Date(hoy.getFullYear(), hoy.getMonth() - 5, 1)
+  const today = new Date();
+  const defaultFromDate = new Date(today.getFullYear(), today.getMonth() - 5, 1)
     .toISOString()
     .slice(0, 10);
-  const [desde, setDesde] = useState(desdeDefault);
-  const [hasta, setHasta] = useState(hoy.toISOString().slice(0, 10));
+  const [fromDate, setFromDate] = useState(defaultFromDate);
+  const [toDate, setToDate] = useState(today.toISOString().slice(0, 10));
 
   return (
     <AppShell
-      title="Reportes y análisis"
-      subtitle="Compará períodos y descubrí tendencias"
-      actions={<ExportDialog desde={desde} hasta={hasta} />}
+      title="Reportes y anÃ¡lisis"
+      subtitle="ComparÃ¡ perÃ­odos y descubrÃ­ tendencias"
+      actions={<ExportDialog fromDate={fromDate} toDate={toDate} />}
     >
       <RequireAuth>
-        <Contenido
-          desde={desde}
-          hasta={hasta}
-          setDesde={setDesde}
-          setHasta={setHasta}
+        <Content
+          fromDate={fromDate}
+          toDate={toDate}
+          setFromDate={setFromDate}
+          setToDate={setToDate}
         />
       </RequireAuth>
     </AppShell>
   );
 };
 
-function Contenido({
-  desde,
-  hasta,
-  setDesde,
-  setHasta,
+function Content({
+  fromDate,
+  toDate,
+  setFromDate,
+  setToDate,
 }: {
-  desde: string;
-  hasta: string;
-  setDesde: (v: string) => void;
-  setHasta: (v: string) => void;
+  fromDate: string;
+  toDate: string;
+  setFromDate: (v: string) => void;
+  setToDate: (v: string) => void;
 }) {
-  const { gastos, categorias, metodos } = useContext(MenudoContext);
-  const [cat, setCat] = useState("todas");
+  const { expenses, categories, paymentMethods } = useMenudo();
+  const [category, setCategory] = useState("todas");
 
-  const filtrados = useMemo(
+  const filtered = useMemo(
     () =>
-      gastos.filter(
+      expenses.filter(
         (g) =>
-          g.fecha >= desde &&
-          g.fecha <= hasta &&
-          (cat === "todas" || g.categoriaId === cat),
+          g.date >= fromDate &&
+          g.date <= toDate &&
+          (category === "todas" || String(g.categoryId) === category),
       ),
-    [gastos, desde, hasta, cat],
+    [expenses, fromDate, toDate, category],
   );
 
-  const serieMensual = useMemo(() => {
+  const monthlySeries = useMemo(() => {
     const map = new Map<string, number>();
-    filtrados.forEach((g) =>
-      map.set(monthKey(g.fecha), (map.get(monthKey(g.fecha)) ?? 0) + g.monto),
+    filtered.forEach((g) =>
+      map.set(monthKey(g.date), (map.get(monthKey(g.date)) ?? 0) + g.amount),
     );
     return [...map.entries()]
       .sort((a, b) => (a[0] < b[0] ? -1 : 1))
       .map(([key, total]) => ({
-        name: new Date(`${key}-01T12:00:00`).toLocaleDateString("es-AR", {
+        name: new Date(`${key}-01T12:00:00`).toLocaleDateString("en-US", {
           month: "short",
           year: "2-digit",
         }),
         total: Math.round(total),
       }));
-  }, [filtrados]);
+  }, [filtered]);
 
-  const porCategoria = useMemo(
+  const byCategory = useMemo(
     () =>
-      categorias
+      categories
         .map((c) => ({
-          name: c.nombre,
+          name: c.name,
           color: c.color,
           value: Math.round(
-            filtrados
-              .filter((g) => g.categoriaId === c.id)
-              .reduce((s, g) => s + g.monto, 0),
+            filtered
+              .filter((g) => g.categoryId === c.id)
+              .reduce((s, g) => s + g.amount, 0),
           ),
-          cantidad: filtrados.filter((g) => g.categoriaId === c.id).length,
+          count: filtered.filter((g) => g.categoryId === c.id).length,
         }))
         .filter((c) => c.value > 0)
         .sort((a, b) => b.value - a.value),
-    [categorias, filtrados],
+    [categories, filtered],
   );
 
-  const porMetodo = useMemo(
+  const byMethod = useMemo(
     () =>
-      metodos
+      paymentMethods
         .map((m) => ({
-          name: m.nombre,
+          name: m.name,
           value: Math.round(
-            filtrados
-              .filter((g) => g.metodoPagoId === m.id)
-              .reduce((s, g) => s + g.monto, 0),
+            filtered
+              .filter((g) => g.paymentMethodId === m.id)
+              .reduce((s, g) => s + g.amount, 0),
           ),
         }))
         .filter((m) => m.value > 0),
-    [metodos, filtrados],
+    [paymentMethods, filtered],
   );
 
-  const total = filtrados.reduce((s, g) => s + g.monto, 0);
-  const meses = serieMensual.length || 1;
+  const total = filtered.reduce((s, g) => s + g.amount, 0);
+  const months = monthlySeries.length || 1;
 
   return (
     <div className="space-y-6">
-      {/* Filtros: rango de fechas y categoría */}
+      {/* Filtros: rango de fechas y categorÃ­a */}
       <ReportsFilter
-        desde={desde}
-        hasta={hasta}
-        cat={cat}
-        setCat={setCat}
-        setDesde={setDesde}
-        setHasta={setHasta}
-        categorias={categorias}
+        fromDate={fromDate}
+        toDate={toDate}
+        category={category}
+        setCategory={setCategory}
+        setFromDate={setFromDate}
+        setToDate={setToDate}
+        categories={categories}
       />
 
-      {/* Estado vacío / Contenido del reporte */}
-      {filtrados.length === 0 ? (
+      {/* Estado vacÃ­o / Contenido del reporte */}
+      {filtered.length === 0 ? (
         <EmptyState
-          title="No hay datos en este período"
-          description="Ampliá el rango de fechas o cambiá la categoría seleccionada."
+          title="No hay datos en este perÃ­odo"
+          description="AmpliÃ¡ el rango de fechas o cambiÃ¡ la categorÃ­a seleccionada."
           action={undefined}
         />
       ) : (
         <>
-          {/* Indicadores del período */}
+          {/* Indicadores del perÃ­odo */}
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard
               accent
-              label="Total del período"
+              label="Total del perÃ­odo"
               value={currency(total)}
-              hint={`${filtrados.length} gastos`}
+              hint={`${filtered.length} gastos`}
             />
             <StatCard
               label="Promedio mensual"
-              value={currency(total / meses)}
-              hint={`${meses} meses`}
+              value={currency(total / months)}
+              hint={`${months} meses`}
             />
             <StatCard
               label="Ticket promedio"
-              value={currency(total / filtrados.length)}
+              value={currency(total / filtered.length)}
               hint="por movimiento"
             />
             <StatCard
-              label="Categoría top"
-              value={porCategoria[0]?.name ?? "—"}
-              hint={porCategoria[0] ? currency(porCategoria[0].value) : ""}
+              label="CategorÃ­a top"
+              value={byCategory[0]?.name ?? "â€”"}
+              hint={byCategory[0] ? currency(byCategory[0].value) : ""}
             />
           </div>
 
-          {/* Gráficos comparativos */}
+          {/* GrÃ¡ficos comparativos */}
           <div className="grid gap-4 lg:grid-cols-5">
-            {/* Gráfico de líneas: tendencia mensual */}
-            <ReportsLineGraph serieMensual={serieMensual} />
+            {/* GrÃ¡fico de lÃ­neas: tendencia mensual */}
+            <ReportsLineGraph monthlySeries={monthlySeries} />
 
-            {/* Gráfico de torta: participación por categoría */}
-            <ReportsPieChart porCategoria={porCategoria} />
+            {/* GrÃ¡fico de torta: participaciÃ³n por categorÃ­a */}
+            <ReportsPieChart byCategory={byCategory} />
           </div>
 
-          {/* Gráfico de barras: comparativo por método de pago */}
-          <ReportsBarChart porMetodo={porMetodo} />
+          {/* GrÃ¡fico de barras: comparativo por mÃ©todo de pago */}
+          <ReportsBarChart byMethod={byMethod} />
 
-          {/* Tabla de detalle por categoría */}
-          <DetailedCategoryTable porCategoria={porCategoria} total={total} />
+          {/* Tabla de detalle por categorÃ­a */}
+          <DetailedCategoryTable byCategory={byCategory} total={total} />
         </>
       )}
     </div>

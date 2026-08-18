@@ -10,13 +10,13 @@ import {
 import { currencyExact } from "../../../../data/finance-types";
 
 interface Props {
-  porMetodo: {
+  byMethod: {
     name: string;
     value: number;
   }[];
 }
 
-export const ReportsBarChart = ({ porMetodo }: Props) => {
+export const ReportsBarChart = ({ byMethod }: Props) => {
   return (
     <section className="surface p-5">
       <h2 className="text-base font-semibold">
@@ -28,7 +28,7 @@ export const ReportsBarChart = ({ porMetodo }: Props) => {
       <div className="mt-3 h-65">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
-            data={porMetodo}
+            data={byMethod}
             layout="vertical"
             margin={{ top: 8, right: 16, left: 24, bottom: 0 }}
           >

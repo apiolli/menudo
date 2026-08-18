@@ -9,14 +9,14 @@ import {
 import { currencyExact } from "../../../../data/finance-types";
 
 interface Props {
-  porCategoria: {
+  byCategory: {
     name: string;
     color: string;
     value: number;
   }[];
 }
 
-export const PieChartContent = ({ porCategoria }: Props) => {
+export const PieChartContent = ({ byCategory }: Props) => {
   return (
     <section className="surface p-5 lg:col-span-2">
       <h2 className="text-base font-semibold">Gasto por categoría</h2>
@@ -27,7 +27,7 @@ export const PieChartContent = ({ porCategoria }: Props) => {
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
-              data={porCategoria}
+              data={byCategory}
               dataKey="value"
               nameKey="name"
               innerRadius={58}
@@ -36,7 +36,7 @@ export const PieChartContent = ({ porCategoria }: Props) => {
               stroke="var(--card)"
               isAnimationActive={false}
             >
-              {porCategoria.map((c) => (
+              {byCategory.map((c) => (
                 <Cell key={c.name} fill={c.color} />
               ))}
             </Pie>

@@ -8,6 +8,7 @@ import {
   SheetTrigger,
 } from "../../components/ui/sheet";
 import { Button } from "../../components/ui/button";
+import { useMenudo } from "../../context/MenudoContext";
 
 export const AppShell = ({
   title,
@@ -21,6 +22,7 @@ export const AppShell = ({
   children: ReactNode;
 }) => {
   const [open, setOpen] = useState(false);
+  const finance = useMenudo();
   return (
     <div className="flex min-h-screen bg-background">
       <aside className="sticky top-0 hidden h-screen w-65.5 shrink-0 lg:block">
@@ -36,7 +38,7 @@ export const AppShell = ({
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-65.5 border-none p-0">
-              <SheetTitle className="sr-only">Navegación</SheetTitle>
+              <SheetTitle className="sr-only">NavegaciÃ³n</SheetTitle>
               <SidebarBody />
             </SheetContent>
           </Sheet>
@@ -54,7 +56,18 @@ export const AppShell = ({
           {actions && <div className="flex items-center gap-2">{actions}</div>}
         </header>
 
-        <main className="flex-1 px-5 py-6 md:px-8 md:py-8">{children}</main>
+        <main className="flex-1 px-5 py-6 md:px-8 md:py-8">
+          {finance.loading ? (
+            <div className="flex h-[50vh] items-center justify-center space-x-2">
+              <div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+              <span className="text-muted-foreground font-medium">
+                Cargando...
+              </span>
+            </div>
+          ) : (
+            children
+          )}
+        </main>
       </div>
     </div>
   );

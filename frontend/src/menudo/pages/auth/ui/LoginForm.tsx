@@ -4,18 +4,55 @@ import { toast } from "sonner";
 import { Input } from "../../../../components/ui/input";
 import { Label } from "../../../../components/ui/label";
 import { Button } from "../../../../components/ui/button";
+import { apiClient } from "../../../../lib/api";
+import { useAuth } from "../../../../hooks/useAuth";
+
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.string().email("Debe ser un correo válido"),
+  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+});
 
 export const LoginForm = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState("valentina@finanzas.app");
   const [password, setPassword] = useState("demo1234");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success("Sesión iniciada");
-    navigate("/");
+    setErrors({});
+
+    const result = loginSchema.safeParse({ email, password });
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.issues.forEach((issue) => {
+        fieldErrors[String(issue.path[0])] = issue.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await apiClient<{ token: string }>("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
+      login(response.token);
+      toast.success("Sesión iniciada");
+      navigate("/");
+    } catch (error: any) {
+      const msg = error.response?.data?.message || "Error al iniciar sesión";
+      toast.error(msg);
+      setErrors({ email: "Credenciales inválidas" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -12,38 +12,46 @@ import { Separator } from "../../../../components/ui/separator";
 import { ShieldCheck } from "lucide-react";
 
 interface Props {
-  guardarDatos: (e: React.FormEvent) => void;
+  saveData: (e: React.FormEvent) => void;
   errors: Record<string, string>;
-  nombre: string;
+  name: string;
   email: string;
-  moneda: string;
-  setMoneda: React.Dispatch<React.SetStateAction<string>>;
+  currency: string;
+  setCurrency: React.Dispatch<React.SetStateAction<string>>;
   setEmail: React.Dispatch<React.SetStateAction<string>>;
-  setNombre: React.Dispatch<React.SetStateAction<string>>;
-  cambiarPass: (e: React.FormEvent<Element>) => void;
-  pass: {
-    actual: string;
-    nueva: string;
-    repetir: string;
+  setName: React.Dispatch<React.SetStateAction<string>>;
+  changePassword: (e: React.FormEvent<Element>) => void;
+  password: {
+    current: string;
+    new: string;
+    repeat: string;
   };
-  passErrors: Record<string, string>;
+  setPassword: React.Dispatch<
+    React.SetStateAction<{
+      current: string;
+      new: string;
+      repeat: string;
+    }>
+  >;
+  passwordErrors: Record<string, string>;
 }
 
 export const MainColum = ({
-  guardarDatos,
+  saveData,
   errors,
-  nombre,
+  name,
   email,
-  moneda,
-  setMoneda,
+  currency,
+  setCurrency,
   setEmail,
-  setNombre,
-  cambiarPass,
-  pass,
-  passErrors,
+  setName,
+  changePassword,
+  password,
+  setPassword,
+  passwordErrors,
 }: Props) => {
   const handleSelect = (value: string | null) => {
-    setMoneda(value ?? ""); // Convierte null en string vacío
+    setCurrency(value ?? ""); // Convierte null en string vacÃ­o
   };
 
   return (
@@ -51,18 +59,18 @@ export const MainColum = ({
       {/* Formulario de datos personales */}
       <h2 className="text-base font-semibold">Datos personales</h2>
       <p className="text-xs text-muted-foreground">
-        Esta información solo la ves vos.
+        Esta informaciÃ³n solo la ves vos.
       </p>
-      <form onSubmit={guardarDatos} className="mt-5 grid gap-4 sm:grid-cols-2">
+      <form onSubmit={saveData} className="mt-5 grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="p-nombre">Nombre completo</Label>
           <Input
             id="p-nombre"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
-          {errors.nombre && (
-            <p className="text-xs text-destructive">{errors.nombre}</p>
+          {errors.name && (
+            <p className="text-xs text-destructive">{errors.name}</p>
           )}
         </div>
         <div className="space-y-2">
@@ -79,7 +87,7 @@ export const MainColum = ({
         </div>
         <div className="space-y-2">
           <Label>Moneda</Label>
-          <Select value={moneda} onValueChange={handleSelect}>
+          <Select value={currency} onValueChange={handleSelect}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -99,36 +107,58 @@ export const MainColum = ({
 
       <Separator className="my-8" />
 
-      {/* Formulario de cambio de contraseña */}
-      <h2 className="text-base font-semibold">Cambiar contraseña</h2>
+      {/* Formulario de cambio de contraseÃ±a */}
+      <h2 className="text-base font-semibold">Cambiar contraseÃ±a</h2>
       <p className="text-xs text-muted-foreground">
-        Usá al menos 8 caracteres con números y letras.
+        UsÃ¡ al menos 8 caracteres con nÃºmeros y letras.
       </p>
-      <form onSubmit={cambiarPass} className="mt-5 grid gap-4 sm:grid-cols-2">
+      <form
+        onSubmit={changePassword}
+        className="mt-5 grid gap-4 sm:grid-cols-2"
+      >
         <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor="p-actual">Contraseña actual</Label>
-          <Input id="p-actual" type="password" value={pass.actual} />
-          {passErrors.actual && (
-            <p className="text-xs text-destructive">{passErrors.actual}</p>
+          <Label htmlFor="p-actual">ContraseÃ±a actual</Label>
+          <Input
+            id="p-actual"
+            type="password"
+            value={password.current}
+            onChange={(e) =>
+              setPassword({ ...password, current: e.target.value })
+            }
+          />
+          {passwordErrors.current && (
+            <p className="text-xs text-destructive">{passwordErrors.current}</p>
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="p-nueva">Nueva contraseña</Label>
-          <Input id="p-nueva" type="password" value={pass.nueva} />
-          {passErrors.nueva && (
-            <p className="text-xs text-destructive">{passErrors.nueva}</p>
+          <Label htmlFor="p-nueva">Nueva contraseÃ±a</Label>
+          <Input
+            id="p-nueva"
+            type="password"
+            value={password.new}
+            onChange={(e) => setPassword({ ...password, new: e.target.value })}
+          />
+          {passwordErrors.new && (
+            <p className="text-xs text-destructive">{passwordErrors.new}</p>
           )}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="p-repetir">Repetir contraseña</Label>
-          <Input id="p-repetir" type="password" value={pass.repetir} />
-          {passErrors.repetir && (
-            <p className="text-xs text-destructive">{passErrors.repetir}</p>
+          <Label htmlFor="p-repetir">Repetir contraseÃ±a</Label>
+          <Input
+            id="p-repetir"
+            type="password"
+            value={password.repeat}
+            onChange={(e) =>
+              setPassword({ ...password, repeat: e.target.value })
+            }
+          />
+          {passwordErrors.repeat && (
+            <p className="text-xs text-destructive">{passwordErrors.repeat}</p>
           )}
         </div>
         <div className="sm:col-span-2">
           <Button type="submit" variant="secondary" className="gap-2">
-            <ShieldCheck className="size-4" /> Actualizar contraseña
+            <ShieldCheck className="size-4" /> Actualizar contraseÃ±a
           </Button>
         </div>
       </form>

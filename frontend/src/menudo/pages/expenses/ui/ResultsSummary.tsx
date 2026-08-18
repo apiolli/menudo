@@ -1,34 +1,39 @@
-import { currencyExact, type Gasto } from "../../../../data/finance-types";
+import { currencyExact, type Expense } from "../../../../data/finance-types";
 import { Button } from "../../../../components/ui/button";
 import { FilterX } from "lucide-react";
 
 interface Props {
   total: number;
-  hayFiltros: boolean | string;
-  limpiar: () => void;
-  filtrados: Gasto[];
+  hasFilters: boolean | string;
+  clearFilters: () => void;
+  filteredExpenses: Expense[];
 }
 
 export const ResultsSummary = ({
   total,
-  hayFiltros,
-  limpiar,
-  filtrados,
+  hasFilters,
+  clearFilters,
+  filteredExpenses,
 }: Props) => {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <p className="text-sm text-muted-foreground">
         <span className="num font-semibold text-foreground">
-          {filtrados.length}
+          {filteredExpenses.length}
         </span>{" "}
-        movimientos ·{" "}
+        movimientos Â·{" "}
         <span className="num font-semibold text-foreground">
           {currencyExact(total)}
         </span>{" "}
         en total
       </p>
-      {hayFiltros && (
-        <Button variant="ghost" size="sm" className="gap-2" onClick={limpiar}>
+      {hasFilters && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-2"
+          onClick={clearFilters}
+        >
           <FilterX className="size-4" /> Limpiar filtros
         </Button>
       )}

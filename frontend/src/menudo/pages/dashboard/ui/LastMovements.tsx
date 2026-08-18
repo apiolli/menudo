@@ -4,19 +4,23 @@ import { ArrowRight } from "lucide-react";
 import {
   currencyExact,
   formatDate,
-  type Categoria,
-  type Gasto,
-  type MetodoPago,
+  type Category,
+  type Expense,
+  type PaymentMethod,
 } from "../../../../data/finance-types";
 import { Badge } from "../../../../components/ui/badge";
 
 interface Props {
-  recientes: Gasto[];
-  metodos: MetodoPago[];
-  categorias: Categoria[];
+  recentExpenses: Expense[];
+  paymentMethods: PaymentMethod[];
+  categories: Category[];
 }
 
-export const LastMovements = ({ recientes, metodos, categorias }: Props) => {
+export const LastMovements = ({
+  recentExpenses,
+  paymentMethods,
+  categories,
+}: Props) => {
   return (
     <section className="surface overflow-hidden">
       <header className="flex items-center justify-between border-b border-border px-5 py-4">
@@ -27,35 +31,42 @@ export const LastMovements = ({ recientes, metodos, categorias }: Props) => {
           </p>
         </div>
         <Button variant="ghost" size="sm" className="gap-1">
-          <Link to="/gastos">
+          <Link to="/expenses">
             Ver todos <ArrowRight className="size-4" />
           </Link>
         </Button>
       </header>
       <ul className="divide-y divide-border">
-        {recientes.map((g) => {
-          const cat = categorias.find((c) => c.id === g.categoriaId);
-          const met = metodos.find((m) => m.id === g.metodoPagoId);
+        {recentExpenses.map((expense) => {
+          const category = categories.find((c) => c.id === expense.categoryId);
+          const method = paymentMethods.find(
+            (m) => m.id === expense.paymentMethodId,
+          );
           return (
-            <li key={g.id} className="flex items-center gap-4 px-5 py-3.5">
+            <li
+              key={expense.id}
+              className="flex items-center gap-4 px-5 py-3.5"
+            >
               <span
                 className="size-9 shrink-0 rounded-lg"
                 style={{
-                  backgroundColor: `${cat?.color ?? "#888"}22`,
-                  border: `1px solid ${cat?.color}55`,
+                  backgroundColor: `${category?.color ?? "#888"}22`,
+                  border: `1px solid ${category?.color}55`,
                 }}
               />
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium">{g.descripcion}</p>
+                <p className="truncate text-sm font-medium">
+                  {expense.description}
+                </p>
                 <p className="truncate text-xs text-muted-foreground">
-                  {formatDate(g.fecha)} · {met?.nombre}
+                  {formatDate(expense.date)} · {method?.name}
                 </p>
               </div>
               <Badge variant="secondary" className="hidden sm:inline-flex">
-                {cat?.nombre}
+                {category?.name}
               </Badge>
               <span className="num text-sm font-semibold">
-                {currencyExact(g.monto)}
+                {currencyExact(expense.amount)}
               </span>
             </li>
           );

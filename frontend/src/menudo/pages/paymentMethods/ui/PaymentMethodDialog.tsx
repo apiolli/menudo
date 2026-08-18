@@ -1,7 +1,8 @@
-import { useContext, useEffect, useState } from "react";
-import { MenudoContext } from "../../../../context/MenudoContext";
-import type { MetodoPago } from "../../../../data/finance-types";
+import { useEffect, useState } from "react";
+import { useMenudo } from "../../../../context/MenudoContext";
+import type { PaymentMethod } from "../../../../data/finance-types";
 import { toast } from "sonner";
+import { z } from "zod";
 import {
   Dialog,
   DialogContent,
@@ -22,40 +23,65 @@ import { Label } from "../../../../components/ui/label";
 import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
 
+const paymentMethodSchema = z.object({
+  name: z.string().min(2, "El nombre debe tener al menos 2 caracteres").max(40),
+  type: z.coerce.number(),
+  detail: z.string().max(30).optional(),
+});
+
 interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  metodo: MetodoPago | null;
+  paymentMethod: PaymentMethod | null;
 }
 
-export const PaymentMethodDialog = ({ open, onOpenChange, metodo }: Props) => {
-  const { saveMetodo } = useContext(MenudoContext);
-  const [nombre, setNombre] = useState("");
-  const [tipo, setTipo] = useState<MetodoPago["tipo"]>("Efectivo");
-  const [detalle, setDetalle] = useState("");
-  const [error, setError] = useState("");
+export const PaymentMethodDialog = ({
+  open,
+  onOpenChange,
+  paymentMethod,
+}: Props) => {
+  const { createPaymentMethod, updatePaymentMethod } = useMenudo();
+  const [name, setName] = useState("");
+  const [type, setType] = useState<number>(2); // Default to Cash (Efectivo) which is 2
+  const [detail, setDetail] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!open) return;
-    setNombre(metodo?.nombre ?? "");
-    setTipo(metodo?.tipo ?? "Efectivo");
-    setDetalle(metodo?.detalle ?? "");
-    setError("");
-  }, [open, metodo]);
+    setName(paymentMethod?.name ?? "");
+    setType(paymentMethod?.type ? Number(paymentMethod.type) : 2);
+    setDetail(paymentMethod?.detail ?? "");
+    setErrors({});
+  }, [open, paymentMethod]);
 
-  const submit = () => {
-    if (nombre.trim().length < 2) {
-      setError("Ingresá un nombre válido");
+  const submit = async () => {
+    setErrors({});
+    const result = paymentMethodSchema.safeParse({ name, type, detail });
+
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.issues.forEach((issue) => {
+        fieldErrors[String(issue.path[0])] = issue.message;
+      });
+      setErrors(fieldErrors);
       return;
     }
-    saveMetodo({
-      id: metodo?.id,
-      nombre: nombre.trim().slice(0, 40),
-      tipo,
-      detalle: detalle.trim().slice(0, 30),
-    });
-    toast.success(metodo ? "Método actualizado" : "Método creado");
-    onOpenChange(false);
+
+    setLoading(true);
+    try {
+      if (paymentMethod?.id) {
+        await updatePaymentMethod(paymentMethod.id, result.data);
+      } else {
+        await createPaymentMethod(result.data);
+      }
+      toast.success(paymentMethod ? "Método actualizado" : "Método creado");
+      onOpenChange(false);
+    } catch (e: any) {
+      toast.error(e.response?.data?.message || "Error al guardar método");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -63,7 +89,7 @@ export const PaymentMethodDialog = ({ open, onOpenChange, metodo }: Props) => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {metodo ? "Editar método" : "Nuevo método de pago"}
+            {paymentMethod ? "Editar método" : "Nuevo método de pago"}
           </DialogTitle>
           <DialogDescription>
             Define cómo se paga el gasto para segmentar tus análisis.
@@ -76,24 +102,26 @@ export const PaymentMethodDialog = ({ open, onOpenChange, metodo }: Props) => {
             <Input
               id="met-nombre"
               maxLength={40}
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               placeholder="Ej: Visa Crédito"
             />
-            {error && <p className="text-xs text-destructive">{error}</p>}
+            {errors.name && (
+              <p className="text-xs text-destructive">{errors.name}</p>
+            )}
           </div>
           <div className="space-y-2">
             <Label>Tipo</Label>
             <Select
-              value={tipo}
-              onValueChange={(v) => setTipo(v as MetodoPago["tipo"])}
+              value={String(type)}
+              onValueChange={(v) => setType(Number(v))}
             >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {TIPOS.map((t) => (
-                  <SelectItem key={t.id} value={t.id}>
+                  <SelectItem key={t.id} value={String(t.id)}>
                     {t.label}
                   </SelectItem>
                 ))}
@@ -105,18 +133,24 @@ export const PaymentMethodDialog = ({ open, onOpenChange, metodo }: Props) => {
             <Input
               id="met-detalle"
               maxLength={30}
-              value={detalle}
-              onChange={(e) => setDetalle(e.target.value)}
+              value={detail}
+              onChange={(e) => setDetail(e.target.value)}
               placeholder="•••• 4821"
             />
           </div>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={loading}
+          >
             Cancelar
           </Button>
-          <Button onClick={submit}>Guardar</Button>
+          <Button onClick={submit} disabled={loading}>
+            {loading ? "Guardando..." : "Guardar"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

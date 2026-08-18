@@ -12,38 +12,38 @@ import { Pencil, Trash2 } from "lucide-react";
 import {
   formatDate,
   currencyExact,
-  type Gasto,
-  type Categoria,
-  type MetodoPago,
+  type Expense,
+  type Category,
+  type PaymentMethod,
 } from "../../../../data/finance-types";
 import { ExpensesPagination } from "./ExpensesPagination";
 import { Badge } from "../../../../components/ui/badge";
 import type { SetStateAction } from "react";
 
 interface Props {
-  filtrados: Gasto[];
-  hayFiltros: string | true;
-  visibles: Gasto[];
-  categorias: Categoria[];
-  metodos: MetodoPago[];
-  onNuevo: () => void;
-  limpiar: () => void;
-  onEditar: (g: Gasto) => void;
-  setToDelete: React.Dispatch<SetStateAction<Gasto | null>>;
+  filteredExpenses: Expense[];
+  hasFilters: string | true;
+  visibleExpenses: Expense[];
+  categories: Category[];
+  paymentMethods: PaymentMethod[];
+  onNew: () => void;
+  clearFilters: () => void;
+  onEdit: (g: Expense) => void;
+  setToDelete: React.Dispatch<SetStateAction<Expense | null>>;
   current: number;
   pages: number;
   setPage: React.Dispatch<SetStateAction<number>>;
 }
 
 export const ExpensesTable = ({
-  filtrados,
-  hayFiltros,
-  visibles,
-  categorias,
-  metodos,
-  onNuevo,
-  limpiar,
-  onEditar,
+  filteredExpenses,
+  hasFilters,
+  visibleExpenses,
+  categories,
+  paymentMethods,
+  onNew,
+  clearFilters,
+  onEdit,
   setToDelete,
   current,
   pages,
@@ -51,21 +51,21 @@ export const ExpensesTable = ({
 }: Props) => {
   return (
     <>
-      {filtrados.length === 0 ? (
+      {filteredExpenses.length === 0 ? (
         <EmptyState
-          title={hayFiltros ? "Sin resultados" : "Aún no cargaste gastos"}
+          title={hasFilters ? "Sin resultados" : "AÃºn no cargaste gastos"}
           description={
-            hayFiltros
-              ? "Probá ajustando los filtros o el término de búsqueda."
-              : "Registrá tu primer gasto para verlo acá."
+            hasFilters
+              ? "ProbÃ¡ ajustando los filtros o el tÃ©rmino de bÃºsqueda."
+              : "RegistrÃ¡ tu primer gasto para verlo acÃ¡."
           }
           action={
-            hayFiltros ? (
-              <Button variant="outline" onClick={limpiar}>
+            hasFilters ? (
+              <Button variant="outline" onClick={clearFilters}>
                 Limpiar filtros
               </Button>
             ) : (
-              <Button onClick={onNuevo}>Registrar gasto</Button>
+              <Button onClick={onNew}>Registrar gasto</Button>
             )
           }
         />
@@ -76,24 +76,26 @@ export const ExpensesTable = ({
               <TableHeader>
                 <TableRow>
                   <TableHead>Fecha</TableHead>
-                  <TableHead>Descripción</TableHead>
-                  <TableHead>Categoría</TableHead>
-                  <TableHead>Método</TableHead>
+                  <TableHead>DescripciÃ³n</TableHead>
+                  <TableHead>CategorÃ­a</TableHead>
+                  <TableHead>MÃ©todo</TableHead>
                   <TableHead className="text-right">Monto</TableHead>
                   <TableHead className="w-24 text-right">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {visibles.map((g) => {
-                  const c = categorias.find((x) => x.id === g.categoriaId);
-                  const m = metodos.find((x) => x.id === g.metodoPagoId);
+                {visibleExpenses.map((g) => {
+                  const c = categories.find((x) => x.id === g.categoryId);
+                  const m = paymentMethods.find(
+                    (x) => x.id === g.paymentMethodId,
+                  );
                   return (
                     <TableRow key={g.id}>
                       <TableCell className="num whitespace-nowrap text-sm text-muted-foreground">
-                        {formatDate(g.fecha)}
+                        {formatDate(g.date)}
                       </TableCell>
                       <TableCell className="max-w-60 truncate font-medium">
-                        {g.descripcion}
+                        {g.description}
                       </TableCell>
                       <TableCell>
                         <span className="inline-flex items-center gap-2 text-sm">
@@ -101,20 +103,20 @@ export const ExpensesTable = ({
                             className="size-2.5 rounded-full"
                             style={{ backgroundColor: c?.color }}
                           />
-                          {c?.nombre ?? "—"}
+                          {c?.name ?? "â€”"}
                         </span>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary">{m?.nombre ?? "—"}</Badge>
+                        <Badge variant="secondary">{m?.name ?? "â€”"}</Badge>
                       </TableCell>
                       <TableCell className="num text-right font-semibold">
-                        {currencyExact(g.monto)}
+                        {currencyExact(g.amount)}
                       </TableCell>
                       <TableCell className="text-right">
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => onEditar(g)}
+                          onClick={() => onEdit(g)}
                           aria-label="Editar"
                         >
                           <Pencil className="size-4" />
@@ -136,7 +138,6 @@ export const ExpensesTable = ({
             </Table>
           </div>
 
-          {/* Paginación */}
           <ExpensesPagination
             current={current}
             pages={pages}

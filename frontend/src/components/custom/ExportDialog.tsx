@@ -1,6 +1,6 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { formatos } from "../../data/finance-store";
-import { MenudoContext } from "../../context/MenudoContext";
+
 import {
   Dialog,
   DialogContent,
@@ -16,68 +16,66 @@ import { cn } from "../../lib/utils";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { Switch } from "../ui/switch";
 
 interface Props {
-  desde?: string;
-  hasta?: string;
+  fromDate?: string;
+  toDate?: string;
 }
 
 export const ExportDialog = ({
-  desde: desdeInicial,
-  hasta: hastaInicial,
+  fromDate: initialFromDate,
+  toDate: initialToDate,
 }: Props) => {
-  const { gastos, categorias, metodos } = useContext(MenudoContext);
   const [open, setOpen] = useState(false);
-  const [formato, setFormato] =
-    useState<(typeof formatos)[number]["id"]>("pdf");
-  const [desde, setDesde] = useState(
-    desdeInicial ?? new Date().toISOString().slice(0, 8) + "01",
+  const [exportFormat, setExportFormat] =
+    useState<(typeof formatos)[number]["id"]>("excel");
+  const [fromDate, setFromDate] = useState(
+    initialFromDate ?? new Date().toISOString().slice(0, 8) + "01",
   );
-  const [hasta, setHasta] = useState(
-    hastaInicial ?? new Date().toISOString().slice(0, 10),
+  const [toDate, setToDate] = useState(
+    initialToDate ?? new Date().toISOString().slice(0, 10),
   );
-  const [incluirGraficos, setIncluirGraficos] = useState(true);
-  const [incluirDetalle, setIncluirDetalle] = useState(true);
   const [exporting, setExporting] = useState(false);
 
-  const exportar = () => {
-    if (desde > hasta) {
-      toast.error("El rango de fechas es inválido");
+  const exportData = async () => {
+    if (fromDate > toDate) {
+      toast.error("El rango de fechas es invÃ¡lido");
       return;
     }
     setExporting(true);
-    const filas = gastos.filter((g) => g.fecha >= desde && g.fecha <= hasta);
 
-    setTimeout(() => {
-      if (formato === "csv") {
-        const head = "fecha,descripcion,categoria,metodo_pago,monto";
-        const body = filas
-          .map((g) =>
-            [
-              g.fecha,
-              `"${g.descripcion.replace(/"/g, "'")}"`,
-              categorias.find((c) => c.id === g.categoriaId)?.nombre ?? "",
-              metodos.find((m) => m.id === g.metodoPagoId)?.nombre ?? "",
-              g.monto.toFixed(2),
-            ].join(","),
-          )
-          .join("\n");
-        const url = URL.createObjectURL(
-          new Blob([`${head}\n${body}`], { type: "text/csv;charset=utf-8" }),
-        );
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `gastos_${desde}_${hasta}.csv`;
-        a.click();
-        URL.revokeObjectURL(url);
-      }
-      setExporting(false);
+    try {
+      const params = new URLSearchParams();
+      params.append("FromTheDate", fromDate);
+      params.append("ToTheDate", toDate);
+      params.append("format", exportFormat);
+
+      const res = await fetch(
+        `https://localhost:7254/api/expenses/export?${params.toString()}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        },
+      );
+
+      if (!res.ok) throw new Error("Error al exportData");
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `gastos_${fromDate}_${toDate}.${exportFormat === "excel" ? "xlsx" : exportFormat}`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      toast.success(`Reporte ${exportFormat.toUpperCase()} generado`);
       setOpen(false);
-      toast.success(`Reporte ${formato.toUpperCase()} generado`, {
-        description: `${filas.length} movimientos entre ${desde} y ${hasta}.`,
-      });
-    }, 900);
+    } catch (error) {
+      toast.error("Error al generar el reporte");
+    } finally {
+      setExporting(false);
+    }
   };
 
   return (
@@ -91,7 +89,7 @@ export const ExportDialog = ({
         <DialogHeader>
           <DialogTitle>Exportar reporte</DialogTitle>
           <DialogDescription>
-            Elegí el formato y el rango de fechas a incluir.
+            ElegÃ­ el exportFormat y el rango de fechas a incluir.
           </DialogDescription>
         </DialogHeader>
 
@@ -100,10 +98,10 @@ export const ExportDialog = ({
             <button
               key={f.id}
               type="button"
-              onClick={() => setFormato(f.id)}
+              onClick={() => setExportFormat(f.id)}
               className={cn(
                 "rounded-xl border border-border p-4 text-left transition-colors hover:bg-secondary",
-                formato === f.id &&
+                exportFormat === f.id &&
                   "border-primary bg-secondary ring-2 ring-primary/25",
               )}
             >
@@ -116,48 +114,25 @@ export const ExportDialog = ({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="exp-desde">Desde</Label>
+            <Label htmlFor="exp-fromDate">Desde</Label>
             <Input
-              id="exp-desde"
+              id="exp-fromDate"
               type="date"
-              value={desde}
+              value={fromDate}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setDesde(e.target.value)
+                setFromDate(e.target.value)
               }
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="exp-hasta">Hasta</Label>
+            <Label htmlFor="exp-toDate">Hasta</Label>
             <Input
-              id="exp-hasta"
+              id="exp-toDate"
               type="date"
-              value={hasta}
+              value={toDate}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setHasta(e.target.value)
+                setToDate(e.target.value)
               }
-            />
-          </div>
-        </div>
-
-        <div className="space-y-3 rounded-xl bg-muted/60 p-4">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="graf" className="font-normal">
-              Incluir gráficos
-            </Label>
-            <Switch
-              id="graf"
-              checked={incluirGraficos}
-              onCheckedChange={setIncluirGraficos}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="det" className="font-normal">
-              Incluir tabla de detalle
-            </Label>
-            <Switch
-              id="det"
-              checked={incluirDetalle}
-              onCheckedChange={setIncluirDetalle}
             />
           </div>
         </div>
@@ -166,9 +141,9 @@ export const ExportDialog = ({
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancelar
           </Button>
-          <Button onClick={exportar} disabled={exporting} className="gap-2">
+          <Button onClick={exportData} disabled={exporting} className="gap-2">
             <Download className="size-4" />
-            {exporting ? "Generando…" : "Exportar"}
+            {exporting ? "Generandoâ€¦" : "Exportar"}
           </Button>
         </DialogFooter>
       </DialogContent>

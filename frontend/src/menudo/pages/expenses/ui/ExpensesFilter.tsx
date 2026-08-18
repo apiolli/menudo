@@ -8,46 +8,46 @@ import {
   SelectValue,
 } from "../../../../components/ui/select";
 import { Search } from "lucide-react";
-import type { Categoria, MetodoPago } from "../../../../data/finance-types";
+import type { Category, PaymentMethod } from "../../../../data/finance-types";
 
 interface Props {
   q: string;
-  cat: string;
-  met: string;
+  categoryId: string;
+  paymentMethodId: string;
   setQ: (value: React.SetStateAction<string>) => void;
   setPage: (value: React.SetStateAction<number>) => void;
-  setCat: (value: React.SetStateAction<string>) => void;
-  categorias: Categoria[];
-  setMet: React.Dispatch<React.SetStateAction<string>>;
-  metodos: MetodoPago[];
-  setDesde: React.Dispatch<React.SetStateAction<string>>;
-  setHasta: React.Dispatch<React.SetStateAction<string>>;
-  desde: string;
-  hasta: string;
+  setCategoryId: (value: React.SetStateAction<string>) => void;
+  categories: Category[];
+  setPaymentMethodId: React.Dispatch<React.SetStateAction<string>>;
+  paymentMethods: PaymentMethod[];
+  setFromDate: React.Dispatch<React.SetStateAction<string>>;
+  setToDate: React.Dispatch<React.SetStateAction<string>>;
+  fromDate: string;
+  toDate: string;
 }
 
 export const ExpensesFilter = ({
   q,
   setQ,
   setPage,
-  setCat,
-  cat,
-  met,
-  categorias,
-  setMet,
-  metodos,
-  setDesde,
-  setHasta,
-  desde,
-  hasta,
+  setCategoryId,
+  categoryId,
+  paymentMethodId,
+  categories,
+  setPaymentMethodId,
+  paymentMethods,
+  setFromDate,
+  setToDate,
+  fromDate,
+  toDate,
 }: Props) => {
   const handleCat = (value: string | null) => {
-    setCat(value ?? "");
+    setCategoryId(value ?? "");
     setPage(1);
   };
 
   const handlePay = (value: string | null) => {
-    setMet(value ?? "");
+    setPaymentMethodId(value ?? "");
     setPage(1);
   };
   return (
@@ -59,7 +59,7 @@ export const ExpensesFilter = ({
           <Input
             id="q"
             className="pl-9"
-            placeholder="Descripción…"
+            placeholder="DescripciÃ³nâ€¦"
             value={q}
             onChange={(e) => {
               setQ(e.target.value);
@@ -69,53 +69,53 @@ export const ExpensesFilter = ({
         </div>
       </div>
       <div className="space-y-2">
-        <Label>Categoría</Label>
-        <Select value={cat} onValueChange={handleCat}>
+        <Label>CategorÃ­a</Label>
+        <Select value={categoryId} onValueChange={handleCat}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="todas">Todas</SelectItem>
-            {categorias.map((c) => (
-              <SelectItem key={c.id} value={c.id}>
-                {c.nombre}
+            {categories.map((c) => (
+              <SelectItem key={c.id} value={String(c.id)}>
+                {c.name}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
       <div className="space-y-2">
-        <Label>Método de pago</Label>
-        <Select value={met} onValueChange={handlePay}>
+        <Label>MÃ©todo de pago</Label>
+        <Select value={paymentMethodId} onValueChange={handlePay}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="todos">Todos</SelectItem>
-            {metodos.map((m) => (
-              <SelectItem key={m.id} value={m.id}>
-                {m.nombre}
+            {paymentMethods.map((m) => (
+              <SelectItem key={m.id} value={String(m.id)}>
+                {m.name}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
       <div className="space-y-2">
-        <Label htmlFor="desde">Desde</Label>
+        <Label htmlFor="fromDate">Desde</Label>
         <Input
-          id="desde"
+          id="fromDate"
           type="date"
-          value={desde}
-          onChange={(e) => setDesde(e.target.value)}
+          value={fromDate}
+          onChange={(e) => setFromDate(e.target.value)}
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="hasta">Hasta</Label>
+        <Label htmlFor="toDate">Hasta</Label>
         <Input
-          id="hasta"
+          id="toDate"
           type="date"
-          value={hasta}
-          onChange={(e) => setHasta(e.target.value)}
+          value={toDate}
+          onChange={(e) => setToDate(e.target.value)}
         />
       </div>
     </section>

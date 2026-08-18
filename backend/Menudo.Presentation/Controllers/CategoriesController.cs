@@ -1,11 +1,13 @@
 ﻿using Menudo.Application.DTOs.Category;
 using Menudo.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Menudo.Presentation.Controllers
 {
     [Route("api/categories")]
     [ApiController]
+    [Authorize]
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryService service;

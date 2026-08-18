@@ -1,6 +1,7 @@
 ﻿using Menudo.Application.DTOs.Expense;
 using Menudo.Application.DTOs.PaymentMethod;
 using Menudo.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +9,7 @@ namespace Menudo.Presentation.Controllers
 {
     [Route("api/expenses")]
     [ApiController]
+    [Authorize]
     public class ExpensesController : ControllerBase
     {
         private readonly IExpenseService service;
