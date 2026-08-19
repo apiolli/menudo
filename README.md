@@ -1,25 +1,39 @@
-# Menudo — Sistema de Registro y Análisis de Gastos Personales
+<div align="center">
 
-Aplicación web full-stack para registrar, categorizar, analizar y exportar gastos personales. El backend está construido en **.NET 10 / ASP.NET Core Web API** con **arquitectura Onion**, y el frontend en **React 19 + TypeScript + Vite**, consumiendo una API REST autenticada con **JWT**.
+# 🧾 Menudo
 
-> Proyecto académico — Programación II/III, ITLA.
+### Sistema de Registro y Análisis de Gastos Personales
+
+Aplicación web full-stack para registrar, categorizar, analizar y exportar gastos personales, construida con **arquitectura Onion** en el backend y una API REST autenticada con **JWT**.
+
+[![.NET](https://img.shields.io/badge/.NET-10-512BD4?style=flat-square&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![SQL Server](https://img.shields.io/badge/SQL_Server-EF_Core-CC2927?style=flat-square&logo=microsoftsqlserver&logoColor=white)](https://www.microsoft.com/sql-server)
+[![License](https://img.shields.io/badge/license-académico-lightgrey?style=flat-square)]()
+
+*Proyecto académico — Programación II, ITLA*
+
+</div>
 
 ---
 
 ## 📋 Tabla de contenidos
 
-- [Descripción general](#descripción-general)
-- [Stack tecnológico](#stack-tecnológico)
-- [Arquitectura del backend](#arquitectura-del-backend)
-- [Estructura del proyecto](#estructura-del-proyecto)
-- [Módulos y funcionalidades](#módulos-y-funcionalidades)
-- [Instalación y ejecución](#instalación-y-ejecución)
-- [Roadmap](#roadmap)
-- [Licencia](#licencia)
+- [📖 Descripción general](#descripción-general)
+- [🛠️ Stack tecnológico](#stack-tecnológico)
+- [🧱 Arquitectura del backend](#arquitectura-del-backend)
+- [📂 Estructura del proyecto](#estructura-del-proyecto)
+- [🧩 Módulos y funcionalidades](#módulos-y-funcionalidades)
+- [🚀 Instalación y ejecución](#instalación-y-ejecución)
+- [🗺️ Roadmap](#roadmap)
+- [📄 Licencia](#licencia)
 
 ---
 
-## Descripción general
+## 📖 Descripción general
 
 Menudo permite a cada usuario administrar sus finanzas personales de forma independiente: registrar gastos, organizarlos por categorías y métodos de pago, visualizar un dashboard con reportes, e importar/exportar información en distintos formatos.
 
@@ -32,30 +46,45 @@ El sistema aplica buenas prácticas de desarrollo profesional: separación de re
 
 ---
 
-## Stack tecnológico
+## 🛠️ Stack tecnológico
 
-**Backend**
+<table>
+<tr>
+<td valign="top" width="33%">
+
+**⚙️ Backend**
 - .NET 10 / ASP.NET Core Web API
-- Entity Framework Core 10 (SQL Server)
-- ASP.NET Core Identity + JWT Bearer Authentication
-- Newtonsoft.Json (serialización, incluyendo enums como string)
-- Scalar (documentación interactiva de la API vía OpenAPI)
+- Entity Framework Core 10
+- ASP.NET Core Identity + JWT
+- Newtonsoft.Json (enums como string)
+- Scalar (docs interactiva OpenAPI)
 
-**Frontend**
+</td>
+<td valign="top" width="33%">
+
+**🎨 Frontend**
 - React 19 + TypeScript
 - Vite
 - React Router 8
-- Axios (consumo de API REST)
-- Tailwind CSS 4 + shadcn/ui (estilo "base-vega") + Lucide Icons
-- Recharts (gráficos del dashboard)
-- Sonner (notificaciones tipo toast)
+- Axios
+- Tailwind CSS 4 + shadcn/ui
+- Recharts · Lucide Icons · Sonner
 
-**Base de datos**
-- SQL Server (vía `Microsoft.EntityFrameworkCore.SqlServer`)
+</td>
+<td valign="top" width="33%">
+
+**🗄️ Base de datos**
+- SQL Server
+- EF Core Migrations
+- Repositorios + Unit of Work
+
+</td>
+</tr>
+</table>
 
 ---
 
-## Arquitectura del backend
+## 🧱 Arquitectura del backend
 
 El backend está organizado en 4 proyectos siguiendo **arquitectura Onion**:
 
@@ -80,7 +109,7 @@ El backend está organizado en 4 proyectos siguiendo **arquitectura Onion**:
 
 ---
 
-## Estructura del proyecto
+## 📂 Estructura del proyecto
 
 ```
 menudo/
@@ -111,7 +140,7 @@ menudo/
 
 ---
 
-## Módulos y funcionalidades
+## 🧩 Módulos y funcionalidades
 
 | Módulo | Descripción |
 | --- | --- |
@@ -127,7 +156,7 @@ menudo/
 
 ---
 
-## Instalación y ejecución
+## 🚀 Instalación y ejecución
 
 ### Requisitos previos
 
@@ -166,7 +195,7 @@ El frontend quedará disponible en `http://localhost:5173` (puerto por defecto d
 
 ---
 
-## Roadmap
+## 🗺️ Roadmap
 
 - [ ] Auditoría de entidades (`CreatedAt`, `UpdatedAt`)
 - [ ] Soft delete en categorías, métodos de pago y gastos
@@ -182,6 +211,14 @@ El frontend quedará disponible en `http://localhost:5173` (puerto por defecto d
 
 ---
 
-## Licencia
+## 📄 Licencia
 
-Proyecto académico — ITLA, Programación II/III.
+Proyecto académico — ITLA, Programación II.
+
+<div align="center">
+
+---
+
+Hecho con 🧾 y ☕ para el curso de Programación · ITLA
+
+</div>
