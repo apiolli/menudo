@@ -25,7 +25,6 @@ namespace Menudo.Infrastructure.Services
             var userId = _currentUserService.UserId;
             if (userId == null) throw new UnauthorizedAccessException("Usuario no autenticado");
 
-            // Asumiendo que GetByIdAsync recibe un Guid
             var user = await _repo.GetByIdAsync(userId.Value);
             if (user == null) throw new Exception("Usuario no encontrado");
             return user;
@@ -43,7 +42,6 @@ namespace Menudo.Infrastructure.Services
 
             if (user.Email != request.Email)
             {
-                // Se corrige el error sintáctico pasando el email y el id actual para validar duplicados
                 var emailExists = await _repo.EmailExistAsync(request.Email);
                 if (emailExists) throw new ConflictException("El email ya está en uso");
 
@@ -51,9 +49,7 @@ namespace Menudo.Infrastructure.Services
             }
 
             user.Name = request.Name;
-
-            // En arquitectura limpia, los cambios se guardan a través del repositorio o unidad de trabajo, 
-            // no accediendo directamente a _context desde el servicio de infraestructura.
+            
             _repo.Update(user);
             await _repo.SaveChangesAsync();
             return new UserDTO { Id = user.Id, Name = user.Name, Email = user.Email };

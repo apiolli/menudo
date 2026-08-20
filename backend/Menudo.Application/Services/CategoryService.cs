@@ -35,6 +35,16 @@ namespace Menudo.Application.Services
 
             if (!result.IsValid) throw new ValidationException(result.Errors);
 
+            var normalizedInput = dto.Name.Trim().ToLower();
+
+            var existingCategory = _repo.GetQueryable()
+            .FirstOrDefault(c => c.Name.Trim().ToLower() == normalizedInput);
+
+            if (existingCategory != null)
+            {
+                throw new BadRequestException($"La categoría '{dto.Name}' ya existe o es muy similar a otra registrada.");
+            }
+
             var category = _mapper.Map<Category>(dto);
 
             // Se cambia el estado a activo

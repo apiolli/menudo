@@ -32,6 +32,16 @@ namespace Menudo.Application.Services
 
             if (!result.IsValid) throw new ValidationException(result.Errors);
 
+            var normalizedInput = dto.Name.Trim().ToLower();
+
+            var existingMethod = _repo.GetQueryable()
+                                    .FirstOrDefault(c => c.Name.Trim().ToLower() == normalizedInput);
+
+            if (existingMethod != null)
+            {
+                throw new BadRequestException($"La categoría '{dto.Name}' ya existe o es muy similar a otra registrada.");
+            }
+
             var userId = _currentUserService.UserId!.Value;
             var paymentMethod = _mapper.Map<PaymentMethod>(dto);
             paymentMethod.UserId = userId;
