@@ -1,180 +1,187 @@
-# FinCore — Sistema de Registro y Análisis de Gastos Personales
+<div align="center">
 
-Aplicación web full-stack para registrar, categorizar, analizar y exportar gastos personales, construida con arquitectura **Onion** en el backend y un frontend moderno que consume una API REST autenticada con **JWT**.
+# 🧾 Menudo
 
----
+### Sistema de Registro y Análisis de Gastos Personales
 
-## 📋 Tabla de Contenidos
+Aplicación web full-stack para registrar, categorizar, analizar y exportar gastos personales, construida con **arquitectura Onion** en el backend y una API REST autenticada con **JWT**.
 
-- [Descripción General](#descripción-general)
-- [Contexto del Sistema](#contexto-del-sistema)
-- [Pantallas del Frontend](#pantallas-del-frontend)
-- [Requisitos Técnicos del Frontend](#requisitos-técnicos-del-frontend)
-- [Arquitectura del Backend](#arquitectura-del-backend)
-- [Stack Tecnológico](#stack-tecnológico)
-- [Estructura del Proyecto](#estructura-del-proyecto)
-- [Instalación y Ejecución](#instalación-y-ejecución)
-- [Roadmap / Mejoras Futuras](#roadmap--mejoras-futuras)
+[![.NET](https://img.shields.io/badge/.NET-10-512BD4?style=flat-square&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![SQL Server](https://img.shields.io/badge/SQL_Server-EF_Core-CC2927?style=flat-square&logo=microsoftsqlserver&logoColor=white)](https://www.microsoft.com/sql-server)
+[![License](https://img.shields.io/badge/license-académico-lightgrey?style=flat-square)]()
 
----
+*Proyecto académico — Programación II, ITLA*
 
-## Descripción General
-
-FinCore permite a cada usuario administrar sus finanzas personales de forma independiente: registrar gastos, organizarlos por categorías y métodos de pago, definir presupuestos mensuales, visualizar reportes con gráficos comparativos y exportar la información en distintos formatos (PDF, Excel, CSV/TXT/JSON).
-
-El sistema evalúa buenas prácticas profesionales de desarrollo: separación de responsabilidades, uso de DTOs, repositorios, inyección de dependencias, validaciones robustas y manejo de errores consistente entre backend y frontend.
+</div>
 
 ---
 
-## Contexto del Sistema
+## 📋 Tabla de contenidos
 
-- Cada usuario se autentica mediante JWT y **solo puede ver, crear, editar y eliminar sus propios datos**.
-- **Entidades principales:** Usuario, Gasto, Categoría, Método de Pago (y Presupuesto como entidad de soporte).
-- El sistema permite:
-  - Registrar y categorizar gastos.
-  - Analizar el comportamiento del gasto mediante reportes y gráficos.
-  - Exportar reportes en **PDF, Excel y CSV/JSON**.
-  - Controlar presupuestos por categoría con alertas de consumo (50%, 80%, 100%).
-
----
-
-## Pantallas del Frontend
-
-| #   | Pantalla                       | Descripción                                                                                                                                         |
-| --- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **Login y Registro**           | Autenticación de usuario con validaciones de formulario y manejo de errores de credenciales.                                                        |
-| 2   | **Dashboard Principal**        | Resumen del mes actual: total gastado, distribución por categoría (gráfico de torta/barras), últimos movimientos y comparación con el mes anterior. |
-| 3   | **Listado de Gastos**          | Tabla/lista con filtros (fecha, categoría, método de pago), búsqueda, paginación y acciones de crear/editar/eliminar.                               |
-| 4   | **Formulario de Gasto**        | Alta y edición de gastos: monto, fecha, descripción, categoría (select) y método de pago (select).                                                  |
-| 5   | **Gestión de Categorías**      | CRUD en formato lista o tarjetas, con color e ícono representativo por categoría.                                                                   |
-| 6   | **Gestión de Métodos de Pago** | CRUD similar a categorías (efectivo, tarjeta, transferencia, etc.).                                                                                 |
-| 7   | **Reportes y Análisis**        | Filtros por rango de fechas/categoría, gráficos comparativos (líneas, barras, torta) y tabla de detalle.                                            |
-| 8   | **Exportación**                | Modal/botón para exportar reportes en PDF, Excel o CSV, con selección de rango de fechas.                                                           |
-| 9   | **Perfil de Usuario**          | Datos básicos del usuario y cambio de contraseña.                                                                                                   |
-| 10  | **Estados de UI**              | Estados vacíos, loading (skeletons) y manejo visual de errores (sesión expirada, error de red, validaciones).                                       |
+- [📖 Descripción general](#descripción-general)
+- [🛠️ Stack tecnológico](#stack-tecnológico)
+- [🧱 Arquitectura del backend](#arquitectura-del-backend)
+- [📂 Estructura del proyecto](#estructura-del-proyecto)
+- [🧩 Módulos y funcionalidades](#módulos-y-funcionalidades)
+- [🚀 Instalación y ejecución](#instalación-y-ejecución)
+- [🗺️ Roadmap](#roadmap)
+- [📄 Licencia](#licencia)
 
 ---
 
-## Requisitos Técnicos del Frontend
+## 📖 Descripción general
 
-- **Navegación clara:** sidebar o navbar con acceso directo a Dashboard, Gastos, Categorías, Métodos de Pago, Reportes y Perfil.
-- **Componentes reutilizables:**
-  - Inputs (texto, número, fecha, select) con validación en línea.
-  - Botones primarios/secundarios/destructivos consistentes.
-  - Tablas con paginación, ordenamiento y filtros reutilizables.
-  - Tarjetas (cards) para categorías, métodos de pago e indicadores del dashboard.
-  - Modales para confirmaciones, formularios rápidos y exportación.
-  - Componentes de gráficos (torta, barras, líneas) parametrizables.
-  - Skeletons/spinners para estados de carga.
-  - Toasts/alerts para feedback de éxito y error.
-- **Manejo de estado:** autenticación persistente (token JWT), estado global para usuario y datos de sesión.
-- **Consumo de API REST:** capa de servicios centralizada para llamadas HTTP, manejo de errores del backend y expiración de sesión.
-- **Responsive design:** adaptable a escritorio, tablet y móvil.
-- **Accesibilidad básica:** contraste adecuado, navegación por teclado, etiquetas ARIA en formularios.
-- **Validaciones en frontend** espejadas con las del backend (montos positivos, fechas válidas, campos obligatorios).
+Menudo permite a cada usuario administrar sus finanzas personales de forma independiente: registrar gastos, organizarlos por categorías y métodos de pago, visualizar un dashboard con reportes, e importar/exportar información en distintos formatos.
+
+El sistema aplica buenas prácticas de desarrollo profesional: separación de responsabilidades por capas, DTOs, repositorios, inyección de dependencias, patrón Strategy para exportación de datos y manejo de errores centralizado.
+
+- Autenticación mediante **JWT**; cada usuario solo puede ver, crear, editar y eliminar sus propios datos.
+- **Entidades principales:** `User`, `Expense`, `Category`, `PaymentMethod`.
+- Importación y exportación de gastos en varios formatos.
+- Dashboard con reportes y gráficos (Recharts).
 
 ---
 
-## Arquitectura del Backend
+## 🛠️ Stack tecnológico
 
-El backend implementa **arquitectura Onion**, separando el sistema en capas independientes:
+<table>
+<tr>
+<td valign="top" width="33%">
+
+**⚙️ Backend**
+- .NET 10 / ASP.NET Core Web API
+- Entity Framework Core 10
+- ASP.NET Core Identity + JWT
+- Newtonsoft.Json (enums como string)
+- Scalar (docs interactiva OpenAPI)
+
+</td>
+<td valign="top" width="33%">
+
+**🎨 Frontend**
+- React 19 + TypeScript
+- Vite
+- React Router 8
+- Axios
+- Tailwind CSS 4 + shadcn/ui
+- Recharts · Lucide Icons · Sonner
+
+</td>
+<td valign="top" width="33%">
+
+**🗄️ Base de datos**
+- SQL Server
+- EF Core Migrations
+- Repositorios + Unit of Work
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🧱 Arquitectura del backend
+
+El backend está organizado en 4 proyectos siguiendo **arquitectura Onion**:
 
 ```
-┌─────────────────────────────────────┐
-│         API (Controladores)          │  ← Sin lógica de negocio
-├─────────────────────────────────────┤
-│      Infraestructura (EF Core)       │  ← Persistencia, repositorios
-├─────────────────────────────────────┤
-│         Aplicación (Servicios)       │  ← Lógica de negocio, DTOs
-├─────────────────────────────────────┤
-│         Dominio (Entidades)          │  ← Independiente de todo lo demás
-└─────────────────────────────────────┘
+┌───────────────────────────────────────┐
+│   Menudo.Presentation (Controllers)    │  ← API, middlewares, sin lógica de negocio
+├───────────────────────────────────────┤
+│   Menudo.Infrastructure (EF Core)      │  ← Persistencia, repositorios, JWT, migraciones
+├───────────────────────────────────────┤
+│   Menudo.Application (Servicios)       │  ← Lógica de negocio, DTOs, validadores, Strategy
+├───────────────────────────────────────┤
+│   Menudo.Domain (Entidades)            │  ← Entidades, enums, excepciones de dominio
+└───────────────────────────────────────┘
 ```
 
 **Principios aplicados:**
-
 - Repositorios e interfaces para acceso a datos.
-- DTOs de entrada y salida (nunca se exponen entidades directamente).
-- Inyección de dependencias en todas las capas.
-- Controladores limpios, delegando la lógica a los servicios.
-- Manejo global de excepciones con respuestas JSON consistentes.
+- DTOs de entrada y salida (las entidades nunca se exponen directamente).
+- Inyección de dependencias en todas las capas (`AddApplication`, `AddInfrastructure`).
+- Patrón **Strategy** para exportación de datos (`ExportStrategyFactory` + estrategias por formato).
+- Excepciones de dominio tipadas (`NotFoundException`, `BadRequestException`, `ConflictException`, `ForbiddenException`, `UnauthorizedException`) manejadas globalmente en un middleware (`ExceptionMiddleware`).
 
 ---
 
-## Stack Tecnológico
-
-**Backend**
-
-- .NET / ASP.NET Core Web API
-- Entity Framework Core
-- JWT para autenticación
-- Swagger / OpenAPI
-
-**Frontend**
-
-- Framework SPA (React / Angular / Vue — según implementación)
-- Consumo de API REST vía servicios HTTP centralizados
-- Librería de gráficos (ej. Chart.js, Recharts o similar)
-- Gestión de estado global (Context API, Redux, o equivalente)
-
-**Base de Datos**
-
-- SQL Server / PostgreSQL (según configuración del proyecto)
-
-**Infraestructura**
-
-- Docker / Docker Compose para contenedores de backend, base de datos y frontend
-
----
-
-## Estructura del Proyecto
+## 📂 Estructura del proyecto
 
 ```
-FinCore/
+menudo/
 ├── backend/
-│   ├── FinCore.API/            # Controladores, configuración, middlewares
-│   ├── FinCore.Application/    # Servicios, DTOs, interfaces
-│   ├── FinCore.Domain/         # Entidades y lógica de dominio
-│   └── FinCore.Infrastructure/ # EF Core, repositorios, persistencia
+│   ├── Menudo.Presentation/        # Controladores, Program.cs, middlewares
+│   │   └── Controllers/            # Auth, Users, Categories, PaymentMethods,
+│   │                                 Expenses, Dashboard, Import
+│   ├── Menudo.Application/         # Servicios, DTOs, validadores, mapeos, Strategy
+│   │   ├── Services/                # CategoryService, DashboardService, ExpenseService,
+│   │   │                              ExportService, ImportService, PaymentMethodService
+│   │   └── Strategy/                 # ExcelExportStrategy, JsonExportStrategy, TxtExportStrategy
+│   ├── Menudo.Infrastructure/      # EF Core, repositorios, autenticación JWT, migraciones
+│   └── Menudo.Domain/              # Entidades (User, Expense, Category, PaymentMethod),
+│                                      enums y excepciones de dominio
 ├── frontend/
-│   ├── src/
-│   │   ├── components/         # Componentes reutilizables (inputs, tablas, modales, cards)
-│   │   ├── pages/               # Pantallas: Dashboard, Gastos, Categorías, Reportes, Perfil
-│   │   ├── services/             # Capa de consumo de API REST
-│   │   ├── context/ | store/     # Manejo de estado global
-│   │   └── assets/               # Íconos, estilos, imágenes
-├── docker-compose.yml
+│   └── src/
+│       ├── menudo/
+│       │   ├── layouts/            # AppShell, SideBarBody, NavList
+│       │   └── pages/              # auth, dashboard, expenses, categories,
+│       │                             paymentMethods, reports, profile
+│       ├── components/             # common, custom, ui (shadcn/ui)
+│       ├── services/               # auth, category, expenses, export, import,
+│       │                             paymentMethod, user (Axios)
+│       ├── context/                 # AuthContext, MenudoContext
+│       ├── hooks/, lib/, router/, data/
 └── README.md
 ```
 
 ---
 
-## Instalación y Ejecución
+## 🧩 Módulos y funcionalidades
+
+| Módulo | Descripción |
+| --- | --- |
+| **Autenticación** | Registro e inicio de sesión con JWT (`/api/auth`). |
+| **Dashboard** | Resumen del gasto del usuario con gráficos (Recharts). |
+| **Gastos** | CRUD de gastos con categoría, método de pago, monto, fecha y descripción. |
+| **Categorías** | CRUD de categorías de gasto. |
+| **Métodos de pago** | CRUD de métodos de pago (efectivo, tarjeta, transferencia, etc.). |
+| **Reportes** | Vista de reportes y análisis del gasto. |
+| **Importación** | Carga de gastos desde archivo (`ImportController` / `ImportService`). |
+| **Exportación** | Exportación de datos en **Excel, TXT y JSON**, vía patrón Strategy. |
+| **Perfil** | Datos del usuario autenticado. |
+
+---
+
+## 🚀 Instalación y ejecución
 
 ### Requisitos previos
 
-- .NET SDK 8+
-- Node.js 18+
-- Docker y Docker Compose (opcional, recomendado)
+- [.NET SDK 10](https://dotnet.microsoft.com/download)
+- [Node.js 18+](https://nodejs.org/)
+- SQL Server (local o remoto)
 
-### Con Docker Compose
+### Backend
 
 ```bash
-docker-compose up --build
+cd backend
+dotnet restore
 ```
 
-### Manual
-
-**Backend**
+Configura tu cadena de conexión en `Menudo.Presentation/appsettings.json` (sección `ConnectionStrings:DefaultConnection`), luego:
 
 ```bash
-cd backend/FinCore.API
-dotnet restore
-dotnet ef database update
+cd Menudo.Presentation
+dotnet ef database update --project ../Menudo.Infrastructure
 dotnet run
 ```
 
-**Frontend**
+La API quedará disponible en `https://localhost:5001` (o el puerto configurado), con documentación interactiva de Scalar en `/scalar` durante desarrollo.
+
+### Frontend
 
 ```bash
 cd frontend
@@ -182,11 +189,13 @@ npm install
 npm run dev
 ```
 
-La API quedará disponible en `https://localhost:5001` (Swagger en `/swagger`) y el frontend en `http://localhost:3000` (o el puerto configurado).
+El frontend quedará disponible en `http://localhost:5173` (puerto por defecto de Vite) y está configurado para consumir la API en `http://localhost:5173`/`http://localhost:3000` según CORS (`AllowFrontend`).
+
+> ⚠️ **Nota:** este repositorio no incluye `docker-compose.yml`; la ejecución actual es manual (backend y frontend por separado).
 
 ---
 
-## Roadmap / Mejoras Futuras
+## 🗺️ Roadmap
 
 - [ ] Auditoría de entidades (`CreatedAt`, `UpdatedAt`)
 - [ ] Soft delete en categorías, métodos de pago y gastos
@@ -194,14 +203,22 @@ La API quedará disponible en `https://localhost:5001` (Swagger en `/swagger`) y
 - [ ] Refresh token para sesiones prolongadas
 - [ ] Gastos recurrentes automáticos
 - [ ] Adjuntar comprobante (imagen/PDF) a cada gasto
-- [ ] Notificaciones proactivas de presupuesto
-- [ ] Comparación de tendencias multi-mes en el dashboard
+- [ ] Exportación a PDF
+- [ ] Presupuestos por categoría con alertas de consumo
 - [ ] Tests unitarios (xUnit + Moq)
 - [ ] Logging estructurado (Serilog)
-- [ ] Exportación a PDF con formato de reporte
+- [ ] Dockerización del proyecto (backend, frontend, base de datos)
 
 ---
 
-## Licencia
+## 📄 Licencia
 
-Proyecto académico — Programación III.
+Proyecto académico — ITLA, Programación II.
+
+<div align="center">
+
+---
+
+Hecho con 🧾 y ☕ para el curso de Programación · ITLA
+
+</div>
