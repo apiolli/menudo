@@ -63,7 +63,7 @@ export const AuthPage = () => {
               <Wallet className="size-5" />
             </span>
           </div>
-          <h1 className="text-2xl font-semibold">Bienvenida de vuelta</h1>
+          <h1 className="text-2xl font-semibold">Bienvenido de vuelta</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Gestioná tus gastos personales desde un solo lugar.
           </p>
