@@ -32,13 +32,15 @@ export const AppShell = ({
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-20 flex flex-wrap items-center gap-3 border-b border-border bg-background/85 px-5 py-4 backdrop-blur md:px-8">
           <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger>
-              <Button variant="outline" size="icon" className="lg:hidden">
-                <Menu className="size-4" />
-              </Button>
+            <SheetTrigger
+              render={
+                <Button variant="outline" size="icon" className="lg:hidden" />
+              }
+            >
+              <Menu className="size-4" />
             </SheetTrigger>
             <SheetContent side="left" className="w-65.5 border-none p-0">
-              <SheetTitle className="sr-only">NavegaciÃ³n</SheetTitle>
+              <SheetTitle className="sr-only">Navegacion</SheetTitle>
               <SidebarBody />
             </SheetContent>
           </Sheet>

@@ -17,7 +17,7 @@ interface Props {
   }[];
 }
 
-export const BarChartContent = ({ months }: Props) => {
+export const EvolutionLast6Months = ({ months }: Props) => {
   return (
     <section className="surface p-5 lg:col-span-3">
       <header className="mb-4 flex items-center justify-between">

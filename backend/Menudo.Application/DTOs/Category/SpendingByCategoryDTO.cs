@@ -7,7 +7,8 @@ namespace Menudo.Application.DTOs.Category
     public record SpendingByCategoryDTO
     {
         public string Name { get; set; } = string.Empty;
-        public decimal Spend {  get; set; }
+        public string Color {get; set;} = string.Empty;
+        public decimal Value {  get; set; }
 
     }
 }

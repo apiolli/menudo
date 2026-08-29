@@ -7,16 +7,13 @@ import {
   Tooltip,
 } from "recharts";
 import { currencyExact } from "../../../../data/finance-types";
+import type { SpendingByCategory } from "../../../../api/types/dashboard-response";
 
 interface Props {
-  byCategory: {
-    name: string;
-    color: string;
-    value: number;
-  }[];
+  byCategory: SpendingByCategory[];
 }
 
-export const PieChartContent = ({ byCategory }: Props) => {
+export const SpendByCategory = ({ byCategory }: Props) => {
   return (
     <section className="surface p-5 lg:col-span-2">
       <h2 className="text-base font-semibold">Gasto por categoría</h2>

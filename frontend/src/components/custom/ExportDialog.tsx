@@ -81,10 +81,8 @@ export const ExportDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
-        <Button variant="outline" className="gap-2">
-          <Download className="size-4" /> Exportar
-        </Button>
+      <DialogTrigger render={<Button variant="outline" className="gap-2" />}>
+        <Download className="size-4" /> Exportar
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>

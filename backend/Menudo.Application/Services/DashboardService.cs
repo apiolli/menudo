@@ -86,7 +86,8 @@ namespace Menudo.Application.Services
                 .Select(e => new SpendingByCategoryDTO
                 {
                     Name = e.Key!.Name,
-                    Spend = e.Sum(e => e.Amount)
+                    Color = e.Key!.Color,
+                    Value = e.Sum(e => e.Amount)
 
                 }).ToList();
         }

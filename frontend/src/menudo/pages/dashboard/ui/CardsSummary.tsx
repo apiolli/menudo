@@ -1,12 +1,13 @@
+import type { HighestExpense } from "../../../../api/types/dashboard-response";
 import { StatCard } from "../../../../components/common/StatCard";
-import { type Expense, currency } from "../../../../data/finance-types";
+import { currencyExact } from "../../../../data/finance-types";
 
 interface Props {
   total: number;
   totalPrev: number;
   count: number;
   average: number;
-  highest: Expense | undefined;
+  highest: HighestExpense;
   delta: number;
 }
 
@@ -23,23 +24,23 @@ export const CardsSummary = ({
       <StatCard
         accent
         label="Total del mes"
-        value={currency(total)}
+        value={currencyExact(total)}
         delta={delta}
         hint="vs mes anterior"
       />
       <StatCard
         label="Mes anterior"
-        value={currency(totalPrev)}
+        value={currencyExact(totalPrev)}
         hint="cierre completo"
       />
       <StatCard
         label="Movimientos"
         value={String(count)}
-        hint={`promedio ${currency(average)}`}
+        hint={`promedio ${currencyExact(average)}`}
       />
       <StatCard
         label="Gasto más alto"
-        value={highest ? currency(highest.amount) : currency(0)}
+        value={highest ? currencyExact(highest.amount) : "0"}
         hint={highest?.description ?? "—"}
       />
     </div>
