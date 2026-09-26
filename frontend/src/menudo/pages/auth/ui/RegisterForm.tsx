@@ -1,13 +1,10 @@
-import { useState } from "react";
-import { useNavigate } from "react-router";
-import { toast } from "sonner";
 import { Label } from "../../../../components/ui/label";
 import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
-import { apiClient } from "../../../../lib/api";
-import { useAuth } from "../../../../hooks/useAuth";
-
 import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRegister } from "../hooks/useRegister";
 
 const registerSchema = z
   .object({
@@ -24,86 +21,49 @@ const registerSchema = z
   });
 
 export const RegisterForm = () => {
-  const navigate = useNavigate();
-  const { login } = useAuth();
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    repeat: "",
+  const { isLoading, onSubmit } = useRegister();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(registerSchema),
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(false);
-  const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrors({});
-
-    const result = registerSchema.safeParse(form);
-    if (!result.success) {
-      const fieldErrors: Record<string, string> = {};
-      result.error.issues.forEach((issue) => {
-        fieldErrors[String(issue.path[0])] = issue.message;
-      });
-      setErrors(fieldErrors);
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      // CORRECCIÓN: Enviamos el objeto plano directamente en 'body'
-      const { name, email, password } = result.data;
-      const response = await apiClient<{ token: string }>(
-        "/api/auth/register",
-        {
-          method: "POST",
-          body: {
-            name: name,
-            email: email,
-            password: password,
-          },
-        },
-      );
-
-      login(response.token);
-      toast.success("Cuenta creada exitosamente");
-      navigate("/dashboard");
-    } catch (error: any) {
-      const msg = error.response?.data?.message || "Error al registrarse";
-      toast.error(msg);
-      if (msg.includes("in use") || msg.includes("uso")) {
-        setErrors({ email: "El correo ya está en uso" });
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
-    <form onSubmit={submit} className="mt-6 space-y-4">
-      {[
-        { k: "name", label: "Nombre completo", type: "text" },
-        { k: "email", label: "Email", type: "email" },
-        { k: "password", label: "Contraseña", type: "password" },
-        { k: "repeat", label: "Repetir contraseña", type: "password" },
-      ].map((f) => (
-        <div key={f.k} className="space-y-2">
-          <Label htmlFor={f.k}>{f.label}</Label>
-          <Input
-            id={f.k}
-            type={f.type}
-            value={form[f.k as keyof typeof form]}
-            onChange={(e) => set(f.k, e.target.value)}
-          />
-          {errors[f.k] && (
-            <p className="text-xs text-destructive">{errors[f.k]}</p>
-          )}
-        </div>
-      ))}
-      <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? "Creando cuenta…" : "Crear cuenta"}
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="name">{"Nombre completo"}</Label>
+        <Input id="name" type="text" {...register("name")} />
+        {errors.name && (
+          <p className="text-xs text-destructive">{errors.name.message}</p>
+        )}
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="email">{"Email"}</Label>
+        <Input id="email" type="email" {...register("email")} />
+        {errors.email && (
+          <p className="text-xs text-destructive">{errors.email.message}</p>
+        )}
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="password">{"Contraseña"}</Label>
+        <Input id="password" type="password" {...register("password")} />
+        {errors.password && (
+          <p className="text-xs text-destructive">{errors.password.message}</p>
+        )}
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="repeat">{"Repetir contraseña"}</Label>
+        <Input id="repeat" type="password" {...register("repeat")} />
+        {errors.repeat && (
+          <p className="text-xs text-destructive">{errors.repeat.message}</p>
+        )}
+      </div>
+
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? "Creando cuenta…" : "Crear cuenta"}
       </Button>
     </form>
   );

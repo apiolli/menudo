@@ -1,28 +1,18 @@
-import { useNavigate } from "react-router";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../../../../components/ui/input";
 import { Label } from "../../../../components/ui/label";
 import { Button } from "../../../../components/ui/button";
-import { useForm } from "react-hook-form";
-
-import { z } from "zod";
-import type { LoginDTO } from "../types/loginDTO";
-import { useState } from "react";
-import { useAuthStore } from "../store/auth.store";
-import { toast } from "sonner";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useLogin } from "../hooks/useLogin";
 
 const loginSchema = z.object({
   email: z.string().email("Debe ser un correo válido"),
   password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
 });
 
-interface Props {
-  isLoading: boolean;
-}
-
-export const LoginForm = ({}: Props) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuthStore();
+export const LoginForm = () => {
+  const { isLoading, onSubmit } = useLogin();
 
   const {
     formState: { errors },
@@ -31,23 +21,6 @@ export const LoginForm = ({}: Props) => {
   } = useForm({
     resolver: zodResolver(loginSchema),
   });
-
-  const navigate = useNavigate();
-
-  const onSubmit = async (loginDto: LoginDTO) => {
-    setIsLoading(true);
-
-    const isValid = await login(loginDto.email, loginDto.password);
-
-    if (isValid) {
-      toast.success("Login exitoso, bienvenido.");
-      return;
-    }
-
-    toast.error("Error");
-
-    setIsLoading(false);
-  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
@@ -71,7 +44,6 @@ export const LoginForm = ({}: Props) => {
           type="password"
           {...register("password", {
             required: true,
-            minLength: 8,
           })}
         />
         {errors.password && (
