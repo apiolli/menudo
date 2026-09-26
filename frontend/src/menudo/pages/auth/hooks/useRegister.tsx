@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuthStore } from "../store/auth.store";
+import { useAuthStore } from "../../../../store/auth.store";
 import type { RegisterDTO } from "../types/registerDTO";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
@@ -19,7 +19,7 @@ export const useRegister = () => {
 
     if (isValid) {
       toast.success("Cuenta creada con exito, bienvenid@!");
-      navigate("/dasboard");
+      navigate("/dashboard");
       return;
     }
 

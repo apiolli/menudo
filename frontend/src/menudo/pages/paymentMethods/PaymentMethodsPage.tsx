@@ -1,7 +1,7 @@
 import { PaymentMethodsContent } from "./ui/PaymentMethodsContent";
 import { PaymentMethodDialog } from "./ui/PaymentMethodDialog";
 import { useState } from "react";
-import { AppShell } from "../../layouts/AppShell";
+import { AppShell } from "../../layouts/MenudoLayout";
 import { Button } from "../../../components/ui/button";
 import { Plus } from "lucide-react";
 import { RequireAuth } from "../../../components/common/RequireAuth";

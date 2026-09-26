@@ -1,26 +1,23 @@
 import { Link } from "react-router";
 import { Button } from "../../../../components/ui/button";
 import { ArrowRight, Wallet } from "lucide-react";
-import {
-  currencyExact,
-  formatDate,
-  type Category,
-  type Expense,
-  type PaymentMethod,
-} from "../../../../data/finance-types";
+import { currencyExact, formatDate } from "../../../../data/finance-types";
 import { Badge } from "../../../../components/ui/badge";
 import { Icono } from "../../../../data/finance-store";
+import type { Expense } from "../../../../types/expense.interface";
+import type { PaymentMethod } from "../../../../types/payment-method";
+import type { Category } from "../../../../types/category.interface";
 
 interface Props {
   recentExpenses: Expense[];
-  paymentMethods: PaymentMethod[];
-  categories: Category[];
+  paymentMethods?: PaymentMethod[];
+  categories?: Category[];
 }
 
 export const LastMovements = ({
   recentExpenses,
-  paymentMethods,
-  categories,
+  // paymentMethods,
+  // categories,
 }: Props) => {
   return (
     <section className="surface overflow-hidden">
@@ -39,19 +36,19 @@ export const LastMovements = ({
       </header>
       <ul className="divide-y divide-border">
         {recentExpenses.map((expense) => {
-          const category = categories.find(
-            (c) => String(c.id) === String(expense.categoryId),
-          );
-          const method = paymentMethods.find(
-            (m) => Number(m.id) === Number(expense.paymentMethodId),
-          );
+          // const category = categories.find(
+          //   (c) => String(c.id) === String(expense.categoryId),
+          // );
+          // const method = paymentMethods.find(
+          //   (m) => Number(m.id) === Number(expense.paymentMethodId),
+          // );
 
           // Normalizamos el color y obtenemos el ícono de la categoría
-          const rawColor = category?.color || "#888";
-          const formattedColor = rawColor.startsWith("#")
-            ? rawColor
-            : `#${rawColor}`;
-          const CategoryIcon = category?.icon ? Icono : Wallet;
+          // const rawColor = category?.color || "#888";
+          // const formattedColor = rawColor.startsWith("#")
+          //   ? rawColor
+          //   : `#${rawColor}`;
+          // const CategoryIcon = category?.icon */ ? Icono : Wallet;
 
           return (
             <li
@@ -60,27 +57,27 @@ export const LastMovements = ({
             >
               <span
                 className="grid size-9 shrink-0 place-items-center rounded-xl"
-                style={{
-                  backgroundColor: `${formattedColor}22`,
-                  color: formattedColor,
-                  border: `1px solid ${formattedColor}55`,
-                }}
+                // style={{
+                //   backgroundColor: `${formattedColor}22`,
+                //   color: formattedColor,
+                //   border: `1px solid ${formattedColor}55`,
+                // }}
               >
-                <CategoryIcon
+                {/* <CategoryIcon
                   name={category?.icon || "Wallet"}
                   className="size-4"
-                />
+                /> */}
               </span>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">
                   {expense.description}
                 </p>
                 <p className="truncate text-xs text-muted-foreground">
-                  {formatDate(expense.date)} · {method?.name ?? "—"}
+                  {/* {formatDate(expense.date)} · {method?.name ?? "—"} */}
                 </p>
               </div>
               <Badge variant="secondary" className="hidden sm:inline-flex">
-                {category?.name ?? "—"}
+                {/* {category?.name ?? "—"} */}
               </Badge>
               <span className="num text-sm font-semibold">
                 {currencyExact(expense.amount)}

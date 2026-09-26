@@ -4,9 +4,8 @@ import { monthLabel } from "../../../data/finance-types";
 import { Button } from "../../../components/ui/button";
 import { Plus } from "lucide-react";
 import { ExportDialog } from "../../../components/custom/ExportDialog";
-import { RequireAuth } from "../../../components/common/RequireAuth";
 import { ExpenseDialog } from "../../../components/custom/ExpenseDialog";
-import { AppShell } from "../../layouts/AppShell";
+import { CustomHeader } from "../../../components/custom/CustomHeader";
 
 export const DashboardPage = () => {
   const [open, setOpen] = useState(false);
@@ -14,22 +13,23 @@ export const DashboardPage = () => {
   const monthStart = today.slice(0, 8) + "01";
 
   return (
-    <AppShell
-      title="Dashboard"
-      subtitle={monthLabel(today.slice(0, 7))}
-      actions={
-        <>
-          <ExportDialog fromDate={monthStart} toDate={today} />
-          <Button className="gap-2" onClick={() => setOpen(true)}>
-            <Plus className="size-4" /> Nuevo gasto
-          </Button>
-        </>
-      }
-    >
-      <RequireAuth>
+    <>
+      <CustomHeader
+        title="Dashboard"
+        subtitle={monthLabel(today.slice(0, 7))}
+        actions={
+          <>
+            <ExportDialog fromDate={monthStart} toDate={today} />
+            <Button className="gap-2" onClick={() => setOpen(true)}>
+              <Plus className="size-4" /> Nuevo gasto
+            </Button>
+          </>
+        }
+      />
+      <main className="flex-1 px-5 py-6 md:px-8 md:py-8">
         <DashboardContent onNew={() => setOpen(true)} />
-      </RequireAuth>
-      <ExpenseDialog open={open} onOpenChange={setOpen} />
-    </AppShell>
+        <ExpenseDialog open={open} onOpenChange={setOpen} />
+      </main>
+    </>
   );
 };

@@ -1,7 +1,7 @@
 import type { PropsWithChildren } from "react";
-import { useAuthStore } from "../menudo/pages/auth/store/auth.store";
+import { useAuthStore } from "../../store/auth.store";
 import { useQuery } from "@tanstack/react-query";
-import { CustomFullScreenLoading } from "../components/custom/CustomFullScreenLoading";
+import { CustomFullScreenLoading } from "../../components/custom/CustomFullScreenLoading";
 
 export const CheckAuthProvider = ({ children }: PropsWithChildren) => {
   const { checkAuthStatus } = useAuthStore();

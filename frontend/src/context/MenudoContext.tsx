@@ -8,13 +8,15 @@ import {
 } from "react";
 import { apiClient } from "../lib/api";
 import { useAuth } from "../hooks/useAuth";
-import type { Category, PaymentMethod, Expense } from "../data/finance-types";
 import {
   expenseService,
   type CreateExpenseDTO,
   type UpdateExpenseDTO,
 } from "../services/expenses.service";
 import { importService, type ImportResult } from "../services/import.service";
+import type { Category } from "../types/category.interface";
+import type { PaymentMethod } from "../types/payment-method";
+import type { Expense } from "../types/expense.interface";
 
 interface MenudoContextType {
   categories: Category[];

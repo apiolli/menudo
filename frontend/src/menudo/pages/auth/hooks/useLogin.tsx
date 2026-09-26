@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { useAuthStore } from "../store/auth.store";
+import { useAuthStore } from "../../../../store/auth.store";
 import type { LoginDTO } from "../types/loginDTO";
 import { toast } from "sonner";
 
@@ -16,7 +16,7 @@ export const useLogin = () => {
 
     if (isValid) {
       toast.success("Login exitoso, bienvenido.");
-      // navigate("/dashboard");
+      navigate("/dashboard");
       return;
     }
 

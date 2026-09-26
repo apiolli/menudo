@@ -6,7 +6,7 @@ import { DetailedCategoryTable } from "./ui/DetailedCategoryTable";
 import { ReportsBarChart } from "./ui/ReportsBarChart";
 import { ReportsPieChart } from "./ui/ReportsPieChart";
 import { ReportsLineGraph } from "./ui/ReportsLineGraph";
-import { AppShell } from "../../layouts/AppShell";
+import { AppShell } from "../../layouts/MenudoLayout";
 import { RequireAuth } from "../../../components/common/RequireAuth";
 import { ExportDialog } from "../../../components/custom/ExportDialog";
 import { currency, monthKey } from "../../../data/finance-types";

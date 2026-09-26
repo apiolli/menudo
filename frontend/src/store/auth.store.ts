@@ -1,8 +1,8 @@
 import { create } from "zustand";
-import type { User } from "../../../../types/user.interface";
-import { checkStatusAction } from "../actions/check-status.action";
-import { loginAction } from "../actions/login.action";
-import { registerAction } from "../actions/register.action";
+import type { User } from "../types/user.interface";
+import { checkStatusAction } from "../menudo/pages/auth/actions/check-status.action";
+import { loginAction } from "../menudo/pages/auth/actions/login.action";
+import { registerAction } from "../menudo/pages/auth/actions/register.action";
 
 type AuthStatus = "authenticated" | "not-authenticated" | "cheking";
 

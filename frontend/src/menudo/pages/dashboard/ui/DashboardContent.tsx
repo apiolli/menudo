@@ -8,17 +8,17 @@ import { useDashboard } from "../hook/useDasboard";
 import { SpendByCategory } from "./SpendByCategory";
 
 export const DashboardContent = ({ onNew }: { onNew: () => void }) => {
-  const { expenses, categories, paymentMethods } = useMenudo();
+  // const { expenses, categories, paymentMethods } = useMenudo();
   const { dashboardData } = useDashboard();
 
-  if (!expenses.length)
-    return (
-      <EmptyState
-        title="Todavía no hay gastos registrados"
-        description="Carga tu primer movimiento para empezar a ver estadísticas de tu mes."
-        action={<Button onClick={onNew}>Registrar gasto</Button>}
-      />
-    );
+  // if (!expenses.length)
+  //   return (
+  //     <EmptyState
+  //       title="Todavía no hay gastos registrados"
+  //       description="Carga tu primer movimiento para empezar a ver estadísticas de tu mes."
+  //       action={<Button onClick={onNew}>Registrar gasto</Button>}
+  //     />
+  //   );
 
   if (!dashboardData) return;
 
@@ -48,8 +48,8 @@ export const DashboardContent = ({ onNew }: { onNew: () => void }) => {
 
       <LastMovements
         recentExpenses={dashboardData.lastMovements}
-        paymentMethods={paymentMethods}
-        categories={categories}
+        // paymentMethods={paymentMethods}
+        // categories={categories}
       />
     </div>
   );

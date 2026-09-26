@@ -1,16 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import { getDashboardData } from "../../../../api/dashboard-actions";
-import { useMenudo } from "../../../../context/MenudoContext";
+import { getDashboardAction } from "../actions/get-dashboard-data.action";
 
 export const useDashboard = () => {
-  const { expenses } = useMenudo();
   const {
     data: dashboardData,
     isError,
     isLoading,
   } = useQuery({
-    queryKey: ["dashboard", expenses],
-    queryFn: getDashboardData,
+    queryKey: ["dashboard"],
+    queryFn: getDashboardAction,
     staleTime: 1000 * 60 * 5,
     retry: false,
   });

@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { ExpensesContent } from "./ui/ExpensesContent";
-import { AppShell } from "../../layouts/AppShell";
+import { AppShell } from "../../layouts/MenudoLayout";
 import { ExportDialog } from "../../../components/custom/ExportDialog";
 import { Button } from "../../../components/ui/button";
 import { Plus } from "lucide-react";

@@ -1,4 +1,4 @@
-import type { HighestExpense } from "../../../../api/types/dashboard-response";
+import type { HighestExpense } from "../types/dashboard-response";
 import { StatCard } from "../../../../components/common/StatCard";
 import { currencyExact } from "../../../../data/finance-types";
 

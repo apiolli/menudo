@@ -1,35 +1,3 @@
-export type Category = {
-  id: number;
-  name: string;
-  color: string;
-  icon: string;
-  budget?: number;
-  spent?: number;
-  status?: string | number;
-  totalExpenses?: number;
-};
-
-export type PaymentMethod = {
-  id: number;
-  name: string;
-  type: string | number;
-  detail?: string;
-  icon?: string;
-  color?: string;
-  totalExpenses?: number;
-};
-
-export type Expense = {
-  id: number;
-  amount: number;
-  date: string; // yyyy-mm-dd or ISO
-  description: string;
-  categoryId: number;
-  paymentMethodId: number;
-  category?: Category;
-  paymentMethod?: PaymentMethod;
-};
-
 export type User = {
   id: number;
   name: string;

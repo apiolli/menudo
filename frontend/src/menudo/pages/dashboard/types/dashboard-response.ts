@@ -1,4 +1,4 @@
-import type { Expense } from "../../data/finance-types";
+import type { Expense } from "../../../../data/finance-types";
 
 export interface DasboardResponse {
   monthTotal: number;

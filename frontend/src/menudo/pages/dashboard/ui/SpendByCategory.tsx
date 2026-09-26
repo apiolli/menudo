@@ -7,7 +7,7 @@ import {
   Tooltip,
 } from "recharts";
 import { currencyExact } from "../../../../data/finance-types";
-import type { SpendingByCategory } from "../../../../api/types/dashboard-response";
+import type { SpendingByCategory } from "../types/dashboard-response";
 
 interface Props {
   byCategory: SpendingByCategory[];

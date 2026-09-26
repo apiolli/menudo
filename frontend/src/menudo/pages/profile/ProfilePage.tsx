@@ -1,5 +1,5 @@
 import { RequireAuth } from "../../../components/common/RequireAuth";
-import { AppShell } from "../../layouts/AppShell";
+import { AppShell } from "../../layouts/MenudoLayout";
 import { ProfileContent } from "./ui/ProfileContent";
 
 export const ProfilePage = () => {
