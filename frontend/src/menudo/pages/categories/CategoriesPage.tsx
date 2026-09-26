@@ -2,11 +2,9 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { CategoryDialog } from "./ui/CategoryDialog";
 import { CategoryContent } from "./ui/CategoryContent";
-import { AppShell } from "../../layouts/MenudoLayout";
 import { Button } from "../../../components/ui/button";
-import { RequireAuth } from "../../../components/common/RequireAuth";
-import type { Category } from "../../../data/finance-types";
 import { CustomHeader } from "../../../components/custom/CustomHeader";
+import type { Category } from "../../../types/category.interface";
 
 export const CategoriesPage = () => {
   const [open, setOpen] = useState(false);
@@ -29,18 +27,20 @@ export const CategoriesPage = () => {
           </Button>
         }
       />
-      <CategoryContent
-        onNew={() => {
-          setEditing(null);
-          setOpen(true);
-        }}
-        onEdit={(c) => {
-          setEditing(c);
-          setOpen(true);
-        }}
-      />
+      <main className="flex-1 px-5 py-6 md:px-8 md:py-8">
+        <CategoryContent
+          onNew={() => {
+            setEditing(null);
+            setOpen(true);
+          }}
+          onEdit={(c) => {
+            setEditing(c);
+            setOpen(true);
+          }}
+        />
 
-      <CategoryDialog open={open} onOpenChange={setOpen} category={editing} />
+        <CategoryDialog open={open} onOpenChange={setOpen} category={editing} />
+      </main>
     </>
   );
 };

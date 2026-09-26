@@ -1,11 +1,11 @@
 import { LogOut, Wallet } from "lucide-react";
-import { useAuth } from "../../hooks/useAuth";
 import { NavList } from "./NavList";
 import { Button } from "../../components/ui/button";
 import { useNavigate } from "react-router";
+import { useAuthStore } from "../../store/auth.store";
 
 export const SidebarBody = () => {
-  const { user, logout } = useAuth();
+  const { user, logout } = useAuthStore();
   const navigate = useNavigate();
 
   const handleLogout = () => {

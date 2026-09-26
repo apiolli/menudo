@@ -1,13 +1,13 @@
-import { RequireAuth } from "../../../components/common/RequireAuth";
-import { AppShell } from "../../layouts/MenudoLayout";
+import { CustomHeader } from "../../../components/custom/CustomHeader";
 import { ProfileContent } from "./ui/ProfileContent";
 
 export const ProfilePage = () => {
   return (
-    <AppShell title="Perfil" subtitle="Tu cuenta y preferencias">
-      <RequireAuth>
+    <>
+      <CustomHeader title="Perfil" subtitle="Tu cuenta y preferencias" />
+      <main className="flex-1 px-5 py-6 md:px-8 md:py-8">
         <ProfileContent />
-      </RequireAuth>
-    </AppShell>
+      </main>
+    </>
   );
 };

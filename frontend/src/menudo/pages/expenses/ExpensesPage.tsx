@@ -1,14 +1,13 @@
 import { useState, useRef } from "react";
 import { ExpensesContent } from "./ui/ExpensesContent";
-import { AppShell } from "../../layouts/MenudoLayout";
 import { ExportDialog } from "../../../components/custom/ExportDialog";
 import { Button } from "../../../components/ui/button";
 import { Plus } from "lucide-react";
-import { RequireAuth } from "../../../components/common/RequireAuth";
-import type { Expense } from "../../../data/finance-types";
 import { ExpenseDialog } from "../../../components/custom/ExpenseDialog";
 import { toast } from "sonner";
 import { importService } from "../../../services/import.service";
+import { CustomHeader } from "../../../components/custom/CustomHeader";
+import type { Expense } from "../../../types/expense.interface";
 
 export const ExpensesPage = () => {
   const [open, setOpen] = useState(false);
@@ -46,42 +45,43 @@ export const ExpensesPage = () => {
   };
 
   return (
-    <AppShell
-      title="Gastos"
-      subtitle="Todos tus movimientos registrados"
-      actions={
-        <>
-          <input
-            type="file"
-            accept=".xlsx"
-            className="hidden"
-            ref={fileInputRef}
-            onChange={handleImport}
-          />
-          <Button variant="outline" onClick={handleDownloadTemplate}>
-            Plantilla
-          </Button>
-          <Button
-            variant="outline"
-            disabled={importing}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            {importing ? "Importando..." : "Importar"}
-          </Button>
-          <ExportDialog />
-          <Button
-            className="gap-2"
-            onClick={() => {
-              setEditing(null);
-              setOpen(true);
-            }}
-          >
-            <Plus className="size-4" /> Nuevo gasto
-          </Button>
-        </>
-      }
-    >
-      <RequireAuth>
+    <>
+      <CustomHeader
+        title="Gastos"
+        subtitle="Todos tus movimientos registrados"
+        actions={
+          <>
+            <input
+              type="file"
+              accept=".xlsx"
+              className="hidden"
+              ref={fileInputRef}
+              onChange={handleImport}
+            />
+            <Button variant="outline" onClick={handleDownloadTemplate}>
+              Plantilla
+            </Button>
+            <Button
+              variant="outline"
+              disabled={importing}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {importing ? "Importando..." : "Importar"}
+            </Button>
+            <ExportDialog />
+            <Button
+              className="gap-2"
+              onClick={() => {
+                setEditing(null);
+                setOpen(true);
+              }}
+            >
+              <Plus className="size-4" /> Nuevo gasto
+            </Button>
+          </>
+        }
+      />
+      <main className="flex-1 px-5 py-6 md:px-8 md:py-8">
         <ExpensesContent
           refreshTrigger={refreshTrigger}
           onNew={() => {
@@ -93,15 +93,15 @@ export const ExpensesPage = () => {
             setOpen(true);
           }}
         />
-      </RequireAuth>
-      <ExpenseDialog
-        open={open}
-        onOpenChange={(v) => {
-          setOpen(v);
-          if (!v) setRefreshTrigger((t) => t + 1);
-        }}
-        expense={editing}
-      />
-    </AppShell>
+        <ExpenseDialog
+          open={open}
+          onOpenChange={(v) => {
+            setOpen(v);
+            if (!v) setRefreshTrigger((t) => t + 1);
+          }}
+          expense={editing}
+        />
+      </main>
+    </>
   );
 };

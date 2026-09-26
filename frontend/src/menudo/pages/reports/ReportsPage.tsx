@@ -6,12 +6,11 @@ import { DetailedCategoryTable } from "./ui/DetailedCategoryTable";
 import { ReportsBarChart } from "./ui/ReportsBarChart";
 import { ReportsPieChart } from "./ui/ReportsPieChart";
 import { ReportsLineGraph } from "./ui/ReportsLineGraph";
-import { AppShell } from "../../layouts/MenudoLayout";
-import { RequireAuth } from "../../../components/common/RequireAuth";
 import { ExportDialog } from "../../../components/custom/ExportDialog";
 import { currency, monthKey } from "../../../data/finance-types";
 import { EmptyState } from "../../../components/common/EmptyState";
 import { StatCard } from "../../../components/common/StatCard";
+import { CustomHeader } from "../../../components/custom/CustomHeader";
 
 export const ReportsPage = () => {
   const today = new Date();
@@ -22,20 +21,20 @@ export const ReportsPage = () => {
   const [toDate, setToDate] = useState(today.toISOString().slice(0, 10));
 
   return (
-    <AppShell
-      title="Reportes y análisis"
-      subtitle="Compara perí­odos y descubre­ tendencias"
-      actions={<ExportDialog fromDate={fromDate} toDate={toDate} />}
-    >
-      <RequireAuth>
-        <Content
-          fromDate={fromDate}
-          toDate={toDate}
-          setFromDate={setFromDate}
-          setToDate={setToDate}
-        />
-      </RequireAuth>
-    </AppShell>
+    <>
+      <CustomHeader
+        title="Reportes y análisis"
+        subtitle="Compara perí­odos y descubre­ tendencias"
+        actions={<ExportDialog fromDate={fromDate} toDate={toDate} />}
+      />
+
+      <Content
+        fromDate={fromDate}
+        toDate={toDate}
+        setFromDate={setFromDate}
+        setToDate={setToDate}
+      />
+    </>
   );
 };
 
