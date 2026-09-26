@@ -6,7 +6,7 @@ const menudoApi = axios.create({
 
 // Aplicamos el interceptor global para las peticiones
 menudoApi.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("jwt_token");
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
