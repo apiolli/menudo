@@ -193,24 +193,6 @@ El frontend quedará disponible en `http://localhost:5173` (puerto por defecto d
 
 > ⚠️ **Nota:** este repositorio no incluye `docker-compose.yml`; la ejecución actual es manual (backend y frontend por separado).
 
----
-
-## 🗺️ Roadmap
-
-- [ ] Auditoría de entidades (`CreatedAt`, `UpdatedAt`)
-- [ ] Soft delete en categorías, métodos de pago y gastos
-- [ ] Paginación y ordenamiento avanzado en listados
-- [ ] Refresh token para sesiones prolongadas
-- [ ] Gastos recurrentes automáticos
-- [ ] Adjuntar comprobante (imagen/PDF) a cada gasto
-- [ ] Exportación a PDF
-- [ ] Presupuestos por categoría con alertas de consumo
-- [ ] Tests unitarios (xUnit + Moq)
-- [ ] Logging estructurado (Serilog)
-- [ ] Dockerización del proyecto (backend, frontend, base de datos)
-
----
-
 ## 📄 Licencia
 
 Proyecto académico — ITLA, Programación II.
