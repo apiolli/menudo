@@ -14,15 +14,18 @@ namespace Menudo.Infrastructure.Authentication
         private readonly IUserRepository _repo;
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly IJwtTokenGenerator _jwtTokenGenerator;
+        private readonly ICurrentUserService _currentUserService;
 
         public AuthService(
             IUserRepository repo,
             IPasswordHasher<User> passwordHasher,
-            IJwtTokenGenerator jwtTokenGenerator)
+            IJwtTokenGenerator jwtTokenGenerator,
+            ICurrentUserService currentUserService)
         {
             _repo = repo;
             _passwordHasher = passwordHasher;
             _jwtTokenGenerator = jwtTokenGenerator;
+            _currentUserService = currentUserService;
         }
 
         public async Task<AuthDTO> LoginAsync(LoginDTO request)
@@ -76,6 +79,25 @@ namespace Menudo.Infrastructure.Authentication
                 Email = user.Email,
                 Name = user.Name,
                 Token = token
+            };
+        }
+
+        public async Task<AuthDTO> CheckStatusAsync()
+        {
+            var userId = _currentUserService.UserId
+                ?? throw new UnauthorizedException("Sesión inválida");
+
+            var user = await _repo.GetByIdAsync(userId)
+                ?? throw new UnauthorizedException("Usuario no existe");
+
+            var newToken = _jwtTokenGenerator.GenerateToken(user);
+
+            return new AuthDTO
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Name = user.Name,
+                Token = newToken
             };
         }
     }

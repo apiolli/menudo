@@ -6,5 +6,6 @@ namespace Menudo.Application.Interfaces
     {
         Task<AuthDTO> LoginAsync(LoginDTO request);
         Task<AuthDTO> RegisterAsync(RegisterDTO request);
+        Task<AuthDTO> CheckStatusAsync();
     }
 }

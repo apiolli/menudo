@@ -30,5 +30,13 @@ namespace Menudo.Presentation.Controllers
             var response = await _authService.RegisterAsync(request);
             return Ok(response);
         }
+
+        [Authorize]
+        [HttpGet("check-status")]
+        public async Task<ActionResult<AuthDTO>> CheckStatus()
+        {
+            var response = await _authService.CheckStatusAsync();
+            return Ok(response);
+        }
     }
 }
