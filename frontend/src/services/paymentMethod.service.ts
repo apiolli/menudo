@@ -1,6 +1,5 @@
 import { apiClient } from "../lib/api";
 
-// Enum equivalente al de C# para usarlo de forma limpia en TypeScript
 export const PaymentType = {
   Transfer: 1,
   Cash: 2,
@@ -12,16 +11,16 @@ export const PaymentType = {
 export type PaymentType = (typeof PaymentType)[keyof typeof PaymentType];
 
 export interface ExpenseSummaryDTO {
-  id: string; // O el tipo de ID que uses para los gastos
+  id: string;
   amount: number;
   date: string;
   description?: string;
 }
 
 export interface PaymentMethod {
-  id: number; // Coincide con el 'int Id' del PaymentMethodDTO de C#
+  id: number;
   name: string;
-  type: PaymentType; // Coincide con PaymentType Type
+  type: PaymentType;
   detail?: string | null;
   icon: string;
   color: string;
