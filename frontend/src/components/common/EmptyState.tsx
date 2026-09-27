@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 interface Props {
   title: string;
   description: string;
-  action: ReactNode;
+  action?: ReactNode;
 }
 
 export const EmptyState = ({ title, description, action }: Props) => {

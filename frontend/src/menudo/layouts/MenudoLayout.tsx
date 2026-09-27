@@ -10,8 +10,7 @@ export const MenudoLayout = () => {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <main className="flex-1 px-5 py-6 md:px-8 md:py-8">
-          {/* {finance.loading ? (
+        {/* {finance.loading ? (
             <div className="flex h-[50vh] items-center justify-center space-x-2">
               <div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
               <span className="text-muted-foreground font-medium">
@@ -21,8 +20,7 @@ export const MenudoLayout = () => {
           ) : (
             children
           )} */}
-          <Outlet />
-        </main>
+        <Outlet />
       </div>
     </div>
   );

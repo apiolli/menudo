@@ -1,8 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import type { Expense } from "../../data/finance-types";
-import { useMenudo } from "../../context/MenudoContext";
 import {
   Dialog,
   DialogContent,
@@ -22,6 +20,10 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Button } from "../ui/button";
+import { useCategories } from "../../menudo/pages/categories/hooks/useCategories";
+import { usePaymentMethods } from "../../menudo/pages/paymentMethods/hooks/usePaymentMethods";
+import { EmptyState } from "../common/EmptyState";
+import type { Expense } from "../../types/expense.interface";
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -46,80 +48,42 @@ interface Props {
 }
 
 export const ExpenseDialog = ({ open, onOpenChange, expense }: Props) => {
-  const { categories, paymentMethods, createExpense, updateExpense } =
-    useMenudo();
-  const [monto, setMonto] = useState("");
-  const [fecha, setFecha] = useState(today());
-  const [descripcion, setDescripcion] = useState("");
-  const [categoriaId, setCategoriaId] = useState("");
-  const [metodoPagoId, setMetodoPagoId] = useState("");
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(false);
+  const categories = useCategories();
+  const paymentMethods = usePaymentMethods();
 
-  useEffect(() => {
-    if (!open) return;
-    setMonto(expense ? String(expense.amount) : "");
-    setFecha(expense?.date ? expense.date.slice(0, 10) : today());
-    setDescripcion(expense?.description ?? "");
-    setCategoriaId(
-      expense?.categoryId
-        ? String(expense.categoryId)
-        : categories[0]?.id
-          ? String(categories[0].id)
-          : "",
-    );
-    setMetodoPagoId(
-      expense?.paymentMethodId
-        ? String(expense.paymentMethodId)
-        : paymentMethods[0]?.id
-          ? String(paymentMethods[0].id)
-          : "",
-    );
-    setErrors({});
-  }, [open, expense, categories, paymentMethods]);
+  const categoriesData = categories.data;
+  const paymentMethodsData = paymentMethods.data;
 
-  const submit = async () => {
-    setErrors({});
-    const result = expenseSchema.safeParse({
-      amount: monto,
-      date: fecha,
-      description: descripcion,
-      categoryId: categoriaId,
-      paymentMethodId: metodoPagoId,
-    });
+  if (!categoriesData || !paymentMethodsData)
+    return <EmptyState description="Actualmente hay un error" title="Error" />;
 
-    if (!result.success) {
-      const fieldErrors: Record<string, string> = {};
-      result.error.issues.forEach((issue) => {
-        fieldErrors[String(issue.path[0])] = issue.message;
-      });
-      setErrors(fieldErrors);
-      return;
-    }
+  // useEffect(() => {
+  //   if (!open) return;
+  //   setMonto(expense ? String(expense.amount) : "");
+  //   setFecha(expense?.date ? expense.date.slice(0, 10) : today());
+  //   setDescripcion(expense?.description ?? "");
+  //   setCategoriaId(
+  //     expense?.categoryId
+  //       ? String(expense.categoryId)
+  //       : categories[0]?.id
+  //         ? String(categories[0].id)
+  //         : "",
+  //   );
+  //   setMetodoPagoId(
+  //     expense?.paymentMethodId
+  //       ? String(expense.paymentMethodId)
+  //       : paymentMethods[0]?.id
+  //         ? String(paymentMethods[0].id)
+  //         : "",
+  //   );
+  //   setErrors({});
+  // }, [open, expense, categories, paymentMethods]);
 
-    setLoading(true);
-    try {
-      if (expense?.id) {
-        await updateExpense(expense.id, result.data);
-      } else {
-        await createExpense(result.data);
-      }
-      toast.success(expense ? "Gasto actualizado" : "Gasto registrado");
-      onOpenChange(false);
-    } catch (e: any) {
-      toast.error(e.response?.data?.message || "Error al guardar el gasto");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const submit = async () => {};
 
-  const handleSelect = (e: string | null) => {
-    setCategoriaId(e ?? "");
-  };
+  const handleSelect = (e: string | null) => {};
 
-  const handleMethodPayment = (e: string | null) => {
-    setMetodoPagoId(e ?? "");
-  };
+  const handleMethodPayment = (e: string | null) => {};
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -134,28 +98,17 @@ export const ExpenseDialog = ({ open, onOpenChange, expense }: Props) => {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="monto">Monto</Label>
-            <Input
-              id="monto"
-              inputMode="decimal"
-              placeholder="0.00"
-              value={monto}
-              onChange={(e) => setMonto(e.target.value)}
-            />
-            {errors.amount && (
+            <Input id="monto" inputMode="decimal" placeholder="0.00" />
+            {/* {errors.amount && (
               <p className="text-xs text-destructive">{errors.amount}</p>
-            )}
+            )} */}
           </div>
           <div className="space-y-2">
             <Label htmlFor="fecha">Fecha</Label>
-            <Input
-              id="fecha"
-              type="date"
-              value={fecha}
-              onChange={(e) => setFecha(e.target.value)}
-            />
-            {errors.date && (
+            <Input id="fecha" type="date" />
+            {/* {errors.date && (
               <p className="text-xs text-destructive">{errors.date}</p>
-            )}
+            )} */}
           </div>
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="descripcion">Descripción</Label>
@@ -164,30 +117,28 @@ export const ExpenseDialog = ({ open, onOpenChange, expense }: Props) => {
               rows={2}
               maxLength={140}
               placeholder="Ej: Supermercado semanal"
-              value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
             />
-            {errors.description && (
+            {/* {errors.description && (
               <p className="text-xs text-destructive">{errors.description}</p>
-            )}
+            )} */}
           </div>
           <div className="space-y-2">
             <Label>Categoría</Label>
-            <Select value={categoriaId} onValueChange={handleSelect}>
+            {/* <Select value={categoriaId} onValueChange={handleSelect}>
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar">
-                  {categories.find((c) => String(c.id) === categoriaId) ? (
+                  {categoriesData.find((c) => String(c.id) === categoriaId) ? (
                     <span className="flex items-center gap-2">
                       <span
                         className="size-2.5 rounded-full"
                         style={{
-                          backgroundColor: categories.find(
+                          backgroundColor: categoriesData.find(
                             (c) => String(c.id) === categoriaId,
                           )?.color,
                         }}
                       />
                       {
-                        categories.find((c) => String(c.id) === categoriaId)
+                        categoriesData.find((c) => String(c.id) === categoriaId)
                           ?.name
                       }
                     </span>
@@ -197,7 +148,7 @@ export const ExpenseDialog = ({ open, onOpenChange, expense }: Props) => {
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {categories.map((c) => (
+                {categories.data?.map((c) => (
                   <SelectItem key={c.id} value={String(c.id)}>
                     <span className="flex items-center gap-2">
                       <span
@@ -209,34 +160,34 @@ export const ExpenseDialog = ({ open, onOpenChange, expense }: Props) => {
                   </SelectItem>
                 ))}
               </SelectContent>
-            </Select>
-            {errors.categoryId && (
+            </Select> */}
+            {/* {errors.categoryId && (
               <p className="text-xs text-destructive">{errors.categoryId}</p>
-            )}
+            )} */}
           </div>
 
           <div className="space-y-2">
             <Label>Método de pago</Label>
-            <Select value={metodoPagoId} onValueChange={handleMethodPayment}>
+            {/* <Select value={metodoPagoId} onValueChange={handleMethodPayment}>
               <SelectTrigger>
                 <SelectValue placeholder="Seleccionar">
-                  {paymentMethods.find((m) => String(m.id) === metodoPagoId)
+                  {paymentMethodsData.find((m) => String(m.id) === metodoPagoId)
                     ?.name ?? "Seleccionar"}
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {paymentMethods.map((m) => (
+                {paymentMethodsData.map((m) => (
                   <SelectItem key={m.id} value={String(m.id)}>
                     {m.name}
                   </SelectItem>
                 ))}
               </SelectContent>
-            </Select>
-            {errors.paymentMethodId && (
+            </Select> */}
+            {/* {errors.paymentMethodId && (
               <p className="text-xs text-destructive">
                 {errors.paymentMethodId}
               </p>
-            )}
+            )} */}
           </div>
         </div>
 
@@ -244,17 +195,17 @@ export const ExpenseDialog = ({ open, onOpenChange, expense }: Props) => {
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            disabled={loading}
+            // disabled={loading}
           >
             Cancelar
           </Button>
-          <Button onClick={submit} disabled={loading}>
+          {/* <Button onClick={submit} disabled={loading}>
             {loading
               ? "Guardando..."
               : expense
                 ? "Guardar cambios"
                 : "Registrar gasto"}
-          </Button>
+          </Button> */}
         </DialogFooter>
       </DialogContent>
     </Dialog>
