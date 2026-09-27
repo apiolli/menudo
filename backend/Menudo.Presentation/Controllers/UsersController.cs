@@ -19,28 +19,28 @@ namespace Menudo.Presentation.Controllers
             _userService = userService;
         }
 
-        [HttpGet("me")]
+        [HttpGet]
         public async Task<IActionResult> GetProfile()
         {
             var profile = await _userService.GetCurrentProfileAsync();
             return Ok(profile);
         }
 
-        [HttpPut("me")]
+        [HttpPut]
         public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserDTO request)
         {
             var profile = await _userService.UpdateProfileAsync(request);
             return Ok(profile);
         }
 
-        [HttpPut("me/password")]
+        [HttpPut("password")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO request)
         {
             await _userService.ChangePasswordAsync(request);
             return NoContent();
         }
 
-        [HttpDelete("me")]
+        [HttpDelete]
         public async Task<IActionResult> DeleteProfile()
         {
             await _userService.DeleteProfileAsync();

@@ -11,29 +11,68 @@ import { Label } from "../../../../components/ui/label";
 import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
 import { COLORES, Icono, ICONOS } from "../../../../data/finance-store";
+import { useCategory } from "../hooks/useCategory";
+import { useSearchParams } from "react-router";
+import { Spinner } from "../../../../components/ui/spinner";
+import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import type { Category } from "../../../../types/category.interface";
+import { cn } from "../../../../lib/utils";
+import { useState } from "react";
 
 const categorySchema = z.object({
   name: z
-    .string()
+    .string("El nombre es requerido")
     .min(2, "El nombre debe tener al menos 2 caracteres")
     .max(40, "Máximo 40 caracteres"),
   color: z.string(),
   icon: z.string(),
   budget: z.coerce
-    .number()
-    .optional()
-    .or(z.literal("").transform(() => undefined)),
+    .number("El presupuesto es requerido")
+    .min(1, "El presupuesto debe de ser mayor 0"),
 });
-
 interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  category: Category | null;
 }
 
-export const CategoryDialog = ({ open, onOpenChange, category }: Props) => {
-  const submit = async () => {};
+export const CategoryDialog = ({ open, onOpenChange }: Props) => {
+  // const [color, setColor] = useState(COLORES[0]);
+  // const [icon, setIcon] = useState(ICONOS[0]);
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const id = searchParams.get("category");
+
+  const { category, isError, isLoading, error } = useCategory(id || "");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useForm({
+    values: {
+      name: category?.name ?? "",
+      color: category?.color ?? COLORES[0],
+      icon: category?.icon ?? ICONOS[0],
+      budget: category?.budget ?? 0,
+    },
+    resolver: zodResolver(categorySchema),
+  });
+
+  if (isLoading) return <Spinner className="size-8" />;
+  if (isError) {
+    toast.error(error);
+    return;
+  }
+
+  const icon = watch("icon");
+  const color = watch("color");
+
+  const submit = async (category: Partial<Category>) => {
+    console.log({ category });
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -50,19 +89,30 @@ export const CategoryDialog = ({ open, onOpenChange, category }: Props) => {
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="cat-nombre">Nombre</Label>
-            <Input id="cat-nombre" maxLength={40} placeholder="Ej: Mascotas" />
-            {/* {errors.name && (
-              <p className="text-xs text-destructive">{errors.name}</p>
-            )} */}
+            <Input
+              id="cat-nombre"
+              maxLength={40}
+              placeholder="Ej: Mascotas"
+              {...register("name", { required: true })}
+            />
+            {errors.name && (
+              <p className="text-xs text-destructive">{errors.name.message}</p>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="cat-pre">Presupuesto mensual </Label>
-            <Input id="cat-pre" inputMode="decimal" placeholder="0" />
-            {/* {errors.budget && (
-              <p className="text-xs text-destructive">{errors.budget}</p>
-            )} */}
+            <Input
+              id="cat-pre"
+              inputMode="decimal"
+              placeholder="0"
+              {...register("budget", { required: true })}
+            />
+            {errors.budget && (
+              <p className="text-xs text-destructive">
+                {errors.budget.message}
+              </p>
+            )}
           </div>
-          {/* Selector de color */}
           <div className="space-y-2">
             <Label>Color</Label>
             <div className="flex flex-wrap gap-2">
@@ -71,17 +121,16 @@ export const CategoryDialog = ({ open, onOpenChange, category }: Props) => {
                   key={c}
                   type="button"
                   aria-label={`Color ${c}`}
-                  // onClick={() => setColor(c)}
-                  // className={cn(
-                  //   "size-8 rounded-full ring-offset-2",
-                  //   color === c && "ring-2 ring-ring",
-                  // )}
+                  onClick={() => setValue("color", c)}
+                  className={cn(
+                    "size-8 rounded-full ring-offset-2 cursor-pointer",
+                    color === c && "ring-2 ring-ring",
+                  )}
                   style={{ backgroundColor: c }}
                 />
               ))}
             </div>
           </div>
-          {/* Selector de ícono */}
           <div className="space-y-2">
             <Label>Ícono</Label>
             <div className="flex flex-wrap gap-2">
@@ -90,11 +139,11 @@ export const CategoryDialog = ({ open, onOpenChange, category }: Props) => {
                   key={i}
                   type="button"
                   aria-label={i}
-                  // onClick={() => setIcon(i)}
-                  // className={cn(
-                  //   "grid size-9 place-items-center rounded-lg border border-border transition-colors hover:bg-secondary",
-                  //   icon === i && "border-primary bg-secondary",
-                  // )}
+                  onClick={() => setValue("icon", i)}
+                  className={cn(
+                    "grid size-9 place-items-center rounded-lg border border-border transition-colors hover:bg-secondary cursor-pointer",
+                    icon === i && "border-primary bg-secondary",
+                  )}
                 >
                   <Icono name={i} className="size-4" />
                 </button>
@@ -106,14 +155,15 @@ export const CategoryDialog = ({ open, onOpenChange, category }: Props) => {
         <DialogFooter>
           <Button
             variant="outline"
+            type="button"
             onClick={() => onOpenChange(false)}
-            // disabled={category}
+            // disabled={!!category}
           >
             Cancelar
           </Button>
-          {/* <Button onClick={submit} disabled={loading}>
-            {loading ? "Guardando..." : "Guardar"}
-          </Button> */}
+          <Button onClick={handleSubmit(submit)} disabled={isLoading}>
+            {isLoading ? "Guardando..." : "Guardar"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

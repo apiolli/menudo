@@ -23,7 +23,7 @@ import { useExpenses } from "../../expenses/hooks/useExpenses";
 
 interface Props {
   onNew: () => void;
-  onEdit: (c: Category) => void;
+  onEdit: (id: number) => void;
 }
 
 export const CategoryContent = ({ onNew, onEdit }: Props) => {
@@ -77,7 +77,7 @@ export const CategoryContent = ({ onNew, onEdit }: Props) => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onEdit(c)}
+                    onClick={() => onEdit(c.id)}
                     aria-label="Editar"
                   >
                     <Pencil className="size-4" />

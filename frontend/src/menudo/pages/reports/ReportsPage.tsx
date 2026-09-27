@@ -11,6 +11,9 @@ import { currency, monthKey } from "../../../data/finance-types";
 import { EmptyState } from "../../../components/common/EmptyState";
 import { StatCard } from "../../../components/common/StatCard";
 import { CustomHeader } from "../../../components/custom/CustomHeader";
+import { useExpenses } from "../expenses/hooks/useExpenses";
+import { useCategories } from "../categories/hooks/useCategories";
+import { usePaymentMethods } from "../paymentMethods/hooks/usePaymentMethods";
 
 export const ReportsPage = () => {
   const today = new Date();
@@ -28,12 +31,12 @@ export const ReportsPage = () => {
         actions={<ExportDialog fromDate={fromDate} toDate={toDate} />}
       />
 
-      <Content
+      {/* <Content
         fromDate={fromDate}
         toDate={toDate}
         setFromDate={setFromDate}
         setToDate={setToDate}
-      />
+      /> */}
     </>
   );
 };
@@ -49,18 +52,27 @@ function Content({
   setFromDate: (v: string) => void;
   setToDate: (v: string) => void;
 }) {
-  const { expenses, categories, paymentMethods } = useMenudo();
+  const expenses = useExpenses();
+  const categories = useCategories();
+  const paymentMethods = usePaymentMethods();
+
+  const expensesData = expenses.data;
+  const categoriesData = categories.data;
+  const paymentMethodsData = paymentMethods.data;
+
   const [category, setCategory] = useState("todas");
+
+  if (!expensesData || !categoriesData || !paymentMethodsData) return;
 
   const filtered = useMemo(
     () =>
-      expenses.filter(
+      expensesData.filter(
         (g) =>
           g.date >= fromDate &&
           g.date <= toDate &&
           (category === "todas" || String(g.categoryId) === category),
       ),
-    [expenses, fromDate, toDate, category],
+    [expensesData, fromDate, toDate, category],
   );
 
   const monthlySeries = useMemo(() => {
@@ -81,7 +93,7 @@ function Content({
 
   const byCategory = useMemo(
     () =>
-      categories
+      categoriesData
         .map((c) => ({
           name: c.name,
           color: c.color,
@@ -94,12 +106,12 @@ function Content({
         }))
         .filter((c) => c.value > 0)
         .sort((a, b) => b.value - a.value),
-    [categories, filtered],
+    [categoriesData, filtered],
   );
 
   const byMethod = useMemo(
     () =>
-      paymentMethods
+      paymentMethodsData
         .map((m) => ({
           name: m.name,
           value: Math.round(
@@ -109,7 +121,7 @@ function Content({
           ),
         }))
         .filter((m) => m.value > 0),
-    [paymentMethods, filtered],
+    [paymentMethodsData, filtered],
   );
 
   const total = filtered.reduce((s, g) => s + g.amount, 0);
@@ -125,7 +137,7 @@ function Content({
         setCategory={setCategory}
         setFromDate={setFromDate}
         setToDate={setToDate}
-        categories={categories}
+        categories={categoriesData}
       />
 
       {/* Estado vacÃ­o / Contenido del reporte */}
