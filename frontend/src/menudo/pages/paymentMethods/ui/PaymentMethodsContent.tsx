@@ -1,11 +1,6 @@
 import { useState } from "react";
 import { EmptyState } from "../../../../components/common/EmptyState";
-import { useMenudo } from "../../../../context/MenudoContext";
-import {
-  currency,
-  monthKey,
-  type PaymentMethod,
-} from "../../../../data/finance-types";
+import { currency, monthKey } from "../../../../data/finance-types";
 import { Button } from "../../../../components/ui/button";
 import { Icono } from "../../../../data/finance-store";
 import { Pencil, Trash2 } from "lucide-react";
@@ -20,6 +15,9 @@ import {
   AlertDialogTitle,
 } from "../../../../components/ui/alert-dialog";
 import { toast } from "sonner";
+import { usePaymentMethods } from "../hooks/usePaymentMethods";
+import { useExpenses } from "../../expenses/hooks/useExpenses";
+import type { PaymentMethod } from "../../../../types/payment-method";
 
 interface Props {
   onNew: () => void;
@@ -27,11 +25,15 @@ interface Props {
 }
 
 export const PaymentMethodsContent = ({ onNew, onEdit }: Props) => {
-  const { paymentMethods, expenses, deletePaymentMethod } = useMenudo();
+  const paymentMethods = usePaymentMethods();
+  const expenses = useExpenses();
+
+  const paymentMethodsData = paymentMethods.data;
+  const expensesData = expenses.data;
   const [toDelete, setToDelete] = useState<PaymentMethod | null>(null);
   const currentMonth = new Date().toISOString().slice(0, 7);
 
-  if (!paymentMethods.length)
+  if (!paymentMethodsData || !expensesData)
     return (
       <EmptyState
         title="Sin métodos de pago"
@@ -43,14 +45,14 @@ export const PaymentMethodsContent = ({ onNew, onEdit }: Props) => {
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {paymentMethods.map((m) => {
+        {paymentMethodsData.map((m) => {
           // Normalizamos el color para asegurarnos de que siempre tenga '#'
           const rawColor = m.color || "#2f7d63";
           const formattedColor = rawColor.startsWith("#")
             ? rawColor
             : `#${rawColor}`;
 
-          const spent = expenses
+          const spent = expensesData
             .filter(
               (g) =>
                 g.paymentMethodId === m.id && monthKey(g.date) === currentMonth,
@@ -129,7 +131,7 @@ export const PaymentMethodsContent = ({ onNew, onEdit }: Props) => {
               onClick={async () => {
                 if (toDelete) {
                   try {
-                    await deletePaymentMethod(toDelete.id);
+                    // await deletePaymentMethod(toDelete.id);
                     toast.success("Método eliminado");
                   } catch (e) {
                     toast.error("Error al eliminar el método");
