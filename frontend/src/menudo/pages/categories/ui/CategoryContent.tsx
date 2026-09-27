@@ -1,10 +1,5 @@
 import { useState } from "react";
-import {
-  currency,
-  monthKey,
-  type Category,
-} from "../../../../data/finance-types";
-import { useMenudo } from "../../../../context/MenudoContext";
+import { currency, monthKey } from "../../../../data/finance-types";
 import { EmptyState } from "../../../../components/common/EmptyState";
 import { Button } from "../../../../components/ui/button";
 import { Icono } from "../../../../data/finance-store";
@@ -22,6 +17,9 @@ import {
 } from "../../../../components/ui/alert-dialog";
 import { toast } from "sonner";
 import { Progress } from "../../../../components/ui/progress";
+import type { Category } from "../../../../types/category.interface";
+import { useCategories } from "../hooks/useCategories";
+import { useExpenses } from "../../expenses/hooks/useExpenses";
 
 interface Props {
   onNew: () => void;
@@ -29,11 +27,15 @@ interface Props {
 }
 
 export const CategoryContent = ({ onNew, onEdit }: Props) => {
-  const { categories, expenses, deleteCategory } = useMenudo();
+  const categories = useCategories();
+  const expenses = useExpenses();
+
+  const categoriesData = categories.data;
+  const expensesData = expenses.data;
   const [toDelete, setToDelete] = useState<Category | null>(null);
   const currentMonth = new Date().toISOString().slice(0, 7);
 
-  if (!categories.length)
+  if (!categoriesData || !expensesData)
     return (
       <EmptyState
         title="No hay categorías"
@@ -45,8 +47,8 @@ export const CategoryContent = ({ onNew, onEdit }: Props) => {
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {categories.map((c) => {
-          const spent = expenses
+        {categoriesData.map((c) => {
+          const spent = expensesData
             .filter(
               (g) => g.categoryId === c.id && monthKey(g.date) === currentMonth,
             )
@@ -66,7 +68,7 @@ export const CategoryContent = ({ onNew, onEdit }: Props) => {
                   <div>
                     <p className="font-display font-semibold">{c.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {expenses.filter((g) => g.categoryId === c.id).length}{" "}
+                      {expensesData.filter((g) => g.categoryId === c.id).length}{" "}
                       gastos registrados
                     </p>
                   </div>
@@ -132,7 +134,7 @@ export const CategoryContent = ({ onNew, onEdit }: Props) => {
               onClick={async () => {
                 if (toDelete) {
                   try {
-                    await deleteCategory(toDelete.id);
+                    // await deleteCategory(toDelete.id);
                     toast.success("Categoría eliminada");
                   } catch (e) {
                     toast.error("Error al eliminar la categoría");

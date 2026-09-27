@@ -1,7 +1,3 @@
-import { useEffect, useState } from "react";
-import type { Category } from "../../../../data/finance-types";
-import { useMenudo } from "../../../../context/MenudoContext";
-import { toast } from "sonner";
 import { z } from "zod";
 import {
   Dialog,
@@ -11,11 +7,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../../../../components/ui/dialog";
-import { cn } from "../../../../lib/utils";
 import { Label } from "../../../../components/ui/label";
 import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
 import { COLORES, Icono, ICONOS } from "../../../../data/finance-store";
+import type { Category } from "../../../../types/category.interface";
 
 const categorySchema = z.object({
   name: z
@@ -37,51 +33,7 @@ interface Props {
 }
 
 export const CategoryDialog = ({ open, onOpenChange, category }: Props) => {
-  const { createCategory, updateCategory } = useMenudo();
-  const [name, setName] = useState("");
-  const [color, setColor] = useState(COLORES[0]);
-  const [icon, setIcon] = useState(ICONOS[0]);
-  const [budget, setBudget] = useState("");
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!open) return;
-    setName(category?.name ?? "");
-    setColor(category?.color ?? COLORES[0]);
-    setIcon(category?.icon ?? ICONOS[0]);
-    setBudget(category?.budget ? String(category.budget) : "");
-    setErrors({});
-  }, [open, category]);
-
-  const submit = async () => {
-    setErrors({});
-    const result = categorySchema.safeParse({ name, color, icon, budget });
-
-    if (!result.success) {
-      const fieldErrors: Record<string, string> = {};
-      result.error.issues.forEach((issue) => {
-        fieldErrors[String(issue.path[0])] = issue.message;
-      });
-      setErrors(fieldErrors);
-      return;
-    }
-
-    setLoading(true);
-    try {
-      if (category?.id) {
-        await updateCategory(category.id, result.data);
-      } else {
-        await createCategory(result.data);
-      }
-      toast.success(category ? "Categoría actualizada" : "Categoría creada");
-      onOpenChange(false);
-    } catch (e: any) {
-      toast.error(e.response?.data?.message || "Error al guardar la categoría");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const submit = async () => {};
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -98,29 +50,17 @@ export const CategoryDialog = ({ open, onOpenChange, category }: Props) => {
         <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="cat-nombre">Nombre</Label>
-            <Input
-              id="cat-nombre"
-              maxLength={40}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Ej: Mascotas"
-            />
-            {errors.name && (
+            <Input id="cat-nombre" maxLength={40} placeholder="Ej: Mascotas" />
+            {/* {errors.name && (
               <p className="text-xs text-destructive">{errors.name}</p>
-            )}
+            )} */}
           </div>
           <div className="space-y-2">
             <Label htmlFor="cat-pre">Presupuesto mensual </Label>
-            <Input
-              id="cat-pre"
-              inputMode="decimal"
-              value={budget}
-              onChange={(e) => setBudget(e.target.value)}
-              placeholder="0"
-            />
-            {errors.budget && (
+            <Input id="cat-pre" inputMode="decimal" placeholder="0" />
+            {/* {errors.budget && (
               <p className="text-xs text-destructive">{errors.budget}</p>
-            )}
+            )} */}
           </div>
           {/* Selector de color */}
           <div className="space-y-2">
@@ -131,11 +71,11 @@ export const CategoryDialog = ({ open, onOpenChange, category }: Props) => {
                   key={c}
                   type="button"
                   aria-label={`Color ${c}`}
-                  onClick={() => setColor(c)}
-                  className={cn(
-                    "size-8 rounded-full ring-offset-2",
-                    color === c && "ring-2 ring-ring",
-                  )}
+                  // onClick={() => setColor(c)}
+                  // className={cn(
+                  //   "size-8 rounded-full ring-offset-2",
+                  //   color === c && "ring-2 ring-ring",
+                  // )}
                   style={{ backgroundColor: c }}
                 />
               ))}
@@ -150,11 +90,11 @@ export const CategoryDialog = ({ open, onOpenChange, category }: Props) => {
                   key={i}
                   type="button"
                   aria-label={i}
-                  onClick={() => setIcon(i)}
-                  className={cn(
-                    "grid size-9 place-items-center rounded-lg border border-border transition-colors hover:bg-secondary",
-                    icon === i && "border-primary bg-secondary",
-                  )}
+                  // onClick={() => setIcon(i)}
+                  // className={cn(
+                  //   "grid size-9 place-items-center rounded-lg border border-border transition-colors hover:bg-secondary",
+                  //   icon === i && "border-primary bg-secondary",
+                  // )}
                 >
                   <Icono name={i} className="size-4" />
                 </button>
@@ -167,13 +107,13 @@ export const CategoryDialog = ({ open, onOpenChange, category }: Props) => {
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            disabled={loading}
+            // disabled={category}
           >
             Cancelar
           </Button>
-          <Button onClick={submit} disabled={loading}>
+          {/* <Button onClick={submit} disabled={loading}>
             {loading ? "Guardando..." : "Guardar"}
-          </Button>
+          </Button> */}
         </DialogFooter>
       </DialogContent>
     </Dialog>

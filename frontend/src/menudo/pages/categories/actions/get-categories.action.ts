@@ -3,7 +3,7 @@ import type { Category } from "../../../../types/category.interface";
 
 export const getCategories = async (): Promise<Category[]> => {
   try {
-    const { data } = await menudoApi.get<Category[]>("/expenses");
+    const { data } = await menudoApi.get<Category[]>("/categories");
     return data;
   } catch (error) {
     throw error;
