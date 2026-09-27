@@ -8,20 +8,21 @@ import {
   SelectValue,
 } from "../../../../components/ui/select";
 import { Search } from "lucide-react";
-import type { Category, PaymentMethod } from "../../../../data/finance-types";
+import type { Category } from "../../../../types/category.interface";
+import type { PaymentMethod } from "../../../../types/payment-method";
 
 interface Props {
   q: string;
   categoryId: string;
   paymentMethodId: string;
-  setQ: (value: React.SetStateAction<string>) => void;
-  setPage: (value: React.SetStateAction<number>) => void;
-  setCategoryId: (value: React.SetStateAction<string>) => void;
+  setQ: (value: string) => void;
+  setPage: (value: number) => void;
+  setCategoryId: (value: string) => void;
   categories: Category[];
-  setPaymentMethodId: React.Dispatch<React.SetStateAction<string>>;
+  setPaymentMethodId: (value: string) => void;
   paymentMethods: PaymentMethod[];
-  setFromDate: React.Dispatch<React.SetStateAction<string>>;
-  setToDate: React.Dispatch<React.SetStateAction<string>>;
+  setFromDate: (value: string) => void;
+  setToDate: (value: string) => void;
   fromDate: string;
   toDate: string;
 }

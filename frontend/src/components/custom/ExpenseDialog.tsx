@@ -24,6 +24,8 @@ import { useCategories } from "../../menudo/pages/categories/hooks/useCategories
 import { usePaymentMethods } from "../../menudo/pages/paymentMethods/hooks/usePaymentMethods";
 import { EmptyState } from "../common/EmptyState";
 import type { Expense } from "../../types/expense.interface";
+import { useSearchParams } from "react-router";
+import { useExpense } from "../../menudo/pages/expenses/hooks/useExpense";
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -44,12 +46,15 @@ const expenseSchema = z.object({
 interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  expense?: Expense | null;
 }
 
-export const ExpenseDialog = ({ open, onOpenChange, expense }: Props) => {
+export const ExpenseDialog = ({ open, onOpenChange }: Props) => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const categories = useCategories();
   const paymentMethods = usePaymentMethods();
+
+  const id = searchParams.get("expense");
+  const { expense, isError, isLoading, error } = useExpense(id || "");
 
   const categoriesData = categories.data;
   const paymentMethodsData = paymentMethods.data;

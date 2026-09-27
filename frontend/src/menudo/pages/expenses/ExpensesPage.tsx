@@ -5,9 +5,9 @@ import { Button } from "../../../components/ui/button";
 import { Plus } from "lucide-react";
 import { ExpenseDialog } from "../../../components/custom/ExpenseDialog";
 import { toast } from "sonner";
-import { importService } from "../../../services/import.service";
 import { CustomHeader } from "../../../components/custom/CustomHeader";
 import type { Expense } from "../../../types/expense.interface";
+import { useDialog } from "../../../hooks/useDialog";
 
 export const ExpensesPage = () => {
   const [open, setOpen] = useState(false);
@@ -16,32 +16,33 @@ export const ExpensesPage = () => {
   const [importing, setImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const { handleOpenDialog, handleDialogChange, isDialogOpen } = useDialog();
 
-    setImporting(true);
-    try {
-      const res = await importService.uploadFile(file);
-      toast.success(
-        `Importación finalizada. Éxitos: ${res.successCount}. Errores: ${res.failureCount}.`,
-      );
-      setRefreshTrigger((t) => t + 1);
-    } catch (err) {
-      toast.error("Error al importar el archivo");
-    } finally {
-      setImporting(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // const file = e.target.files?.[0];
+    // if (!file) return;
+    // setImporting(true);
+    // try {
+    //   const res = await importService.uploadFile(file);
+    //   toast.success(
+    //     `Importación finalizada. Éxitos: ${res.successCount}. Errores: ${res.failureCount}.`,
+    //   );
+    //   setRefreshTrigger((t) => t + 1);
+    // } catch (err) {
+    //   toast.error("Error al importar el archivo");
+    // } finally {
+    //   setImporting(false);
+    //   if (fileInputRef.current) fileInputRef.current.value = "";
+    // }
   };
 
   const handleDownloadTemplate = async () => {
-    try {
-      await importService.downloadTemplate();
-      toast.success("Plantilla descargada exitosamente");
-    } catch (err) {
-      toast.error("Error al descargar la plantilla");
-    }
+    // try {
+    //   await importService.downloadTemplate();
+    //   toast.success("Plantilla descargada exitosamente");
+    // } catch (err) {
+    //   toast.error("Error al descargar la plantilla");
+    // }
   };
 
   return (
@@ -84,22 +85,12 @@ export const ExpensesPage = () => {
       <main className="flex-1 px-5 py-6 md:px-8 md:py-8">
         <ExpensesContent
           refreshTrigger={refreshTrigger}
-          onNew={() => {
-            setEditing(null);
-            setOpen(true);
-          }}
-          onEdit={(g) => {
-            setEditing(g);
-            setOpen(true);
-          }}
+          onNew={() => handleOpenDialog("new")}
+          onEdit={() => handleOpenDialog("edit")}
         />
         <ExpenseDialog
-          open={open}
-          onOpenChange={(v) => {
-            setOpen(v);
-            if (!v) setRefreshTrigger((t) => t + 1);
-          }}
-          expense={editing}
+          open={isDialogOpen("new", "edit")}
+          onOpenChange={handleDialogChange}
         />
       </main>
     </>

@@ -9,16 +9,13 @@ import {
   TableRow,
 } from "../../../../components/ui/table";
 import { Pencil, Trash2 } from "lucide-react";
-import {
-  formatDate,
-  currencyExact,
-  type Expense,
-  type Category,
-  type PaymentMethod,
-} from "../../../../data/finance-types";
+import { formatDate, currencyExact } from "../../../../data/finance-types";
 import { ExpensesPagination } from "./ExpensesPagination";
 import { Badge } from "../../../../components/ui/badge";
 import type { SetStateAction } from "react";
+import type { Expense } from "../../../../types/expense.interface";
+import type { Category } from "../../../../types/category.interface";
+import type { PaymentMethod } from "../../../../types/payment-method";
 
 interface Props {
   filteredExpenses: Expense[];
@@ -27,12 +24,10 @@ interface Props {
   categories: Category[];
   paymentMethods: PaymentMethod[];
   onNew: () => void;
-  clearFilters: () => void;
-  onEdit: (g: Expense) => void;
-  setToDelete: React.Dispatch<SetStateAction<Expense | null>>;
+  onEdit: () => void;
   current: number;
   pages: number;
-  setPage: React.Dispatch<SetStateAction<number>>;
+  setPage: (value: number) => void;
 }
 
 export const ExpensesTable = ({
@@ -42,9 +37,7 @@ export const ExpensesTable = ({
   categories,
   paymentMethods,
   onNew,
-  clearFilters,
   onEdit,
-  setToDelete,
   current,
   pages,
   setPage,
@@ -61,9 +54,7 @@ export const ExpensesTable = ({
           }
           action={
             hasFilters ? (
-              <Button variant="outline" onClick={clearFilters}>
-                Limpiar filtros
-              </Button>
+              <Button variant="outline">Limpiar filtros</Button>
             ) : (
               <Button onClick={onNew}>Registrar gasto</Button>
             )
@@ -118,7 +109,7 @@ export const ExpensesTable = ({
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => onEdit(g)}
+                          onClick={() => onEdit()}
                           aria-label="Editar"
                         >
                           <Pencil className="size-4" />
@@ -127,7 +118,7 @@ export const ExpensesTable = ({
                           variant="ghost"
                           size="icon"
                           className="text-destructive hover:text-destructive"
-                          onClick={() => setToDelete(g)}
+                          // onClick={() => setToDelete(g)}
                           aria-label="Eliminar"
                         >
                           <Trash2 className="size-4" />

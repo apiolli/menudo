@@ -1,18 +1,17 @@
-import { currencyExact, type Expense } from "../../../../data/finance-types";
+import { currencyExact } from "../../../../data/finance-types";
 import { Button } from "../../../../components/ui/button";
 import { FilterX } from "lucide-react";
+import type { Expense } from "../../../../types/expense.interface";
 
 interface Props {
   total: number;
   hasFilters: boolean | string;
-  clearFilters: () => void;
   filteredExpenses: Expense[];
 }
 
 export const ResultsSummary = ({
   total,
   hasFilters,
-  clearFilters,
   filteredExpenses,
 }: Props) => {
   return (
@@ -28,12 +27,7 @@ export const ResultsSummary = ({
         en total
       </p>
       {hasFilters && (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="gap-2"
-          onClick={clearFilters}
-        >
+        <Button variant="ghost" size="sm" className="gap-2">
           <FilterX className="size-4" /> Limpiar filtros
         </Button>
       )}

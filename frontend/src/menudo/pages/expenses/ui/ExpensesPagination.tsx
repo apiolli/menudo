@@ -1,10 +1,9 @@
-import type { SetStateAction } from "react";
 import { Button } from "../../../../components/ui/button";
 
 interface Props {
   current: number;
   pages: number;
-  setPage: React.Dispatch<SetStateAction<number>>;
+  setPage: (value: number) => void;
 }
 
 export const ExpensesPagination = ({ current, pages, setPage }: Props) => {

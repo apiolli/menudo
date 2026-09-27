@@ -1,6 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import { type Expense } from "../../../../data/finance-types";
-import { useMenudo } from "../../../../context/MenudoContext";
 import { expenseService } from "../../../../services/expenses.service";
 import { toast } from "sonner";
 import {
@@ -16,28 +14,85 @@ import {
 import { ResultsSummary } from "./ResultsSummary";
 import { ExpensesFilter } from "./ExpensesFilter";
 import { ExpensesTable } from "./ExpensesTable";
+import { useCategories } from "../../categories/hooks/useCategories";
+import { usePaymentMethods } from "../../paymentMethods/hooks/usePaymentMethods";
+import { EmptyState } from "../../../../components/common/EmptyState";
+import { CardsSkeleton } from "../../../../components/common/CardSkeleton";
+import type { Expense } from "../../../../types/expense.interface";
+import { useSearchParams } from "react-router";
 
 interface Props {
   onNew: () => void;
-  onEdit: (g: Expense) => void;
+  onEdit: () => void;
   refreshTrigger: number;
 }
 
 const PAGE_SIZE = 8;
 
 export const ExpensesContent = ({ onNew, onEdit, refreshTrigger }: Props) => {
-  const { categories, paymentMethods, deleteExpense } = useMenudo();
-  const [q, setQ] = useState("");
-  const [categoryId, setCategoryId] = useState("todas");
-  const [paymentMethodId, setPaymentMethodId] = useState("todos");
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
-  const [page, setPage] = useState(1);
-  const [toDelete, setToDelete] = useState<Expense | null>(null);
-
   const [visibleExpenses, setVisibleExpenses] = useState<Expense[]>([]);
-  const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categories = useCategories();
+  const paymentMethods = usePaymentMethods();
+
+  const categoriesData = categories.data;
+  const paymentMethodsData = paymentMethods.data;
+
+  if (categories.isLoading || paymentMethods.isLoading)
+    return <CardsSkeleton />;
+
+  if (!categoriesData || !paymentMethodsData) {
+    const isEmpty = categoriesData ? "metodos de pago" : "categorias";
+    return (
+      <EmptyState
+        title={`Todavia no tienes ${isEmpty}`}
+        description="Registra"
+      />
+    );
+  }
+
+  const q = searchParams.get("q") ?? "";
+  const setQ = (q: string) => {
+    searchParams.set("q", q);
+    setSearchParams(searchParams);
+  };
+
+  const categoryId = searchParams.get("categoryId") ?? "todas";
+  const setCategoryId = (categoryId: string) => {
+    searchParams.set("categoryId", categoryId);
+    setSearchParams(searchParams);
+  };
+
+  const paymentMethodId = searchParams.get("paymentMethodId") ?? "todos";
+  const setPaymentMethodId = (paymentMethodId: string) => {
+    searchParams.set("paymentMethodId", paymentMethodId);
+    setSearchParams(searchParams);
+  };
+
+  const fromDate = searchParams.get("fromDate") ?? "";
+  const setFromDate = (fromDate: string) => {
+    searchParams.set("fromDate", fromDate);
+    setSearchParams(searchParams);
+  };
+
+  const toDate = searchParams.get("toDate") ?? "";
+  const setToDate = (toDate: string) => {
+    searchParams.set("toDate", toDate);
+    setSearchParams(searchParams);
+  };
+
+  const page = Number(searchParams.get("page")) ?? 1;
+  const setPage = (page: number) => {
+    searchParams.set("page", page.toString());
+    setSearchParams(searchParams);
+  };
+
+  const totalItems = Number(searchParams.get("totalItems")) ?? 0;
+  const setTotalItems = (totalItems: number) => {
+    searchParams.set("totalItems", totalItems.toString());
+    setSearchParams(searchParams);
+  };
 
   const fetchExpenses = useCallback(async () => {
     setLoading(true);
@@ -77,15 +132,6 @@ export const ExpensesContent = ({ onNew, onEdit, refreshTrigger }: Props) => {
     fromDate ||
     toDate;
 
-  const clearFilters = () => {
-    setQ("");
-    setCategoryId("todas");
-    setPaymentMethodId("todos");
-    setFromDate("");
-    setToDate("");
-    setPage(1);
-  };
-
   return (
     <div className="space-y-5">
       <ExpensesFilter
@@ -95,9 +141,9 @@ export const ExpensesContent = ({ onNew, onEdit, refreshTrigger }: Props) => {
         setQ={setQ}
         setPage={setPage}
         setCategoryId={setCategoryId}
-        categories={categories}
+        categories={categoriesData}
         setPaymentMethodId={setPaymentMethodId}
-        paymentMethods={paymentMethods}
+        paymentMethods={paymentMethodsData}
         setFromDate={setFromDate}
         setToDate={setToDate}
         fromDate={fromDate}
@@ -107,7 +153,6 @@ export const ExpensesContent = ({ onNew, onEdit, refreshTrigger }: Props) => {
       <ResultsSummary
         total={total}
         hasFilters={hasFilters ? true : ""}
-        clearFilters={clearFilters}
         filteredExpenses={visibleExpenses}
       />
 
@@ -116,19 +161,17 @@ export const ExpensesContent = ({ onNew, onEdit, refreshTrigger }: Props) => {
           filteredExpenses={visibleExpenses}
           hasFilters={hasFilters ? true : ""}
           visibleExpenses={visibleExpenses}
-          categories={categories}
-          paymentMethods={paymentMethods}
+          categories={categoriesData}
+          paymentMethods={paymentMethodsData}
           onNew={onNew}
-          clearFilters={clearFilters}
           onEdit={onEdit}
-          setToDelete={setToDelete}
           current={page}
           pages={pages}
           setPage={setPage}
         />
       </div>
 
-      <AlertDialog
+      {/* <AlertDialog
         open={!!toDelete}
         onOpenChange={(v) => !v && setToDelete(null)}
       >
@@ -146,9 +189,9 @@ export const ExpensesContent = ({ onNew, onEdit, refreshTrigger }: Props) => {
               onClick={async () => {
                 if (toDelete) {
                   try {
-                    await deleteExpense(toDelete.id);
+                    // await deleteExpense(toDelete.id);
                     toast.success("Gasto eliminado");
-                    fetchExpenses();
+                    // fetchExpenses();
                   } catch (e) {
                     toast.error("Error al eliminar el gasto");
                   }
@@ -160,7 +203,7 @@ export const ExpensesContent = ({ onNew, onEdit, refreshTrigger }: Props) => {
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
-      </AlertDialog>
+      </AlertDialog> */}
     </div>
   );
 };

@@ -38,9 +38,6 @@ interface Props {
 }
 
 export const CategoryDialog = ({ open, onOpenChange }: Props) => {
-  // const [color, setColor] = useState(COLORES[0]);
-  // const [icon, setIcon] = useState(ICONOS[0]);
-
   const [searchParams, setSearchParams] = useSearchParams();
   const id = searchParams.get("category");
 
@@ -157,7 +154,6 @@ export const CategoryDialog = ({ open, onOpenChange }: Props) => {
             variant="outline"
             type="button"
             onClick={() => onOpenChange(false)}
-            // disabled={!!category}
           >
             Cancelar
           </Button>

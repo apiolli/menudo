@@ -3,7 +3,7 @@ import { getExpensesAction } from "../actions/get-expenses.action";
 
 export const useExpenses = () => {
   const data = useQuery({
-    queryKey: ["paymentMethods"],
+    queryKey: ["expenses"],
     queryFn: getExpensesAction,
     retry: false,
     staleTime: 1000 * 60 * 5,
