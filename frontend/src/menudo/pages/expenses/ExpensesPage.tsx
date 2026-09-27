@@ -70,13 +70,7 @@ export const ExpensesPage = () => {
               {importing ? "Importando..." : "Importar"}
             </Button>
             <ExportDialog />
-            <Button
-              className="gap-2"
-              onClick={() => {
-                setEditing(null);
-                setOpen(true);
-              }}
-            >
+            <Button className="gap-2" onClick={() => handleOpenDialog("new")}>
               <Plus className="size-4" /> Nuevo gasto
             </Button>
           </>

@@ -20,20 +20,37 @@ import { Progress } from "../../../../components/ui/progress";
 import type { Category } from "../../../../types/category.interface";
 import { useCategories } from "../hooks/useCategories";
 import { useExpenses } from "../../expenses/hooks/useExpenses";
+import { useSearchParams } from "react-router";
+import { useCategory } from "../hooks/useCategory";
+import type { Features } from "../../../../hooks/useDialog";
+import { CardsSkeleton } from "../../../../components/common/CardSkeleton";
+import { useDeleteCategory } from "../hooks/useDeleteCategory";
 
 interface Props {
   onNew: () => void;
-  onEdit: (id: number) => void;
+  onEdit: (id: number, feature: Features) => void;
+  open: (dialogName: string, secondDialog?: string | undefined) => boolean;
+  onOpenChange: (isOpen: boolean) => void;
+  onDelete: (id: number, feature: Features) => void;
 }
 
-export const CategoryContent = ({ onNew, onEdit }: Props) => {
+export const CategoryContent = ({
+  onNew,
+  onEdit,
+  onDelete,
+  open,
+  onOpenChange,
+}: Props) => {
   const categories = useCategories();
   const expenses = useExpenses();
 
   const categoriesData = categories.data;
   const expensesData = expenses.data;
-  const [toDelete, setToDelete] = useState<Category | null>(null);
-  const currentMonth = new Date().toISOString().slice(0, 7);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const id = searchParams.get("category");
+
+  const { category, isError, isLoading, error } = useCategory(id || "");
+  const mutation = useDeleteCategory();
 
   if (!categoriesData || !expensesData)
     return (
@@ -44,15 +61,31 @@ export const CategoryContent = ({ onNew, onEdit }: Props) => {
       />
     );
 
+  if (isLoading) return <CardsSkeleton />;
+  if (isError) {
+    toast.error(error);
+    return;
+  }
+
+  const handleDelete = async (id: string) => {
+    await mutation.mutate(id, {
+      onSuccess: () => {
+        toast.success("Categoria eliminada exitosamente");
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
+
+    const params = new URLSearchParams();
+    setSearchParams(params);
+  };
+
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {categoriesData.map((c) => {
-          const spent = expensesData
-            .filter(
-              (g) => g.categoryId === c.id && monthKey(g.date) === currentMonth,
-            )
-            .reduce((s, g) => s + g.amount, 0);
+          const spent = !c.spent ? 0 : c.spent;
           const pct = c.budget ? Math.min(100, (spent / c.budget) * 100) : 0;
           const exceeded = c.budget ? spent > c.budget : false;
           return (
@@ -77,7 +110,7 @@ export const CategoryContent = ({ onNew, onEdit }: Props) => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onEdit(c.id)}
+                    onClick={() => onEdit(c.id, "category")}
                     aria-label="Editar"
                   >
                     <Pencil className="size-4" />
@@ -86,7 +119,7 @@ export const CategoryContent = ({ onNew, onEdit }: Props) => {
                     variant="ghost"
                     size="icon"
                     className="text-destructive hover:text-destructive"
-                    onClick={() => setToDelete(c)}
+                    onClick={() => onDelete(c.id, "category")}
                     aria-label="Eliminar"
                   >
                     <Trash2 className="size-4" />
@@ -114,13 +147,10 @@ export const CategoryContent = ({ onNew, onEdit }: Props) => {
         })}
       </div>
 
-      <AlertDialog
-        open={!!toDelete}
-        onOpenChange={(v) => !v && setToDelete(null)}
-      >
+      <AlertDialog open={open("delete")} onOpenChange={onOpenChange}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar “{toDelete?.name}”?</AlertDialogTitle>
+            <AlertDialogTitle>¿Eliminar “{category?.name}”?</AlertDialogTitle>
             <AlertDialogDescription>
               También se eliminarán los gastos asociados a esta categoría. Esta
               acción no se puede deshacer.
@@ -130,19 +160,7 @@ export const CategoryContent = ({ onNew, onEdit }: Props) => {
             <AlertDialogCancel variant={undefined} size={undefined}>
               Cancelar
             </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={async () => {
-                if (toDelete) {
-                  try {
-                    // await deleteCategory(toDelete.id);
-                    toast.success("Categoría eliminada");
-                  } catch (e) {
-                    toast.error("Error al eliminar la categoría");
-                  }
-                }
-                setToDelete(null);
-              }}
-            >
+            <AlertDialogAction onClick={() => handleDelete(id!.toString())}>
               Eliminar
             </AlertDialogAction>
           </AlertDialogFooter>

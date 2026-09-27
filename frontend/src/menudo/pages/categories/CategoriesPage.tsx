@@ -3,23 +3,16 @@ import { CategoryDialog } from "./ui/CategoryDialog";
 import { CategoryContent } from "./ui/CategoryContent";
 import { Button } from "../../../components/ui/button";
 import { CustomHeader } from "../../../components/custom/CustomHeader";
-import { useSearchParams } from "react-router";
 import { useDialog } from "../../../hooks/useDialog";
 
 export const CategoriesPage = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const { handleDialogChange, isDialogOpen } = useDialog();
-
-  const handleOpenDialog = (dialog: string) => {
-    searchParams.set("dialog", dialog);
-    setSearchParams(searchParams);
-  };
-
-  const handleEditDialog = (id: number) => {
-    searchParams.set("dialog", "edit");
-    searchParams.set("category", id.toString());
-    setSearchParams(searchParams);
-  };
+  const {
+    handleDialogChange,
+    isDialogOpen,
+    handleOpenDialog,
+    handleDeleteDialog,
+    handleEditDialog,
+  } = useDialog();
 
   return (
     <>
@@ -36,6 +29,9 @@ export const CategoriesPage = () => {
         <CategoryContent
           onNew={() => handleOpenDialog("new")}
           onEdit={handleEditDialog}
+          onDelete={handleDeleteDialog}
+          open={isDialogOpen}
+          onOpenChange={handleDialogChange}
         />
 
         <CategoryDialog

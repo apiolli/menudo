@@ -13,13 +13,13 @@ import { Button } from "../../../../components/ui/button";
 import { COLORES, Icono, ICONOS } from "../../../../data/finance-store";
 import { useCategory } from "../hooks/useCategory";
 import { useSearchParams } from "react-router";
-import { Spinner } from "../../../../components/ui/spinner";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Category } from "../../../../types/category.interface";
 import { cn } from "../../../../lib/utils";
-import { useState } from "react";
+import { CardsSkeleton } from "../../../../components/common/CardSkeleton";
+import { useCreateUpdateCategory } from "../hooks/useCreateUpdateCategory";
 
 const categorySchema = z.object({
   name: z
@@ -42,6 +42,7 @@ export const CategoryDialog = ({ open, onOpenChange }: Props) => {
   const id = searchParams.get("category");
 
   const { category, isError, isLoading, error } = useCategory(id || "");
+  const mutation = useCreateUpdateCategory();
   const {
     register,
     handleSubmit,
@@ -58,7 +59,7 @@ export const CategoryDialog = ({ open, onOpenChange }: Props) => {
     resolver: zodResolver(categorySchema),
   });
 
-  if (isLoading) return <Spinner className="size-8" />;
+  if (isLoading) return <CardsSkeleton />;
   if (isError) {
     toast.error(error);
     return;
@@ -67,8 +68,24 @@ export const CategoryDialog = ({ open, onOpenChange }: Props) => {
   const icon = watch("icon");
   const color = watch("color");
 
+  const mutationSuccess =
+    searchParams.get("dialog") === "new"
+      ? "Producto creado con exito"
+      : "Producto editado exitosamente";
+
   const submit = async (category: Partial<Category>) => {
-    console.log({ category });
+    category.id = +id!;
+    await mutation.mutate(category, {
+      onSuccess: () => {
+        toast.success(mutationSuccess);
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
+
+    const params = new URLSearchParams();
+    setSearchParams(params);
   };
 
   return (
