@@ -16,6 +16,7 @@ export const useCreateUpdateCategory = () => {
       });
       queryClient.setQueryData(["categories", { id: category.id }], category);
     },
+    retry: false,
   });
 
   return mutation;

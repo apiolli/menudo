@@ -11,7 +11,7 @@ import { Label } from "../../../../components/ui/label";
 import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
 import { COLORES, Icono, ICONOS } from "../../../../data/finance-store";
-import { useCategory } from "../hooks/useCategory";
+import { useCategory } from "../api/useCategory";
 import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -19,7 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { Category } from "../../../../types/category.interface";
 import { cn } from "../../../../lib/utils";
 import { CardsSkeleton } from "../../../../components/common/CardSkeleton";
-import { useCreateUpdateCategory } from "../hooks/useCreateUpdateCategory";
+import { useCreateUpdateCategory } from "../api/useCreateUpdateCategory";
 
 const categorySchema = z.object({
   name: z

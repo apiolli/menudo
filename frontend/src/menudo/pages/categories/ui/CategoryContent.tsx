@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { currency, monthKey } from "../../../../data/finance-types";
+import { currency } from "../../../../data/finance-types";
 import { EmptyState } from "../../../../components/common/EmptyState";
 import { Button } from "../../../../components/ui/button";
 import { Icono } from "../../../../data/finance-store";
@@ -17,14 +16,9 @@ import {
 } from "../../../../components/ui/alert-dialog";
 import { toast } from "sonner";
 import { Progress } from "../../../../components/ui/progress";
-import type { Category } from "../../../../types/category.interface";
-import { useCategories } from "../hooks/useCategories";
-import { useExpenses } from "../../expenses/hooks/useExpenses";
-import { useSearchParams } from "react-router";
-import { useCategory } from "../hooks/useCategory";
 import type { Features } from "../../../../hooks/useDialog";
 import { CardsSkeleton } from "../../../../components/common/CardSkeleton";
-import { useDeleteCategory } from "../hooks/useDeleteCategory";
+import { useCategoryContent } from "../hooks/useCategoryContent";
 
 interface Props {
   onNew: () => void;
@@ -41,45 +35,36 @@ export const CategoryContent = ({
   open,
   onOpenChange,
 }: Props) => {
-  const categories = useCategories();
-  const expenses = useExpenses();
+  const {
+    categoriesData,
+    category,
+    expensesData,
+    isError,
+    isLoading,
+    error,
+    handleDelete,
+    isPending,
+  } = useCategoryContent();
 
-  const categoriesData = categories.data;
-  const expensesData = expenses.data;
-  const [searchParams, setSearchParams] = useSearchParams();
-  const id = searchParams.get("category");
-
-  const { category, isError, isLoading, error } = useCategory(id || "");
-  const mutation = useDeleteCategory();
+  if (isLoading) return <CardsSkeleton />;
+  if (isError) {
+    toast.error(error);
+    return (
+      <EmptyState
+        title="Error!"
+        description="Ha ocurrido un error inesperado al cargar los datos."
+      />
+    );
+  }
 
   if (!categoriesData || !expensesData)
     return (
       <EmptyState
         title="No hay categorías"
-        description="Creá categorías para organizar y analizar mejor tus gastos."
+        description="Crea categorías para organizar y analizar mejor tus gastos."
         action={<Button onClick={onNew}>Crear categoría</Button>}
       />
     );
-
-  if (isLoading) return <CardsSkeleton />;
-  if (isError) {
-    toast.error(error);
-    return;
-  }
-
-  const handleDelete = async (id: string) => {
-    await mutation.mutate(id, {
-      onSuccess: () => {
-        toast.success("Categoria eliminada exitosamente");
-      },
-      onError: (error) => {
-        toast.error(error.message);
-      },
-    });
-
-    const params = new URLSearchParams();
-    setSearchParams(params);
-  };
 
   return (
     <>
@@ -160,7 +145,7 @@ export const CategoryContent = ({
             <AlertDialogCancel variant={undefined} size={undefined}>
               Cancelar
             </AlertDialogCancel>
-            <AlertDialogAction onClick={() => handleDelete(id!.toString())}>
+            <AlertDialogAction onClick={handleDelete} disabled={isPending}>
               Eliminar
             </AlertDialogAction>
           </AlertDialogFooter>

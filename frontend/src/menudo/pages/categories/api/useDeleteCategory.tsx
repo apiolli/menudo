@@ -11,6 +11,7 @@ export const useDeleteCategory = () => {
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
       queryClient.invalidateQueries({ queryKey: ["paymentMethods"] });
     },
+    retry: false,
   });
 
   return mutation;

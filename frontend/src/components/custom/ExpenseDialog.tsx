@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Button } from "../ui/button";
-import { useCategories } from "../../menudo/pages/categories/hooks/useCategories";
+import { useCategories } from "../../menudo/pages/categories/api/useCategories";
 import { usePaymentMethods } from "../../menudo/pages/paymentMethods/hooks/usePaymentMethods";
 import { EmptyState } from "../common/EmptyState";
 import type { Expense } from "../../types/expense.interface";
