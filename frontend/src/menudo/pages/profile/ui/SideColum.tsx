@@ -1,11 +1,8 @@
 import { LogOut } from "lucide-react";
 import { Button } from "../../../../components/ui/button";
-import {
-  currencyExact,
-  type Category,
-  type Expense,
-} from "../../../../data/finance-types";
-import { useNavigate } from "react-router";
+import { currencyExact } from "../../../../data/finance-types";
+import type { Expense } from "../../../../types/expense.interface";
+import type { Category } from "../../../../types/category.interface";
 
 interface Props {
   user: any | null;
@@ -22,16 +19,8 @@ export const SideColum = ({
   total,
   categories,
 }: Props) => {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate("/", { replace: true });
-  };
-
   return (
     <aside className="space-y-4">
-      {/* Avatar y datos de la cuenta */}
       <div className="surface p-6 text-center">
         <span
           className="mx-auto grid size-16 place-items-center rounded-full text-xl font-semibold text-primary-foreground"
@@ -43,7 +32,6 @@ export const SideColum = ({
         <p className="text-xs text-muted-foreground">{user?.email}</p>
       </div>
 
-      {/* Resumen de estadísticas */}
       <div className="surface space-y-4 p-6">
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">
@@ -66,7 +54,7 @@ export const SideColum = ({
       <Button
         variant="outline"
         className="w-full gap-2 text-destructive hover:text-destructive"
-        onClick={handleLogout}
+        onClick={logout}
       >
         <LogOut className="size-4" /> Cerrar sesión
       </Button>

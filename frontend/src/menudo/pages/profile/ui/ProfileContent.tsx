@@ -6,6 +6,9 @@ import { useAuth } from "../../../../hooks/useAuth";
 import { useMenudo } from "../../../../context/MenudoContext";
 import { userService } from "../../../../services/user.service";
 import { z } from "zod";
+import { useAuthStore } from "../../../../store/auth.store";
+import { useCategories } from "../../categories/api/useCategories";
+import { useExpenses } from "../../expenses/hooks/useExpenses";
 
 const updateSchema = z.object({
   name: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
@@ -27,13 +30,10 @@ const passwordSchema = z
   });
 
 export const ProfileContent = () => {
-  const { user, setUser, logout } = useAuth();
-  const { categories, expenses } = useMenudo();
-
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const { user, logout } = useAuthStore();
+  const { data: categories } = useCategories();
+  const { data: expenses } = useExpenses();
   const [currency, setCurrency] = useState("USD");
-  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [password, setPassword] = useState({
     current: "",
@@ -44,64 +44,59 @@ export const ProfileContent = () => {
     {},
   );
 
-  useEffect(() => {
-    if (user) {
-      setName(user.name);
-      setEmail(user.email);
-    }
-  }, [user]);
+  if (!expenses || !categories || !user) return;
 
   const saveData = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrors({});
+    // setErrors({});
 
-    const result = updateSchema.safeParse({ name, email, currency });
-    if (!result.success) {
-      const fieldErrors: Record<string, string> = {};
-      result.error.issues.forEach((issue) => {
-        fieldErrors[String(issue.path[0])] = issue.message;
-      });
-      setErrors(fieldErrors);
-      return;
-    }
+    // const result = updateSchema.safeParse({ name, email, currency });
+    // if (!result.success) {
+    //   const fieldErrors: Record<string, string> = {};
+    //   result.error.issues.forEach((issue) => {
+    //     fieldErrors[String(issue.path[0])] = issue.message;
+    //   });
+    //   setErrors(fieldErrors);
+    //   return;
+    // }
 
-    try {
-      const updatedUser = await userService.updateProfile({ name, email });
-      setUser(updatedUser as any);
-      toast.success("Datos actualizados exitosamente");
-    } catch (error: any) {
-      toast.error(
-        error.response?.data?.message || "Error al actualizar perfil",
-      );
-    }
+    // try {
+    //   const updatedUser = await userService.updateProfile({ name, email });
+    //   setUser(updatedUser as any);
+    //   toast.success("Datos actualizados exitosamente");
+    // } catch (error: any) {
+    //   toast.error(
+    //     error.response?.data?.message || "Error al actualizar perfil",
+    //   );
+    // }
   };
 
   const changePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    setPasswordErrors({});
+    // setPasswordErrors({});
 
-    const result = passwordSchema.safeParse(password);
-    if (!result.success) {
-      const fieldErrors: Record<string, string> = {};
-      result.error.issues.forEach((issue) => {
-        fieldErrors[String(issue.path[0])] = issue.message;
-      });
-      setPasswordErrors(fieldErrors);
-      return;
-    }
+    // const result = passwordSchema.safeParse(password);
+    // if (!result.success) {
+    //   const fieldErrors: Record<string, string> = {};
+    //   result.error.issues.forEach((issue) => {
+    //     fieldErrors[String(issue.path[0])] = issue.message;
+    //   });
+    //   setPasswordErrors(fieldErrors);
+    //   return;
+    // }
 
-    try {
-      await userService.changePassword({
-        currentPassword: password.current,
-        newPassword: password.new,
-      });
-      setPassword({ current: "", new: "", repeat: "" });
-      toast.success("Contraseña actualizada exitosamente");
-    } catch (error: any) {
-      toast.error(
-        error.response?.data?.message || "Error al cambiar la contraseña",
-      );
-    }
+    // try {
+    //   await userService.changePassword({
+    //     currentPassword: password.current,
+    //     newPassword: password.new,
+    //   });
+    //   setPassword({ current: "", new: "", repeat: "" });
+    //   toast.success("Contraseña actualizada exitosamente");
+    // } catch (error: any) {
+    //   toast.error(
+    //     error.response?.data?.message || "Error al cambiar la contraseña",
+    //   );
+    // }
   };
 
   const total = expenses.reduce((acc, curr) => acc + curr.amount, 0);
@@ -110,18 +105,13 @@ export const ProfileContent = () => {
     <div className="grid gap-6 lg:grid-cols-3">
       {/* Columna principal: datos personales y seguridad */}
       <MainColum
-        saveData={saveData}
-        errors={errors}
-        name={name}
-        email={email}
         currency={currency}
         setCurrency={setCurrency}
-        setEmail={setEmail}
-        setName={setName}
         changePassword={changePassword}
         password={password}
         setPassword={setPassword}
         passwordErrors={passwordErrors}
+        user={user}
       />
 
       {/* Columna lateral: avatar, estadísticas y cierre de sesión */}

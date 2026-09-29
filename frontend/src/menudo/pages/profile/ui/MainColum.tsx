@@ -10,16 +10,12 @@ import {
 import { Button } from "../../../../components/ui/button";
 import { Separator } from "../../../../components/ui/separator";
 import { ShieldCheck } from "lucide-react";
+import { useForm } from "react-hook-form";
+import type { User } from "../../../../types/user.interface";
 
 interface Props {
-  saveData: (e: React.FormEvent) => void;
-  errors: Record<string, string>;
-  name: string;
-  email: string;
   currency: string;
   setCurrency: React.Dispatch<React.SetStateAction<string>>;
-  setEmail: React.Dispatch<React.SetStateAction<string>>;
-  setName: React.Dispatch<React.SetStateAction<string>>;
   changePassword: (e: React.FormEvent<Element>) => void;
   password: {
     current: string;
@@ -34,25 +30,33 @@ interface Props {
     }>
   >;
   passwordErrors: Record<string, string>;
+  user: User;
 }
 
 export const MainColum = ({
-  saveData,
-  errors,
-  name,
-  email,
   currency,
   setCurrency,
-  setEmail,
-  setName,
   changePassword,
   password,
   setPassword,
   passwordErrors,
+  user,
 }: Props) => {
   const handleSelect = (value: string | null) => {
     setCurrency(value ?? "USD");
   };
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    values: {
+      ...user,
+    },
+  });
+
+  const onSubmit = (user: Partial<User>) => {};
 
   return (
     <section className="surface p-6 lg:col-span-2">
@@ -61,17 +65,19 @@ export const MainColum = ({
       <p className="text-xs text-muted-foreground">
         Esta información solo la ves tú.
       </p>
-      <form onSubmit={saveData} className="mt-5 grid gap-4 sm:grid-cols-2">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="mt-5 grid gap-4 sm:grid-cols-2"
+      >
         <div className="space-y-2">
           <Label htmlFor="p-nombre">Nombre completo</Label>
           <Input
             id="p-nombre"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            {...register("name", { required: true })}
             placeholder="Tu nombre"
           />
           {errors.name && (
-            <p className="text-xs text-destructive">{errors.name}</p>
+            <p className="text-xs text-destructive">{errors.name.message}</p>
           )}
         </div>
         <div className="space-y-2">
@@ -79,12 +85,11 @@ export const MainColum = ({
           <Input
             id="p-email"
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            {...register("email", { required: true })}
             placeholder="correo@ejemplo.com"
           />
           {errors.email && (
-            <p className="text-xs text-destructive">{errors.email}</p>
+            <p className="text-xs text-destructive">{errors.name?.message}</p>
           )}
         </div>
         <div className="space-y-2">
