@@ -7,9 +7,10 @@ import { ExportDialog } from "../../../components/custom/ExportDialog";
 import { ExpenseDialog } from "../../../components/custom/ExpenseDialog";
 import { CustomHeader } from "../../../components/custom/CustomHeader";
 
+const today = new Date().toISOString().slice(0, 10);
+
 export const DashboardPage = () => {
   const [open, setOpen] = useState(false);
-  const today = new Date().toISOString().slice(0, 10);
   const monthStart = today.slice(0, 8) + "01";
 
   return (
