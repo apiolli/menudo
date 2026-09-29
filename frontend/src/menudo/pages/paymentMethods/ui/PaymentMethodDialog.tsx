@@ -1,4 +1,3 @@
-import { z } from "zod";
 import {
   Dialog,
   DialogContent,
@@ -10,38 +9,36 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "../../../../components/ui/select";
-import { TIPOS, COLORES, ICONOS, Icono } from "../../../../data/finance-store";
+import { convertion, COLORES, TIPOS } from "../../../../data/finance-store";
 import { Label } from "../../../../components/ui/label";
 import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
 import { cn } from "../../../../lib/utils";
-import type { PaymentMethod } from "../../../../types/payment-method";
-
-const paymentMethodSchema = z.object({
-  name: z.string().min(2, "El nombre debe tener al menos 2 caracteres").max(40),
-  type: z.coerce.number().min(1, "Seleccioná un tipo de método de pago"),
-  detail: z.string().max(30).optional(),
-  color: z.string(),
-  icon: z.string(),
-});
+import { usePaymentMethodDialog } from "../hooks/usePaymentMethodDialog";
+import { Controller } from "react-hook-form";
 
 interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  paymentMethod: PaymentMethod | null;
 }
 
-export const PaymentMethodDialog = ({
-  open,
-  onOpenChange,
-  paymentMethod,
-}: Props) => {
-  const submit = async () => {};
-  // const selectedTypeObj = TIPOS.find((t) => t.id === type);
+export const PaymentMethodDialog = ({ open, onOpenChange }: Props) => {
+  const {
+    handleSubmit,
+    submit,
+    paymentMethod,
+    register,
+    setValue,
+    isPosting,
+    errors,
+    control,
+    color,
+  } = usePaymentMethodDialog();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -62,38 +59,50 @@ export const PaymentMethodDialog = ({
               id="met-nombre"
               maxLength={40}
               placeholder="Ej: Visa Crédito"
+              {...register("name", { required: true })}
             />
-            {/* {errors.name && (
-              <p className="text-xs text-destructive">{errors.name}</p>
-            )} */}
+            {errors.name && (
+              <p className="text-xs text-destructive">{errors.name.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
             <Label>Tipo</Label>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecciona un tipo">
-                  {/* {selectedTypeObj
-                    ? selectedTypeObj.label
-                    : "Selecciona un tipo"} */}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {TIPOS.map((t) => (
-                  <SelectItem key={t.id} value={String(t.id)}>
-                    {t.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {/* {errors.type && (
-              <p className="text-xs text-destructive">{errors.type}</p>
-            )} */}
+            <Controller
+              name="paymentType"
+              control={control}
+              render={({ field }) => (
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona un tipo"></SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {TIPOS.map((c) => (
+                        <SelectItem key={c.value} value={c.value}>
+                          {c.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.paymentType && (
+              <p className="text-xs text-destructive">
+                {errors.paymentType.message}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="met-detalle">Detalle (opcional)</Label>
-            <Input id="met-detalle" maxLength={30} placeholder="•••• 4821" />
+            <Input
+              id="met-detalle"
+              maxLength={30}
+              placeholder="•••• 4821"
+              {...register("detail")}
+            />
           </div>
 
           {/* Selector de color */}
@@ -105,33 +114,13 @@ export const PaymentMethodDialog = ({
                   key={c}
                   type="button"
                   aria-label={`Color ${c}`}
-                  // onClick={() => setColor(c)}
+                  onClick={() => setValue("color", c)}
                   className={cn(
-                    "size-8 rounded-full ring-offset-2",
-                    // color === c && "ring-2 ring-ring",
+                    "size-8 rounded-full ring-offset-2 cursor-pointer",
+                    color === c && "ring-2 ring-ring",
                   )}
                   style={{ backgroundColor: c }}
                 />
-              ))}
-            </div>
-          </div>
-
-          {/* Selector de ícono */}
-          <div className="space-y-2">
-            <Label>Ícono</Label>
-            <div className="flex flex-wrap gap-2">
-              {ICONOS.map((i) => (
-                <button
-                  key={i}
-                  type="button"
-                  aria-label={i}
-                  className={cn(
-                    "grid size-9 place-items-center rounded-lg border border-border transition-colors hover:bg-secondary",
-                    // icon === i && "border-primary bg-secondary",
-                  )}
-                >
-                  <Icono name={i} className="size-4" />
-                </button>
               ))}
             </div>
           </div>
@@ -141,12 +130,12 @@ export const PaymentMethodDialog = ({
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
-            // disabled={loading}
+            disabled={isPosting}
           >
             Cancelar
           </Button>
-          <Button onClick={submit} disabled={true}>
-            {true ? "Guardando..." : "Guardar"}
+          <Button onClick={handleSubmit(submit)} disabled={isPosting}>
+            {isPosting ? "Guardando..." : "Guardar"}
           </Button>
         </DialogFooter>
       </DialogContent>

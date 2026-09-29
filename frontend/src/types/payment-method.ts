@@ -1,7 +1,7 @@
 export interface PaymentMethod {
   id: number;
   name: string;
-  type: string | number;
+  paymentType: string | number;
   detail?: string;
   icon?: string;
   color?: string;

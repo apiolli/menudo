@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { EmptyState } from "../../../../components/common/EmptyState";
 import { currency, monthKey } from "../../../../data/finance-types";
 import { Button } from "../../../../components/ui/button";
@@ -15,30 +14,55 @@ import {
   AlertDialogTitle,
 } from "../../../../components/ui/alert-dialog";
 import { toast } from "sonner";
-import { usePaymentMethods } from "../hooks/usePaymentMethods";
-import { useExpenses } from "../../expenses/hooks/useExpenses";
-import type { PaymentMethod } from "../../../../types/payment-method";
+import type { Features } from "../../../../hooks/useDialog";
+import { usePaymentMethodContent } from "../hooks/usePaymentMethodContent";
+import { CardsSkeleton } from "../../../../components/common/CardSkeleton";
 
 interface Props {
   onNew: () => void;
-  onEdit: (m: PaymentMethod) => void;
+  onEdit: (id: number, feature: Features) => void;
+  onDelete: (id: number, feature: Features) => void;
+  open: (dialogName: string, secondDialog?: string | undefined) => boolean;
+  openChange: (isOpen: boolean) => void;
 }
 
-export const PaymentMethodsContent = ({ onNew, onEdit }: Props) => {
-  const paymentMethods = usePaymentMethods();
-  const expenses = useExpenses();
-
-  const paymentMethodsData = paymentMethods.data;
-  const expensesData = expenses.data;
-  const [toDelete, setToDelete] = useState<PaymentMethod | null>(null);
+export const PaymentMethodsContent = ({
+  onNew,
+  onEdit,
+  onDelete,
+  open,
+  openChange,
+}: Props) => {
+  const {
+    paymentMethodsData,
+    expensesData,
+    isError,
+    isLoading,
+    isPending,
+    error,
+    handleDelete,
+    paymentMethod,
+  } = usePaymentMethodContent();
   const currentMonth = new Date().toISOString().slice(0, 7);
+
+  if (isLoading) return <CardsSkeleton />;
+
+  if (isError) {
+    toast.error(error);
+    return (
+      <EmptyState
+        title="Error!"
+        description="Ha ocurrido un error inesperado al cargar los datos."
+      />
+    );
+  }
 
   if (!paymentMethodsData || !expensesData)
     return (
       <EmptyState
-        title="Sin métodos de pago"
-        description="Agregá tus tarjetas, efectivo o billeteras para asociarlos a cada gasto."
-        action={<Button onClick={onNew}>Agregar método</Button>}
+        title="No hay categorías"
+        description="Crea categorías para organizar y analizar mejor tus gastos."
+        action={<Button onClick={onNew}>Crear categoría</Button>}
       />
     );
 
@@ -79,7 +103,7 @@ export const PaymentMethodsContent = ({ onNew, onEdit }: Props) => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => onEdit(m)}
+                    onClick={() => onEdit(m.id, "paymentMethod")}
                     aria-label="Editar"
                   >
                     <Pencil className="size-4" />
@@ -88,7 +112,7 @@ export const PaymentMethodsContent = ({ onNew, onEdit }: Props) => {
                     variant="ghost"
                     size="icon"
                     className="text-destructive hover:text-destructive"
-                    onClick={() => setToDelete(m)}
+                    onClick={() => onDelete(m.id, "paymentMethod")}
                     aria-label="Eliminar"
                   >
                     <Trash2 className="size-4" />
@@ -114,32 +138,19 @@ export const PaymentMethodsContent = ({ onNew, onEdit }: Props) => {
         })}
       </div>
 
-      <AlertDialog
-        open={!!toDelete}
-        onOpenChange={(v) => !v && setToDelete(null)}
-      >
+      <AlertDialog open={open("delete")} onOpenChange={openChange}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar “{toDelete?.name}”?</AlertDialogTitle>
+            <AlertDialogTitle>
+              ¿Eliminar “{paymentMethod?.name}”?
+            </AlertDialogTitle>
             <AlertDialogDescription>
               También se eliminarán los gastos asociados a este método de pago.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={async () => {
-                if (toDelete) {
-                  try {
-                    // await deletePaymentMethod(toDelete.id);
-                    toast.success("Método eliminado");
-                  } catch (e) {
-                    toast.error("Error al eliminar el método");
-                  }
-                }
-                setToDelete(null);
-              }}
-            >
+            <AlertDialogAction onClick={handleDelete} disabled={isPending}>
               Eliminar
             </AlertDialogAction>
           </AlertDialogFooter>

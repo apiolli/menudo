@@ -56,10 +56,10 @@ export const ICONOS = [
   "Dog",
   "Shirt",
   "Gift",
-  "Banknote",
-  "CreditCard",
-  "Smartphone",
-  "Landmark",
+  // "Banknote",
+  // "CreditCard",
+  // "Smartphone",
+  // "Landmark",
 ];
 
 export function Icono({
@@ -79,10 +79,26 @@ export function Icono({
   return <Cmp className={className} />;
 }
 
+// export const TIPOS = [
+//   { id: 2, label: "Efectivo", icon: Banknote },
+//   { id: 4, label: "Tarjeta de crédito", icon: CreditCard },
+//   { id: 3, label: "Tarjeta de débito", icon: CreditCard },
+//   { id: 1, label: "Transferencia", icon: Landmark },
+//   { id: 5, label: "Billetera virtual", icon: Smartphone },
+// ];
+
+export const convertion = [
+  { label: "Efectivo", enum: "Cash" },
+  { label: "Tarjeta de crédito", enum: "CreditCard" },
+  { label: "Tarjeta de débito", enum: "DebitCard" },
+  { label: "Transferencia", enum: "Transfer" },
+  { label: "Billetera virtual", enum: "VirtualWallet" },
+];
+
 export const TIPOS = [
-  { id: 2, label: "Efectivo", icon: Banknote },
-  { id: 4, label: "Tarjeta de crédito", icon: CreditCard },
-  { id: 3, label: "Tarjeta de débito", icon: CreditCard },
-  { id: 1, label: "Transferencia", icon: Landmark },
-  { id: 5, label: "Billetera virtual", icon: Smartphone },
-] as const;
+  { label: "Efectivo", value: "2" },
+  { label: "Tarjeta de crédito", value: "4" },
+  { label: "Tarjeta de débito", value: "3" },
+  { label: "Transferencia", value: "1" },
+  { label: "Billetera virtual", value: "5" },
+];

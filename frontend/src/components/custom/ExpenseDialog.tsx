@@ -21,7 +21,7 @@ import {
 } from "../ui/select";
 import { Button } from "../ui/button";
 import { useCategories } from "../../menudo/pages/categories/api/useCategories";
-import { usePaymentMethods } from "../../menudo/pages/paymentMethods/hooks/usePaymentMethods";
+import { usePaymentMethods } from "../../menudo/pages/paymentMethods/api/usePaymentMethods";
 import { EmptyState } from "../common/EmptyState";
 import type { Expense } from "../../types/expense.interface";
 import { useSearchParams } from "react-router";

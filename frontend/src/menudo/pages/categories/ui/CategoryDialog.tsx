@@ -1,4 +1,3 @@
-import { z } from "zod";
 import {
   Dialog,
   DialogContent,
@@ -11,82 +10,36 @@ import { Label } from "../../../../components/ui/label";
 import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
 import { COLORES, Icono, ICONOS } from "../../../../data/finance-store";
-import { useCategory } from "../api/useCategory";
-import { useSearchParams } from "react-router";
 import { toast } from "sonner";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { Category } from "../../../../types/category.interface";
 import { cn } from "../../../../lib/utils";
 import { CardsSkeleton } from "../../../../components/common/CardSkeleton";
-import { useCreateUpdateCategory } from "../api/useCreateUpdateCategory";
+import { useCategoryDialog } from "../hooks/useCategoryDialog";
 
-const categorySchema = z.object({
-  name: z
-    .string("El nombre es requerido")
-    .min(2, "El nombre debe tener al menos 2 caracteres")
-    .max(40, "Máximo 40 caracteres"),
-  color: z.string(),
-  icon: z.string(),
-  budget: z.coerce
-    .number("El presupuesto es requerido")
-    .min(1, "El presupuesto debe de ser mayor 0"),
-});
 interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
 }
 
 export const CategoryDialog = ({ open, onOpenChange }: Props) => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const id = searchParams.get("category");
-
-  const { category, isError, isLoading, error } = useCategory(id || "");
-  const mutation = useCreateUpdateCategory();
   const {
+    isError,
+    isLoading,
+    error,
+    errors,
+    category,
+    color,
+    icon,
     register,
     handleSubmit,
-    formState: { errors },
     setValue,
-    watch,
-  } = useForm({
-    values: {
-      name: category?.name ?? "",
-      color: category?.color ?? COLORES[0],
-      icon: category?.icon ?? ICONOS[0],
-      budget: category?.budget ?? 0,
-    },
-    resolver: zodResolver(categorySchema),
-  });
+    submit,
+  } = useCategoryDialog();
 
   if (isLoading) return <CardsSkeleton />;
   if (isError) {
     toast.error(error);
     return;
   }
-
-  const icon = watch("icon");
-  const color = watch("color");
-
-  const mutationSuccess =
-    searchParams.get("dialog") === "new"
-      ? "Producto creado con exito"
-      : "Producto editado exitosamente";
-
-  const submit = async (category: Partial<Category>) => {
-    category.id = +id!;
-    await mutation.mutate(category, {
-      onSuccess: () => {
-        toast.success(mutationSuccess);
-      },
-      onError: (error) => {
-        toast.error(error.message);
-      },
-    });
-
-    const params = new URLSearchParams();
-    setSearchParams(params);
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

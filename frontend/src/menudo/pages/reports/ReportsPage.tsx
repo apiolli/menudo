@@ -13,7 +13,7 @@ import { StatCard } from "../../../components/common/StatCard";
 import { CustomHeader } from "../../../components/custom/CustomHeader";
 import { useExpenses } from "../expenses/hooks/useExpenses";
 import { useCategories } from "../categories/api/useCategories";
-import { usePaymentMethods } from "../paymentMethods/hooks/usePaymentMethods";
+import { usePaymentMethods } from "../paymentMethods/api/usePaymentMethods";
 
 export const ReportsPage = () => {
   const today = new Date();

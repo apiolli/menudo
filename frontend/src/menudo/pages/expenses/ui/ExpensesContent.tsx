@@ -15,7 +15,7 @@ import { ResultsSummary } from "./ResultsSummary";
 import { ExpensesFilter } from "./ExpensesFilter";
 import { ExpensesTable } from "./ExpensesTable";
 import { useCategories } from "../../categories/api/useCategories";
-import { usePaymentMethods } from "../../paymentMethods/hooks/usePaymentMethods";
+import { usePaymentMethods } from "../../paymentMethods/api/usePaymentMethods";
 import { EmptyState } from "../../../../components/common/EmptyState";
 import { CardsSkeleton } from "../../../../components/common/CardSkeleton";
 import type { Expense } from "../../../../types/expense.interface";
